@@ -91,7 +91,7 @@ struct SC_FinishtoLobby_init{ //겜종료 -> 로비
 
 struct CS_ingame_send{
 	int 		vkey; // GetAsyncKeyState(vkey)로 동시키입력 여부를 확인하기 위한 변수 
-	SHORT		pressedVkey;	
+	SHORT		pressedVkey;
 }
 
 struct CS_ingame_send{
