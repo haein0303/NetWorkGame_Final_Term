@@ -1,12 +1,27 @@
 
 //11.08추가
 //공용데이터------------------------------------------
-int 		charType[3];
-int         charLook[3];
-float       prevTime;	//이전시간(제한시간으로 초기화)
-float       elapsedTime;
-float       skillScope; //스킬범위 = charDirc + 상수
+
+//
+struct G_data {
+    char_info       char_info;
+    int 		    charType[3];
+    int             charLook[3];
+    float           prevTime;	//이전시간(제한시간으로 초기화)
+    float           elapsedTime;
+};
+
+//서버가 가지고 있는 캐릭터의 기본 정보
+struct char_info {
+    int         type_Num; //자신의 넘버
+    rect        skill_area; //스킬의 범위
+    rect        attack_area; //공격의 범위
+};
+
+
 //---------------------------------------------------
+
+
 
 enum Scene {
     Lobby,
