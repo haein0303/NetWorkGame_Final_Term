@@ -1,4 +1,13 @@
 
+//11.08추가
+//공용데이터------------------------------------------
+int 		charType[3];
+int         charLook[3];
+float       prevTime;	//이전시간(제한시간으로 초기화)
+float       elapsedTime;
+float       skillScope; //스킬범위 = charDirc + 상수
+//---------------------------------------------------
+
 enum Scene {
     Lobby,
     Char_sel,
