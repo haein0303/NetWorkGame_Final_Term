@@ -1,3 +1,30 @@
+// 수정
+//공용데이터------------------------------------------
+float           prevTime;	//이전시간(제한시간으로 초기화)
+float           elapsedTime;	//현재시간
+
+// G_data 배열로 실제 데이터 관리, character_data는 네트워크 송수신시 사용
+struct G_data {
+    char_info       char_info;
+    int 	    charType;
+    int             charLook;
+    fvec2       location;
+    int 		state;
+    bool 		coin;
+    float 	    skill_cooltime1;
+    float 	    skill_cooltime2;
+    bool	attack_on;
+    bool	skill_on;
+};
+
+//서버가 가지고 있는 캐릭터의 기본 정보
+struct char_info {
+    rect        skill_area; //스킬의 범위
+    rect        attack_area; //공격의 범위
+};
+
+
+//---------------------------------------------------
 
 //11.08추가
 //공용데이터------------------------------------------
