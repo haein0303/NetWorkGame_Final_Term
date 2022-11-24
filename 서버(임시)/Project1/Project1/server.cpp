@@ -60,10 +60,11 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 err_display("recv()");
                 break;
             }
-            else if (retval == 0)
+            else if (retval == 0) {
+                send(client_sock, buf, BUFSIZE, 0);
                 break;
-
-            send(client_sock, buf, BUFSIZE, 0);
+            }
+            
         }
         // 에코 서버 끝
 
