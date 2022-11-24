@@ -1,6 +1,7 @@
 #include "Common.h"
 #include <iostream>
 #include <fstream>
+#include <chrono>
 #include "protocol.h"
 
 using namespace std;
@@ -75,7 +76,7 @@ int main(int argc, char* argv[])
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
     // 데이터 통신에 사용할 변수
-    SOCKET client_sock;
+    SOCKET client_sock[3];
     struct sockaddr_in clientaddr;
     int addrlen;
     char buf[BUFSIZE + 1]; // 가변 길이 데이터
@@ -84,8 +85,8 @@ int main(int argc, char* argv[])
     while (cnt != 3) {
         // accept()
         addrlen = sizeof(clientaddr);
-        client_sock = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
-        if (client_sock == INVALID_SOCKET) {
+        client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
+        if (client_sock[cnt] == INVALID_SOCKET) {
             err_display("accept()");
             break;
         }
@@ -95,15 +96,15 @@ int main(int argc, char* argv[])
             inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
         // 스레드 생성
-        hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock, 0, NULL);
-        if (hThread == NULL) { closesocket(client_sock); }
+        hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
+        if (hThread == NULL) { closesocket(client_sock[cnt]); }
         else { 
             // 초기 설정 클라 아이디 송신
             SC_Lobby_Send cl;
             cl._protocol_num = SC_lobby_send;
             cl._acc_count = cnt;
             cl._my_num = cnt;
-            send(client_sock, reinterpret_cast<char*>(&cl), sizeof(cl), 0);
+            send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
             cnt++;
         }
     }
@@ -125,33 +126,78 @@ int main(int argc, char* argv[])
     // 세명 접속 이후 캐릭터 선택 창으로 변경 되는 부분
     {
         // 서버에서 씬넘버 변경 후 타이머 설정
-        SC_Scene_Send sc;
-        sc._protocol_num = SC_scene_send;
-        sc._scene_num = Main_game;
+        
 
-
-        SC_Ingame_Send is;
+        // 각 클라이언트에 씬데이터 송신
 
         // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
+    
 
-        {
-            // while 문 설정 해서 시간 다 될때까지 클라이언트 캐릭터 선택 정보 받아서 모두 선택 완료되거나 시간 종료 시 매인 게임 문 실행
-            // 이때 시간 다 지났을 경우 현재 클라 설정으로 캐릭터 세팅
-        }
+        // 각 클라이언트에 인게임 초기 데이터 송신
+
+        // while 문 설정 해서 시간 다 될때까지 클라이언트 캐릭터 선택 정보 받아서 모두 선택 완료되거나 시간 종료 시 매인 게임 문 실행
+        // 이때 시간 다 지났을 경우 현재 클라 설정으로 캐릭터 세팅
         
         // while문 종료 시 씬넘버 변경 후 메인게임 초기화 데이터 송신
     }
 
     // 메인 게임 부분
     {
+        // 서버에서 씬넘버 변경 후 타이머 설정
+        SC_Scene_Send sc;
+        sc._protocol_num = SC_scene_send;
+        sc._scene_num = Main_game;
+        prevTime = 100;
+
+        // 각 클라이언트에 씬데이터 송신
+        for (int i = 0; i < 3; ++i) {
+            send(client_sock[i], reinterpret_cast<char*>(&sc), sizeof(sc), 0);
+        }
+
+        // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
+        SC_Ingame_Send is;
+        for (int i = 0; i < 3; ++i) {
+            is._player[i]._char_type = player[i].charType;
+            is._player[i]._coin = player[i].coin;
+            is._player[i]._location = player[i].location;
+            is._player[i]._look = player[i].charLook;
+            is._player[i]._skill_cooltime1 = player[i].skill_cooltime1;
+            is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
+            is._player[i]._state = player[i].state;
+        }
+        is._coin_location = { 1,1 };
+        is._left_time = prevTime;
+        is._protocol_num = SC_ingame_send;
+
+        // 각 클라이언트에 인게임 초기 데이터 송신
+        for (int i = 0; i < 3; ++i) {
+            send(client_sock[i], reinterpret_cast<char*>(&is), sizeof(is), 0);
+        }
+
+        auto start = chrono::system_clock::now();
+
         // while 문에서 매인 게임 문 실행
-        // 이때 매 루프마다 리시브받은 데이터가 존재 할 경우 바뀐 데이터로 송신
-        // 쿨타임의 경우 리시브 받은 시간을 토대로 시간 체크 -> 리시브 받은 순간에 절대 시간 측정 후 저장 ->
-        // 다음 업데이트 시에 시간 계산 후 갱신된 정보 송신
+        while (true)
+        {
+            auto now = chrono::system_clock::now();
 
-        // 리시브 받은 데이터가 없어도 계속 업데이트 후 송신 반복
+            chrono::duration<float> pip = start - now;
 
-        // 매인 게임 시간 0일 경우 데이터 확인 후 씬 변경 송신 및 캐릭터 중앙부 이동
+            elapsedTime = prevTime - pip.count();
+
+            if (elapsedTime <= 0) {
+                // 게임 종료 및 로비 씬으로 전환
+                // 바로 종료 안하고 게임 끝나는 화면으로 전환 가능성있음
+            }
+            else {
+                // 충돌 처리 및 공용 데이터 업데이트
+                // 쿨타임 업데이트
+                // 업데이트 된 데이터 송신
+                // 리시브 받은 데이터가 없어도 계속 업데이트 후 송신 반복
+
+
+            }
+        }
     }
     // 소켓 닫기
     closesocket(listen_sock);
