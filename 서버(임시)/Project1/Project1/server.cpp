@@ -11,6 +11,8 @@ using namespace std;
 
 G_data player[3];
 
+HANDLE hRcev1Event, hRcev2Event, hRcev3Event; // 이벤트
+
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
     // 데이터 통신에 사용할 변수
@@ -43,7 +45,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             // 이후 반복
         }
         // closesocket()
-        closesocket(client_sock);
+        //closesocket(client_sock);
         return 0;
     }
 }
@@ -82,6 +84,11 @@ int main(int argc, char* argv[])
     char buf[BUFSIZE + 1]; // 가변 길이 데이터
     HANDLE hThread[3];
 
+    // 이벤트 생성
+    hRcev1Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+    hRcev2Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+    hRcev3Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+
     while (cnt != 3) {
         // accept()
         addrlen = sizeof(clientaddr);
@@ -103,8 +110,10 @@ int main(int argc, char* argv[])
             SC_Lobby_Send cl;
             cl._protocol_num = SC_lobby_send;
             cl._acc_count = cnt;
-            cl._my_num = cnt;
-            send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
+            //cl._my_num = cnt;
+            for (int i = 0; i < cnt; ++i) {
+                send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
+            }
             cnt++;
         }
     }
@@ -113,7 +122,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < 3; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
-        player[i].location = { 0,0 };
+        player[i].location = { 0,(float)i * 64 };
         player[i].state = Idle;
         player[i].coin = false;
         player[i].skill_cooltime1 = 0;
@@ -181,7 +190,7 @@ int main(int argc, char* argv[])
         {
             auto now = chrono::system_clock::now();
 
-            chrono::duration<float> pip = start - now;
+            chrono::duration<float> pip = now - start;
 
             elapsedTime = prevTime - pip.count();
 
@@ -198,9 +207,16 @@ int main(int argc, char* argv[])
 
             }
         }
+
+        // 결과창
     }
     // 소켓 닫기
     closesocket(listen_sock);
+
+    // 이벤트 제거
+    CloseHandle(hRcev1Event);
+    CloseHandle(hRcev2Event);
+    CloseHandle(hRcev3Event);
 
     // 윈속 종료
     WSACleanup();
