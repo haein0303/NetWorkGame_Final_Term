@@ -50,11 +50,11 @@ DWORD WINAPI ProcessClient(LPVOID arg)
         // 데이터 크기 받기
         // 데이터 타입 확인
 
-        // 클라이언트와 데이터 통신
-        while (1) {
-            DWORD retval;
+        // 임시 에코 서버
+        retval = recv(client_sock, buf, BUFSIZE, 0);
+        cout << "프로토콜 넘버" << buf << endl;
 
-            // 데이터 받기(가변 길이)
+        while (1) {
             retval = recv(client_sock, buf, BUFSIZE, MSG_WAITALL);
             if (retval == SOCKET_ERROR) {
                 err_display("recv()");
@@ -63,20 +63,37 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             else if (retval == 0)
                 break;
 
-            //이전 쓰레드가 자신에게 허락할때까지 대기
-            retval = WaitForSingleObject(hRecvEvent[my_num], INFINITE);
-            if (retval != WAIT_OBJECT_0) break;
-
-
-            // 데이터 받은 후 받은 데이터 공용 데이터에 업데이트
-            
-            //root 이벤트를 돌려줌
-            SetEvent(hRootEvent);
-
-            // 이후 반복
-
-
+            send(client_sock, buf, BUFSIZE, 0);
         }
+        // 에코 서버 끝
+
+        // 클라이언트와 데이터 통신
+        //while (1) {
+        //    DWORD retval;
+
+        //    // 데이터 받기(가변 길이)
+        //    retval = recv(client_sock, buf, BUFSIZE, MSG_WAITALL);
+        //    if (retval == SOCKET_ERROR) {
+        //        err_display("recv()");
+        //        break;
+        //    }
+        //    else if (retval == 0)
+        //        break;
+
+        //    //이전 쓰레드가 자신에게 허락할때까지 대기
+        //    retval = WaitForSingleObject(hRecvEvent[my_num], INFINITE);
+        //    if (retval != WAIT_OBJECT_0) break;
+
+
+        //    // 데이터 받은 후 받은 데이터 공용 데이터에 업데이트
+        //    
+        //    //root 이벤트를 돌려줌
+        //    SetEvent(hRootEvent);
+
+        //    // 이후 반복
+
+
+        //}
        
         break;
     }
