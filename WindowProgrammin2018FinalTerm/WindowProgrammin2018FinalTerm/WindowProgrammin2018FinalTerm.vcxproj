@@ -138,6 +138,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Framework.h" />
     <ClInclude Include="Network.h" />
     <ClInclude Include="Object.h" />

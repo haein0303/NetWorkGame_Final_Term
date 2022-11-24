@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "WindowProgrammin2018FinalTerm.h"
 #include "Framework.h"
+#include "Common.h"
 
 #define MAX_LOADSTRING	100
 #define CLIENT_WIDTH	1920
@@ -22,12 +23,88 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 //INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+
+///////////////////////////////////////////////////////////////////////////////////
+// 소켓 통신 스레드 함수
+#define SERVERIP   "127.0.0.1"
+#define SERVERPORT 9000
+#define BUFSIZE    512
+
+SOCKET sock; // 소켓
+char buf[BUFSIZE + 1]; // 데이터 송수신 버퍼
+
+
+// TCP 클라이언트 시작 부분
+DWORD WINAPI ClientMain(LPVOID arg)
+{
+	int retval;
+
+	//서버 아이피 받아오기이
+	//SERVERIP = 
+
+	// 소켓 생성
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET) err_quit("socket()");
+
+	// connect()
+	struct sockaddr_in serveraddr;
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) err_quit("connect()");
+
+	// 서버와 데이터 통신
+	while (1) {
+
+		// 데이터 보내기
+		retval = send(sock, buf, (int)strlen(buf), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+			break;
+		}
+		std::cout << "[TCP 클라이언트] %d바이트를 보냈습니다." << std::endl;
+
+		// 데이터 받기
+		retval = recv(sock, buf, retval, MSG_WAITALL);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0)
+			break;
+
+		// 받은 데이터 출력
+		buf[retval] = '\0';
+
+		std::cout << "[TCP 클라이언트] %d바이트를 받았습니다." << retval << std::endl;
+		std::cout << "[받은 데이터]" << buf << std::endl;
+
+	}
+
+	return 0;
+}
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR    lpCmdLine, _In_ int       nCmdShow)
 {
+
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
 	// TODO: 여기에 코드를 입력합니다.
+	// 윈속 초기화
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+	
+	// 소켓 통신 스레드 생성
+	//CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+
 
 	// 전역 문자열을 초기화합니다.
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -201,3 +278,4 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// 성공 반환
 	return TRUE;
 }
+
