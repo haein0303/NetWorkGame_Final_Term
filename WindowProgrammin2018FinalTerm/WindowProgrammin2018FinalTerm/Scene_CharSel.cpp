@@ -4,8 +4,6 @@
 
 Scene_Charsel::Scene_Charsel()
 {
-
-
 }
 
 Scene_Charsel::~Scene_Charsel()
@@ -68,7 +66,6 @@ bool Scene_Charsel::OnCreate()
 		wsprintf(LoadText, L"Graphic\\UI\\CharSel\\NUM\\%d.png", i);
 		num[i].Load(LoadText);
 	}
-
 
 	//타이머 초기화
 	timer = 60;
@@ -183,10 +180,6 @@ bool Scene_Charsel::OnCreate()
 		}
 	}
 
-
-
-
-
 	return false;
 }
 
@@ -194,7 +187,6 @@ void Scene_Charsel::BuildObjects()
 {
 
 }
-
 
 
 //키 상태를 입력받음.
