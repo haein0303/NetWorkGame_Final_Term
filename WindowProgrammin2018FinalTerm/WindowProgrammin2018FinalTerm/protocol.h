@@ -89,7 +89,8 @@ struct SC_Ingame_send { //프레임마다 전송하는 데이터
 };
 
 //ver 2.0 : edit
-struct SC_lobby_send {	//새로운 acc 있을 때마다 보내줌 
+struct SC_Lobby_Send {	//새로운 acc 있을 때마다 보내줌
+    int data_type;
     int	_acc_count;
     int 	_my_num;
 };
