@@ -354,3 +354,5 @@ __pycache__/
 # End of https://www.gitignore.io/api/c++,windows,visualstudio
 WindowProgrammin2018FinalTerm/WindowProgrammin2018FinalTerm/WindowProgrammin2018FinalTerm.vcxproj
 *.vcxproj
+WindowProgrammin2018FinalTerm/WindowProgrammin2018FinalTerm/WindowProgrammin2018FinalTerm.vcxproj
+*.vcxproj

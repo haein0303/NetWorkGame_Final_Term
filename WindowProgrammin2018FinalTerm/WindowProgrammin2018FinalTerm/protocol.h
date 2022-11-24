@@ -53,18 +53,19 @@ struct char_info {
     RECT        skill_area; //스킬의 범위
     RECT        attack_area; //공격의 범위
 };
+
 // G_data 배열로 실제 데이터 관리, character_data는 네트워크 송수신시 사용
 struct G_data {
-    char_info        char_info;
-    int 	    		charType;
-    int              charLook;
-    fvec2            location;
-    int 	state;
-    bool 	coin;
+    char_info   char_info;
+    int 	    charType;
+    int         charLook;
+    fvec2       location;
+    int 	    state;
+    bool 	    coin;
     float 	    skill_cooltime1;
     float 	    skill_cooltime2;
     bool	    attack_on;
-    bool   	skill_on;
+    bool   	    skill_on;
 };
 
 
@@ -141,9 +142,9 @@ struct CS_ingame_Send {
     SHORT	pressedVkey;
 };
 struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
-    short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
-    short _vertical_key;    // -1 : down || 0 : NULL || 1 : up
-    short _skill_key;       //  0 : NULL || 1 : skill || 2 : attack || 3 : dash 
+    short _horizontal_key = 0;  // -1 : left || 0 : NULL || 1 : right
+    short _vertical_key = 0;    // -1 : down || 0 : NULL || 1 : up
+    short _skill_key = 0;       //  0 : NULL || 1 : skill || 2 : attack || 3 : dash 
 };
 struct CS_lobby_send {
     CS_ingame_Send      _input;

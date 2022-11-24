@@ -96,3 +96,4 @@ private:
 	CScene * m_pCurrScene;
 
 };
+

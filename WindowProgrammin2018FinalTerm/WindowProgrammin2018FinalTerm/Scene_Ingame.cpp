@@ -5,6 +5,9 @@
 #include "OBJECT_Skill.h"
 #include "Framework.h"
 
+//글로벌 키 데이터입니다.
+extern CS_ingame_send_tmp gKeyData;
+extern CRITICAL_SECTION g_cs;
 
 CIngameScene::CIngameScene()
 {
@@ -109,6 +112,7 @@ void CIngameScene::BuildObjects()
 
 void CIngameScene::KeyState()
 {
+
 	if (keydown != TRUE)
 	{
 		if (isp2LockDown != TRUE)
@@ -490,6 +494,48 @@ void CIngameScene::KeyState()
 			}
 		}
 	}
+	EnterCriticalSection(&g_cs); 
+	{
+		// 0 1 2 3 p2 이동 4 5 6 p2 스킬 공격 대시 7 8 9 10 p1 이동 11 12 13 p1 스킬 공격 대시
+
+		//struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
+		//	short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
+		//	short _vertical_key;    // -1 : down || 0 : NULL || 1 : up
+		//	short _skill_key;       //  0 : NULL || 1 : skill || 2 : attack || 3 : dash 
+		//};
+
+		//스킬키는 초기화
+		gKeyData._skill_key = 0;
+
+		if (keydownList[0]) {//LEFT
+			gKeyData._horizontal_key = -1;
+		}
+		if (keydownList[2]) {//RIGHT
+			gKeyData._horizontal_key = 1;
+		}
+		if (keydownList[2]&& keydownList[0]) {//동시
+			gKeyData._horizontal_key = 0;
+		}
+		if (keydownList[1]) {//UP
+			gKeyData._vertical_key = 1;
+		}
+		if (keydownList[3]) {//DOWN
+			gKeyData._vertical_key = -1;
+		}
+		if (keydownList[1] && keydownList[3]) {//동시
+			gKeyData._vertical_key = 0;
+		}
+		if (keydownList[4]) {
+			gKeyData._skill_key = 1;
+		}
+		if (keydownList[5]) {
+			gKeyData._skill_key = 2;
+		}
+		if (keydownList[6]) {
+			gKeyData._skill_key = 3;
+		}
+	}
+	LeaveCriticalSection(&g_cs);
 }
 
 void CIngameScene::CharacterState()

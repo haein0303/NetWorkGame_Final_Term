@@ -11,6 +11,7 @@
 // Windows 헤더 파일:
 #include <windows.h>
 #include <atlimage.h>
+#include "protocol.h"
 
 // C 런타임 헤더 파일입니다.
 #include <stdlib.h>
@@ -22,6 +23,7 @@
 #include <iostream>
 #include <chrono>
 #include <string>
+#include <mutex>
 
 // 타이머를 쓰기 위함
 #pragma comment(lib, "winmm.lib")
@@ -96,5 +98,7 @@ public:
 #endif
 
 #endif
+
+
 
 
