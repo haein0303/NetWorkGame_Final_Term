@@ -99,7 +99,11 @@ int main(int argc, char* argv[])
         if (hThread == NULL) { closesocket(client_sock); }
         else { 
             // 초기 설정 클라 아이디 송신
-            
+            SC_Lobby_Send cl;
+            cl.data_type = SC_lobby_send;
+            cl._acc_count = cnt;
+            cl._my_num = cnt;
+            send(client_sock, reinterpret_cast<char*>(&cl), sizeof(cl), 0);
             cnt++;
         }
     }
