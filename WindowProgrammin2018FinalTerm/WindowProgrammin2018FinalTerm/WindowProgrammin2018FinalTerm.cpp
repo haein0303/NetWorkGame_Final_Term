@@ -4,11 +4,13 @@
 #include "WindowProgrammin2018FinalTerm.h"
 #include "Framework.h"
 #include "Common.h"
+#include <chrono>
 //#include "protocol.h"
 
 //글로벌 키 데이터입니다.
 CS_ingame_send_tmp gKeyData;
 CRITICAL_SECTION g_cs;
+
 
 #define MAX_LOADSTRING	100
 #define CLIENT_WIDTH	1920
@@ -44,6 +46,7 @@ G_data player;
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg)
 {
+	InitializeCriticalSection(&g_cs);
 	int retval;
 
 	// 소켓 생성
@@ -59,16 +62,22 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
+	buf[0] = '3';
+	retval = send(sock, buf, BUFSIZE, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+
 	// 서버와 데이터 통신
 	while (1) {
 		CS_ingame_send_tmp _tmp;
-
+		//std::this_thread::sleep_for(std::chrono::seconds(80));
 		EnterCriticalSection(&g_cs); 
 		_tmp._horizontal_key = gKeyData._horizontal_key;
 		_tmp._vertical_key = gKeyData._vertical_key;
 		_tmp._skill_key = gKeyData._skill_key;
 		LeaveCriticalSection(&g_cs);
-
+		
 
 		// 데이터 보내기
 		retval = send(sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), 0);
@@ -76,16 +85,17 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			err_display("send()");
 			break;
 		}
+		std::cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << std::endl;
 		
 
-		// 데이터 받기
-		retval = recv(sock, buf, retval, MSG_WAITALL);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
-			break;
-		}
-		else if (retval == 0)
-			break;
+		//// 데이터 받기
+		//retval = recv(sock, buf, retval, MSG_WAITALL);
+		//if (retval == SOCKET_ERROR) {
+		//	err_display("recv()");
+		//	break;
+		//}
+		//else if (retval == 0)
+		//	break;
 
 
 

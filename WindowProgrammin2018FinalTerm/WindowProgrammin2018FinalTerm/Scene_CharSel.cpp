@@ -247,7 +247,7 @@ void Scene_Charsel::KeyState() {
 
 
 	//P2 ทนต๐
-	if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000) {
+	if (GetAsyncKeyState(VK_F1) & 0x8000) {
 		ready2 = true;
 	}
 	if (!ready2) {

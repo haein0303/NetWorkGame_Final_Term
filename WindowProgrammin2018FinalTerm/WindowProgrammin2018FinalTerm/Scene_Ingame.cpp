@@ -117,21 +117,21 @@ void CIngameScene::KeyState()
 	{
 		if (isp2LockDown != TRUE)
 		{
-			if (GetAsyncKeyState(VK_NUMPAD1) & 0x8000 && SkillCoolTime[1] <= 0) // 스킬
+			if (GetAsyncKeyState(VK_F1) & 0x8000 && SkillCoolTime[1] <= 0) // 스킬
 			{
 				keydownList[4] = TRUE;
 
 				keydown = TRUE;
 				isp2LockDown = TRUE;
 			}
-			else if (GetAsyncKeyState(VK_NUMPAD2) & 0x8000) // 공격
+			else if (GetAsyncKeyState(VK_F2) & 0x8000) // 공격
 			{
 				keydownList[5] = TRUE;
 
 				keydown = TRUE;
 				isp2LockDown = TRUE;
 			}
-			else if (GetAsyncKeyState(VK_NUMPAD3) & 0x8000) //대시
+			else if (GetAsyncKeyState(VK_F3) & 0x8000) //대시
 			{
 				if (m_pFramework->GetPlayer(2)->DashCoolTimer <= 0)
 				{
@@ -494,6 +494,8 @@ void CIngameScene::KeyState()
 			}
 		}
 	}
+
+
 	EnterCriticalSection(&g_cs); 
 	{
 		// 0 1 2 3 p2 이동 4 5 6 p2 스킬 공격 대시 7 8 9 10 p1 이동 11 12 13 p1 스킬 공격 대시

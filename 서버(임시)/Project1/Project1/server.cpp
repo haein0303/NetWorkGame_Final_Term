@@ -46,7 +46,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
     }
 
     while (1) {
-
+        CS_ingame_send_tmp _tmp;
         // 데이터 크기 받기
         // 데이터 타입 확인
 
@@ -55,7 +55,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
         cout << "프로토콜 넘버" << buf << endl;
 
         while (1) {
-            retval = recv(client_sock, buf, BUFSIZE, MSG_WAITALL);
+            retval = recv(client_sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), MSG_WAITALL);
             if (retval == SOCKET_ERROR) {
                 err_display("recv()");
                 break;
@@ -64,6 +64,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 send(client_sock, buf, BUFSIZE, 0);
                 break;
             }
+            cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << endl;
             
         }
         // 에코 서버 끝

@@ -24,19 +24,20 @@ enum CharState {
 
 //ver 2.0 : add
 enum SC_ProtocalInfo { //현재 전송하는 정보
-    SC_Ingame_send,
-    SC_lobby_send,
-    SC_scene_send,
-    SC_LobbytoCharsel_init,
-    SC_CharseltoIngame_init,
-    SC_IngametoFinish_init,
-    SC_FinishtoLobby_init,
+    ESC_Ingame_send,
+    ESC_lobby_send,
+    ESC_scene_send,
+    ESC_LobbytoCharsel_init,
+    ESC_CharseltoIngame_init,
+    ESC_IngametoFinish_init,
+    ESC_FinishtoLobby_init,
 };
 
 //ver 2.0 : add
 enum CS_ProtocalInfo { //현재 전송하는 정보
-    CS_ingame_send, //or CS_ingame_send_temp
-    CS_lobby_send,
+    ECS_ingame_send, //or CS_ingame_send_temp
+    ECS_lobby_send,
+    ECS_ingame_send_tmp
 };
 
 struct fvec2 {	//플레이어 좌표 구조체
