@@ -4,6 +4,8 @@
 #include "WindowProgrammin2018FinalTerm.h"
 #include "Framework.h"
 #include "Common.h"
+#include "protocol.h"
+
 
 #define MAX_LOADSTRING	100
 #define CLIENT_WIDTH	1920
@@ -33,14 +35,12 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 SOCKET sock; // 소켓
 char buf[BUFSIZE + 1]; // 데이터 송수신 버퍼
 
+G_data player;
 
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg)
 {
 	int retval;
-
-	//서버 아이피 받아오기이
-	//SERVERIP = 
 
 	// 소켓 생성
 	sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -64,7 +64,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			err_display("send()");
 			break;
 		}
-		std::cout << "[TCP 클라이언트] %d바이트를 보냈습니다." << std::endl;
+		//std::cout << "[TCP 클라이언트] " << std::endl;
 
 		// 데이터 받기
 		retval = recv(sock, buf, retval, MSG_WAITALL);
@@ -75,11 +75,12 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		// 받은 데이터 출력
-		buf[retval] = '\0';
 
-		std::cout << "[TCP 클라이언트] %d바이트를 받았습니다." << retval << std::endl;
-		std::cout << "[받은 데이터]" << buf << std::endl;
+		// 받은 데이터 출력
+		// ....
+
+
+		
 
 	}
 
@@ -103,7 +104,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 		return 1;
 	
 	// 소켓 통신 스레드 생성
-	//CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 
 	// 전역 문자열을 초기화합니다.
