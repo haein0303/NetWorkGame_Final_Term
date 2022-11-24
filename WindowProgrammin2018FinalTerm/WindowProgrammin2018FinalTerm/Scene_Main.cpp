@@ -77,19 +77,17 @@ void CMainScene::KeyState() {
 				//SceneNum = 3;
 				finish = true;
 				break;
-			case 1:
-				SceneNum = 2;
-				break;
-			case 2:
-				SceneNum = 3;
-				break;
+			//case 1:
+			//	SceneNum = 2;
+			//	break;
+			//case 2:
+			//	SceneNum = 3;
+			//	break;
 			case 3:
 				finish = true;
 				break;
 
 			}
-
-
 		}
 		CheckKey = true;
 	}

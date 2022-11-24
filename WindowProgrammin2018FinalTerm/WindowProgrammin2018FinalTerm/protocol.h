@@ -98,7 +98,7 @@ struct SC_Lobby_Send {	//새로운 acc 있을 때마다 보내줌
 //공통
 struct SC_scene_send { // 씬데이터
     int 	_scene_num;
-    int _protocol_num;
+    int     _protocol_num;
 };
 
 // 클라이언트 초기화할 때 사용하는 구조체들
