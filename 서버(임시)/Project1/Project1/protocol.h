@@ -67,6 +67,7 @@ struct G_data {
     float 	    skill_cooltime2;
     bool	    attack_on;
     bool   	skill_on;
+    int my_num;
 };
 
 

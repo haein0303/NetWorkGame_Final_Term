@@ -27,7 +27,6 @@ int calc_prev_thread(int i) {
 //Recv 쓰레드
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
-    
     // 데이터 통신에 사용할 변수
     int retval;
     SOCKET client_sock = (SOCKET)arg;
@@ -40,6 +39,12 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
     int my_num = 0; //자기 자신의 배정 번호를 저장
 
+    for (int i = 0; i < 3; i++) {
+        if (player[i].my_num == GetCurrentThreadId()) {
+            my_num = i;
+        }
+    }
+
     while (1) {
 
         // 데이터 크기 받기
@@ -48,8 +53,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
         // 클라이언트와 데이터 통신
         while (1) {
             DWORD retval;
-
-       
 
             // 데이터 받기(가변 길이)
             retval = recv(client_sock, buf, BUFSIZE, MSG_WAITALL);
@@ -147,6 +150,7 @@ int main(int argc, char* argv[])
             SC_Lobby_Send cl;
             cl._protocol_num = SC_lobby_send;
             cl._acc_count = cnt;
+            player[cnt].my_num = GetCurrentThreadId();
             //cl._my_num = cnt;
             for (int i = 0; i < cnt; ++i) {
                 send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
