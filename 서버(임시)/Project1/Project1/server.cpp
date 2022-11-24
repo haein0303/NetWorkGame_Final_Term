@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
         else { 
             // 초기 설정 클라 아이디 송신
             SC_Lobby_Send cl;
-            cl.data_type = SC_lobby_send;
+            cl._protocol_num = SC_lobby_send;
             cl._acc_count = cnt;
             cl._my_num = cnt;
             send(client_sock, reinterpret_cast<char*>(&cl), sizeof(cl), 0);
@@ -108,9 +108,30 @@ int main(int argc, char* argv[])
         }
     }
 
+    // 임시 플레이어 데이터 세팅
+    for (int i = 0; i < 3; ++i) {
+        player[i].charType = i;
+        player[i].charLook = 0;
+        player[i].location = { 0,0 };
+        player[i].state = Idle;
+        player[i].coin = false;
+        player[i].skill_cooltime1 = 0;
+        player[i].skill_cooltime2 = 0;
+        player[i].attack_on = false;
+        player[i].skill_on = false;
+    }
+    // end
+
     // 세명 접속 이후 캐릭터 선택 창으로 변경 되는 부분
     {
         // 서버에서 씬넘버 변경 후 타이머 설정
+        SC_Scene_Send sc;
+        sc._protocol_num = SC_scene_send;
+        sc._scene_num = Main_game;
+
+
+        SC_Ingame_Send is;
+
         // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
 
         {

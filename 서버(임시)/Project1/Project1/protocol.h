@@ -24,7 +24,7 @@ enum CharState {
 
 //ver 2.0 : add
 enum SC_ProtocalInfo { //현재 전송하는 정보
-    SC_Ingame_send,
+    SC_ingame_send,
     SC_lobby_send,
     SC_scene_send,
     SC_LobbytoCharsel_init,
@@ -82,21 +82,22 @@ struct Character_data {
 };
 
 //ver 2.0 : add
-struct SC_Ingame_send { //프레임마다 전송하는 데이터
+struct SC_Ingame_Send { //프레임마다 전송하는 데이터
     Character_data  _player[3];
     fvec2           _coin_location;
     float           _left_time;
+    int _protocol_num;
 };
 
 //ver 2.0 : edit
 struct SC_Lobby_Send {	//새로운 acc 있을 때마다 보내줌
-    int data_type;
+    int _protocol_num;
     int	_acc_count;
     int 	_my_num;
 };
 
 //공통
-struct SC_scene_send { // 씬데이터
+struct SC_Scene_Send { // 씬데이터
     int 	_scene_num;
     int _protocol_num;
 };
