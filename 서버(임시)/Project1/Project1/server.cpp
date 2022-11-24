@@ -11,10 +11,23 @@ using namespace std;
 
 G_data player[3];
 
-HANDLE hRcev1Event, hRcev2Event, hRcev3Event; // 이벤트
+//HANDLE hRcev1Event, hRcev2Event, hRcev3Event; // 이벤트
+HANDLE hRecvEvent[3];
+HANDLE hRootEvent;
 
+//자신의 다음 쓰레드의 번호를 반환
+int calc_next_thread(int i) {
+    return (i + 1) % 3;
+}
+//자신의 이전 쓰레드의 번호를 반환
+int calc_prev_thread(int i) {
+    return (i + 2) % 3;
+}
+
+//Recv 쓰레드
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
+    
     // 데이터 통신에 사용할 변수
     int retval;
     SOCKET client_sock = (SOCKET)arg;
@@ -25,6 +38,8 @@ DWORD WINAPI ProcessClient(LPVOID arg)
     addrlen = sizeof(clientaddr);
     getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 
+    int my_num = 0; //자기 자신의 배정 번호를 저장
+
     while (1) {
 
         // 데이터 크기 받기
@@ -32,6 +47,10 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
         // 클라이언트와 데이터 통신
         while (1) {
+            DWORD retval;
+
+       
+
             // 데이터 받기(가변 길이)
             retval = recv(client_sock, buf, BUFSIZE, MSG_WAITALL);
             if (retval == SOCKET_ERROR) {
@@ -41,13 +60,24 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             else if (retval == 0)
                 break;
 
+            //이전 쓰레드가 자신에게 허락할때까지 대기
+            retval = WaitForSingleObject(hRecvEvent[my_num], INFINITE);
+            if (retval != WAIT_OBJECT_0) break;
+
+
             // 데이터 받은 후 받은 데이터 공용 데이터에 업데이트
+            
+            //root 이벤트를 돌려줌
+            SetEvent(hRootEvent);
+
             // 이후 반복
+
+
         }
-        // closesocket()
-        //closesocket(client_sock);
-        return 0;
+       
+        break;
     }
+    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -84,10 +114,18 @@ int main(int argc, char* argv[])
     char buf[BUFSIZE + 1]; // 가변 길이 데이터
     HANDLE hThread[3];
 
-    // 이벤트 생성
-    hRcev1Event = CreateEvent(NULL, FALSE, TRUE, NULL);
-    hRcev2Event = CreateEvent(NULL, FALSE, TRUE, NULL);
-    hRcev3Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+    DWORD event_retval; //결과 저장용
+
+    //// 이벤트 생성
+    //hRcev1Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+    //hRcev2Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+    //hRcev3Event = CreateEvent(NULL, FALSE, TRUE, NULL);
+
+
+    //이벤트 생성
+    for (int i = 0; i < 3; ++i) {
+        hRecvEvent[i] = CreateEvent(NULL, FALSE, TRUE, NULL);
+    }
 
     while (cnt != 3) {
         // accept()
@@ -99,8 +137,7 @@ int main(int argc, char* argv[])
         }
 
         // 접속한 클라이언트 정보 출력
-        printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
-            inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+        printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
         // 스레드 생성
         hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
@@ -194,6 +231,15 @@ int main(int argc, char* argv[])
 
             elapsedTime = prevTime - pip.count();
 
+            for (int i = 0; i < 3; ++i) {
+                //대기
+                SetEvent(hRecvEvent[i]);
+                //소환
+                event_retval = WaitForSingleObject(hRootEvent, INFINITE);
+                if (event_retval != WAIT_OBJECT_0) break;
+            }
+
+
             if (elapsedTime <= 0) {
                 // 게임 종료 및 로비 씬으로 전환
                 // 바로 종료 안하고 게임 끝나는 화면으로 전환 할수도있음
@@ -213,10 +259,10 @@ int main(int argc, char* argv[])
     // 소켓 닫기
     closesocket(listen_sock);
 
-    // 이벤트 제거
-    CloseHandle(hRcev1Event);
-    CloseHandle(hRcev2Event);
-    CloseHandle(hRcev3Event);
+    //// 이벤트 제거
+    //CloseHandle(hRcev1Event);
+    //CloseHandle(hRcev2Event);
+    //CloseHandle(hRcev3Event);
 
     // 윈속 종료
     WSACleanup();
