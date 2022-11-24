@@ -94,4 +94,5 @@ public:
 private:
 	CScene * arrScene[CScene::SceneTag::count];
 	CScene * m_pCurrScene;
+
 };

@@ -21,7 +21,6 @@ private:
 
 
 	CImage MainTitle;
-	CImage Manual[2];
 
 	bool CheckKey;
 	

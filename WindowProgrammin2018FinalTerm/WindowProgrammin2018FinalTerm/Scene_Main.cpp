@@ -19,8 +19,7 @@ CMainScene::CMainScene(SceneTag tag, CFramework * pFramework) : CScene(tag, pFra
 
 void CMainScene::OnDestroy() {
 	MainTitle.Destroy();
-	Manual[0].Destroy();
-	Manual[1].Destroy();
+
 }
 
 bool CMainScene::OnCreate()
@@ -31,8 +30,6 @@ bool CMainScene::OnCreate()
 	finish = false;
 
 	MainTitle.Load(L"Graphic\\UI\\MAINTITLE.jpg");
-	Manual[0].Load(L"Graphic\\UI\\manual1.png");
-	Manual[1].Load(L"Graphic\\UI\\manual2.png");
 
 	return false;
 }
@@ -51,10 +48,8 @@ void CMainScene::Render(HDC hdc)
 		MainTitle.Draw(hdc, 0, 0, windowX, windowY);
 		break;
 	case 1:
-		Manual[0].Draw(hdc, 0, 0, windowX, windowY);
 		break;
 	case 2:
-		Manual[1].Draw(hdc, 0, 0, windowX, windowY);
 		break;
 	default:
 		MainTitle.Draw(hdc, 0, 0, windowX, windowY);
@@ -79,7 +74,8 @@ void CMainScene::KeyState() {
 		if (!CheckKey) {
 			switch (SceneNum) {
 			case 0:
-				SceneNum = 1;
+				//SceneNum = 3;
+				finish = true;
 				break;
 			case 1:
 				SceneNum = 2;

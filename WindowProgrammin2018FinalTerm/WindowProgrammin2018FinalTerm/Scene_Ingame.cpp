@@ -1006,7 +1006,7 @@ void CIngameScene::Update(float fTimeElapsed)
 	{
 		KeyState();
 		CharacterState();
-		Nevigator();
+		//Nevigator();
 		CoinObject->Update(fTimeElapsed);
 		m_pFramework->GetPlayer(1)->Update(fTimeElapsed);
 		m_pFramework->GetPlayer(2)->Update(fTimeElapsed);
