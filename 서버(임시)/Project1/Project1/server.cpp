@@ -1,11 +1,14 @@
 #include "Common.h"
 #include <iostream>
 #include <fstream>
+#include "protocol.h"
 
 using namespace std;
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
+
+G_data player[3];
 
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
@@ -36,7 +39,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 break;
 
             // 데이터 받은 후 받은 데이터 공용 데이터에 업데이트
-            // 충돌 처리를 어디서 할 지는 몰?루
             // 이후 반복
         }
         // closesocket()
@@ -96,7 +98,8 @@ int main(int argc, char* argv[])
         hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock, 0, NULL);
         if (hThread == NULL) { closesocket(client_sock); }
         else { 
-            // 초기 설정 클라 아이디 송신 해줘야 함
+            // 초기 설정 클라 아이디 송신
+            
             cnt++;
         }
     }
