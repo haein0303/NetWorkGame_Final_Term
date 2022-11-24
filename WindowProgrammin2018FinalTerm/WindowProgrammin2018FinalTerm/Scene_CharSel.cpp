@@ -279,7 +279,6 @@ void Scene_Charsel::KeyState() {
 
 		if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
 			//Å×½ºÆ®
-			cinput.vkey = 10;
 
 			if (!P2_R) {
 				switch (choice2) {

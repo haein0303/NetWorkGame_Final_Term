@@ -69,7 +69,6 @@ struct G_data {
 
 
 //공용데이터------------------------------------------
-
 //ver 2.0 : add
 struct Character_data {
     int 		_char_type;
@@ -87,6 +86,13 @@ struct SC_Ingame_send { //프레임마다 전송하는 데이터
     fvec2           _coin_location;
     float           _left_time;
 };
+
+
+
+
+
+
+
 
 //ver 2.0 : edit
 struct SC_Lobby_Send {	//새로운 acc 있을 때마다 보내줌
