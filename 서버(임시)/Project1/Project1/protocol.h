@@ -49,6 +49,12 @@ struct fvec2 {	//플레이어 좌표 구조체
 float           prevTime;	//이전시간(제한시간으로 초기화)
 float           elapsedTime;	//현재시간
 
+//서버가 가지고 있는 캐릭터의 기본 정보
+struct char_info {
+    RECT        skill_area; //스킬의 범위
+    RECT        attack_area; //공격의 범위
+};
+
 // G_data 배열로 실제 데이터 관리, character_data는 네트워크 송수신시 사용
 struct G_data {
     char_info        char_info;
@@ -63,11 +69,7 @@ struct G_data {
     bool   	skill_on;
 };
 
-//서버가 가지고 있는 캐릭터의 기본 정보
-struct char_info {
-    RECT        skill_area; //스킬의 범위
-    RECT        attack_area; //공격의 범위
-};
+
 //공용데이터------------------------------------------
 
 //ver 2.0 : add
