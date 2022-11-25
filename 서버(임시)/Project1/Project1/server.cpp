@@ -46,18 +46,55 @@ DWORD WINAPI ProcessClient(LPVOID arg)
     }
 
     while (1) {
-        CS_ingame_send_tmp _tmp;
+        CS_ingame_send_tmp ingame_key;
         // 데이터 크기 받기
         // 데이터 타입 확인
 
        
 
+        //while (1) {
+        //    // 임시 에코 서버
+        //    retval = recv(client_sock, buf, BUFSIZE, 0);
+        //    cout << "프로토콜 넘버" << buf[0] << endl;
+
+        //    retval = recv(client_sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), MSG_WAITALL);
+        //    if (retval == SOCKET_ERROR) {
+        //        err_display("recv()");
+        //        break;
+        //    }
+        //    else if (retval == 0) {
+        //        send(client_sock, buf, BUFSIZE, 0);
+        //        break;
+        //    }
+        //    cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << endl;
+        //    
+        //}
+        // 에코 서버 끝
+
+
         while (1) {
+            DWORD retval;
+            int protocol_num;
             // 임시 에코 서버
             retval = recv(client_sock, buf, BUFSIZE, 0);
+            
+            protocol_num = buf[0];
             cout << "프로토콜 넘버" << buf[0] << endl;
+            switch (protocol_num) {
+            case 3:
+                retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
+                    if (retval == SOCKET_ERROR) {
+                        err_display("recv()");
+                        break;
+                    }
+                    else if (retval == 0) {
+                        send(client_sock, buf, BUFSIZE, 0);
+                        break;
+                    }
+                break;
 
-            retval = recv(client_sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), MSG_WAITALL);
+            }
+            retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
             if (retval == SOCKET_ERROR) {
                 err_display("recv()");
                 break;
@@ -66,10 +103,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 send(client_sock, buf, BUFSIZE, 0);
                 break;
             }
-            cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << endl;
-            
+
+
         }
-        // 에코 서버 끝
 
         // 클라이언트와 데이터 통신
         //while (1) {
