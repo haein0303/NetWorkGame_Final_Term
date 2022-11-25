@@ -31,14 +31,8 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 //INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 
-///////////////////////////////////////////////////////////////////////////////////
-// 소켓 통신 스레드 함수
-#define SERVERIP   "127.0.0.1"
-#define SERVERPORT 9000
-#define BUFSIZE    512
 
 SOCKET sock; // 소켓
-char buf[BUFSIZE + 1]; // 데이터 송수신 버퍼
 
 G_data player;
 
@@ -48,6 +42,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 {
 	InitializeCriticalSection(&g_cs);
 	int retval;
+	char r_buf[BUFSIZE + 1]; // 데이터 수신 버퍼
 
 	// 소켓 생성
 	sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -62,43 +57,21 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
-	buf[0] = '3';
-	retval = send(sock, buf, BUFSIZE, 0);
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-	}
+	
 
 	// 서버와 데이터 통신
 	while (1) {
-		//CS_ingame_send_tmp _tmp;
-		////std::this_thread::sleep_for(std::chrono::seconds(80));
-		//EnterCriticalSection(&g_cs); 
-		//_tmp._horizontal_key = gKeyData._horizontal_key;
-		//_tmp._vertical_key = gKeyData._vertical_key;
-		//_tmp._skill_key = gKeyData._skill_key;
-		//LeaveCriticalSection(&g_cs);
-		//
-
-		//// 데이터 보내기
-		//retval = send(sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), 0);
-		//if (retval == SOCKET_ERROR) {
-		//	err_display("send()");
-		//	break;
-		//}
-		//std::cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << std::endl;
-		//
-
-		//// 데이터 받기
-		//retval = recv(sock, buf, retval, MSG_WAITALL);
-		//if (retval == SOCKET_ERROR) {
-		//	err_display("recv()");
-		//	break;
-		//}
-		//else if (retval == 0)
-		//	break;
+		
 
 
-
+		// 데이터 받기
+		retval = recv(sock, r_buf, retval, MSG_WAITALL);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0)
+			break;
 		
 
 	}

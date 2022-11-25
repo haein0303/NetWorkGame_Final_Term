@@ -50,11 +50,13 @@ DWORD WINAPI ProcessClient(LPVOID arg)
         // 데이터 크기 받기
         // 데이터 타입 확인
 
-        // 임시 에코 서버
-        retval = recv(client_sock, buf, BUFSIZE, 0);
-        cout << "프로토콜 넘버" << buf << endl;
+       
 
         while (1) {
+            // 임시 에코 서버
+            retval = recv(client_sock, buf, BUFSIZE, 0);
+            cout << "프로토콜 넘버" << buf[0] << endl;
+
             retval = recv(client_sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), MSG_WAITALL);
             if (retval == SOCKET_ERROR) {
                 err_display("recv()");
