@@ -70,23 +70,23 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 	// 서버와 데이터 통신
 	while (1) {
-		CS_ingame_send_tmp _tmp;
-		//std::this_thread::sleep_for(std::chrono::seconds(80));
-		EnterCriticalSection(&g_cs); 
-		_tmp._horizontal_key = gKeyData._horizontal_key;
-		_tmp._vertical_key = gKeyData._vertical_key;
-		_tmp._skill_key = gKeyData._skill_key;
-		LeaveCriticalSection(&g_cs);
-		
+		//CS_ingame_send_tmp _tmp;
+		////std::this_thread::sleep_for(std::chrono::seconds(80));
+		//EnterCriticalSection(&g_cs); 
+		//_tmp._horizontal_key = gKeyData._horizontal_key;
+		//_tmp._vertical_key = gKeyData._vertical_key;
+		//_tmp._skill_key = gKeyData._skill_key;
+		//LeaveCriticalSection(&g_cs);
+		//
 
-		// 데이터 보내기
-		retval = send(sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send()");
-			break;
-		}
-		std::cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << std::endl;
-		
+		//// 데이터 보내기
+		//retval = send(sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), 0);
+		//if (retval == SOCKET_ERROR) {
+		//	err_display("send()");
+		//	break;
+		//}
+		//std::cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << std::endl;
+		//
 
 		//// 데이터 받기
 		//retval = recv(sock, buf, retval, MSG_WAITALL);

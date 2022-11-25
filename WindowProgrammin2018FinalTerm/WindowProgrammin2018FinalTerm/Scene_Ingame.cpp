@@ -8,6 +8,7 @@
 //글로벌 키 데이터입니다.
 extern CS_ingame_send_tmp gKeyData;
 extern CRITICAL_SECTION g_cs;
+extern SOCKET sock;
 
 CIngameScene::CIngameScene()
 {
@@ -496,9 +497,8 @@ void CIngameScene::KeyState()
 	}
 
 
-	EnterCriticalSection(&g_cs); 
-	{
-		// 0 1 2 3 p2 이동 4 5 6 p2 스킬 공격 대시 7 8 9 10 p1 이동 11 12 13 p1 스킬 공격 대시
+	if(keydown == TRUE)
+	{		// 0 1 2 3 p2 이동 4 5 6 p2 스킬 공격 대시 7 8 9 10 p1 이동 11 12 13 p1 스킬 공격 대시
 
 		//struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
 		//	short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
@@ -536,8 +536,25 @@ void CIngameScene::KeyState()
 		if (keydownList[6]) {
 			gKeyData._skill_key = 3;
 		}
+
+		/*CS_ingame_send_tmp _tmp;
+	_tmp._horizontal_key = gKeyData._horizontal_key;
+	_tmp._vertical_key = gKeyData._vertical_key;
+	_tmp._skill_key = gKeyData._skill_key;*/
+
+
+		int retval;
+		// 데이터 보내기
+		retval = send(sock, reinterpret_cast<char*>(&gKeyData), sizeof(gKeyData), 0);
+		if (retval == SOCKET_ERROR) {
+			//err_display("send()");
+		}
+		//std::cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << std::endl;
+
 	}
-	LeaveCriticalSection(&g_cs);
+	
+
+	
 }
 
 void CIngameScene::CharacterState()
