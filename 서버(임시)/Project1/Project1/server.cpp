@@ -44,6 +44,8 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             my_num = i;
         }
     }
+    float _x = 20;
+    float _y = 20;
 
     while (1) {
         while (1) {
@@ -68,11 +70,11 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                     }
                     if (ingame_key._skill_key == 0) { // 스킬 x 이동만
 
-                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += 1;
-                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= 1;
+                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += _x;
+                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= _x;
 
-                        if (ingame_key._vertical_key == 1) player[my_num].location.y += 1;
-                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= 1;
+                        if (ingame_key._vertical_key == 1) player[my_num].location.y += _y;
+                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= _y;
 
                         player[my_num].state = Walk;
                     }
@@ -83,11 +85,11 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
                     }
                     else if (ingame_key._skill_key == 3) { // 대쉬
-                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += 10;
-                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= 10;
+                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += _x*10;
+                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= _x*10;
 
-                        if (ingame_key._vertical_key == 1) player[my_num].location.y += 10;
-                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= 10;
+                        if (ingame_key._vertical_key == 1) player[my_num].location.y += _y*10;
+                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= _y*10;
 
                         player[my_num].state = Dash;
                     }
