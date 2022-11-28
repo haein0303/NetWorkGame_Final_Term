@@ -89,12 +89,10 @@ struct SC_Ingame_Send { //프레임마다 전송하는 데이터
     Character_data  _player[3];
     fvec2           _coin_location;
     float           _left_time;
-    int _protocol_num;
 };
 
 //ver 2.0 : edit
 struct SC_Lobby_Send {	//새로운 acc 있을 때마다 보내줌
-    int _protocol_num;
     int	_acc_count;
     int 	_my_num;
 };
@@ -102,13 +100,11 @@ struct SC_Lobby_Send {	//새로운 acc 있을 때마다 보내줌
 //공통
 struct SC_Scene_Send { // 씬데이터
     int 	_scene_num;
-    int _protocol_num;
 };
 
 // 클라이언트 초기화할 때 사용하는 구조체들
 struct SC_LobbytoCharsel_init { //로비 -> 캐 선택
     int	_scene_num;
-    int		_protocol_num;
     int	_char_num;  //접속한 순서대로 플레이어에게 부여되는 플레이어 넘버
     int      _char_type;
     bool 	_ready;
@@ -116,7 +112,6 @@ struct SC_LobbytoCharsel_init { //로비 -> 캐 선택
 
 struct SC_CharseltoIngame_init { //캐선택 -> 인게임
     int     _scene_num;
-    int     _protocol_num;
     //Gtimer  _timer; //타이머, 스킬 쿨타임 초기화
     fvec2   _location;
     int     _state;
@@ -125,13 +120,11 @@ struct SC_CharseltoIngame_init { //캐선택 -> 인게임
 
 struct SC_IngametoFinish_init { //인게임 -> 겜종료
     int     _scene_num;
-    int     _protocol_num;
     int     _CharState;
 };
 
 struct SC_FinishtoLobby_init { //겜종료 -> 로비
     int 	_scene_num;
-    int      _protocol_num;
 };
 
 struct CS_ingame_Send {

@@ -46,65 +46,54 @@ DWORD WINAPI ProcessClient(LPVOID arg)
     }
 
     while (1) {
-        CS_ingame_send_tmp ingame_key;
-        // 데이터 크기 받기
-        // 데이터 타입 확인
-
-       
-
-        //while (1) {
-        //    // 임시 에코 서버
-        //    retval = recv(client_sock, buf, BUFSIZE, 0);
-        //    cout << "프로토콜 넘버" << buf[0] << endl;
-
-        //    retval = recv(client_sock, reinterpret_cast<char*>(&_tmp), sizeof(_tmp), MSG_WAITALL);
-        //    if (retval == SOCKET_ERROR) {
-        //        err_display("recv()");
-        //        break;
-        //    }
-        //    else if (retval == 0) {
-        //        send(client_sock, buf, BUFSIZE, 0);
-        //        break;
-        //    }
-        //    cout << _tmp._horizontal_key << "||" << _tmp._vertical_key << "||" << _tmp._skill_key << endl;
-        //    
-        //}
-        // 에코 서버 끝
-
-
         while (1) {
+            CS_ingame_send_tmp ingame_key;
             DWORD retval;
             int protocol_num;
             // 임시 에코 서버
             retval = recv(client_sock, buf, BUFSIZE, 0);
             
             protocol_num = buf[0];
-            cout << "프로토콜 넘버" << buf[0] << endl;
+            //cout << "프로토콜 넘버" << buf[0] << endl;
+
             switch (protocol_num) {
-            case 3:
+            case 0: // ingame_key_send
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
                     if (retval == SOCKET_ERROR) {
                         err_display("recv()");
                         break;
                     }
                     else if (retval == 0) {
-                        send(client_sock, buf, BUFSIZE, 0);
                         break;
+                    }
+                    if (ingame_key._skill_key == 0) { // 스킬 x 이동만
+
+                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += 1;
+                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= 1;
+
+                        if (ingame_key._vertical_key == 1) player[my_num].location.y += 1;
+                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= 1;
+
+                        player[my_num].state = Walk;
+                    }
+                    else if (ingame_key._skill_key == 1) { // 1번 스킬
+
+                    }
+                    else if (ingame_key._skill_key == 2) { // 공격
+
+                    }
+                    else if (ingame_key._skill_key == 3) { // 대쉬
+                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += 10;
+                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= 10;
+
+                        if (ingame_key._vertical_key == 1) player[my_num].location.y += 10;
+                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= 10;
+
+                        player[my_num].state = Dash;
                     }
                 break;
 
             }
-            retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
-            if (retval == SOCKET_ERROR) {
-                err_display("recv()");
-                break;
-            }
-            else if (retval == 0) {
-                send(client_sock, buf, BUFSIZE, 0);
-                break;
-            }
-
-
         }
 
         // 클라이언트와 데이터 통신
@@ -204,12 +193,13 @@ int main(int argc, char* argv[])
         if (hThread == NULL) { closesocket(client_sock[cnt]); }
         else { 
             // 초기 설정 클라 아이디 송신
+            buf[0] = SC_lobby_send;
             SC_Lobby_Send cl;
-            cl._protocol_num = SC_lobby_send;
             cl._acc_count = cnt;
             player[cnt].my_num = GetCurrentThreadId();
-            //cl._my_num = cnt;
+
             for (int i = 0; i < cnt; ++i) {
+                send(client_sock[cnt], buf, BUFSIZE, 0);
                 send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
             }
             cnt++;
@@ -252,12 +242,13 @@ int main(int argc, char* argv[])
     {
         // 서버에서 씬넘버 변경 후 타이머 설정
         SC_Scene_Send sc;
-        sc._protocol_num = SC_scene_send;
+        buf[0] = SC_scene_send;
         sc._scene_num = Main_game;
         prevTime = 100;
 
         // 각 클라이언트에 씬데이터 송신
         for (int i = 0; i < 3; ++i) {
+            send(client_sock[i], buf, BUFSIZE, 0);
             send(client_sock[i], reinterpret_cast<char*>(&sc), sizeof(sc), 0);
         }
 
@@ -274,10 +265,11 @@ int main(int argc, char* argv[])
         }
         is._coin_location = { 1,1 };
         is._left_time = prevTime;
-        is._protocol_num = SC_ingame_send;
+        buf[0] = SC_ingame_send;
 
         // 각 클라이언트에 인게임 초기 데이터 송신
         for (int i = 0; i < 3; ++i) {
+            send(client_sock[i], buf, BUFSIZE, 0);
             send(client_sock[i], reinterpret_cast<char*>(&is), sizeof(is), 0);
         }
 
@@ -307,16 +299,38 @@ int main(int argc, char* argv[])
             }
 
             else {
-                /////클라 키입력 송수신 테스트 
-               
-
-
                 // 충돌 처리 및 공용 데이터 업데이트
+                for (int i = 0; i < 3; ++i) {
+                    // 맵 충돌 확인
+
+                    // 공격 충돌 확인
+                }
+
                 // 쿨타임 업데이트
+                for (int i = 0; i < 3; ++i) {
+                    // 시간 값 확인 후 지난 시간 만큼 남은 쿨타임에서 감소
+                }
+
                 // 업데이트 된 데이터 송신
-                // 리시브 받은 데이터가 없어도 계속 업데이트 후 송신 반복
+                SC_Ingame_Send _is;
+                for (int i = 0; i < 3; ++i) {
+                    _is._player[i]._char_type = player[i].charType;
+                    _is._player[i]._coin = player[i].coin;
+                    _is._player[i]._location = player[i].location;
+                    _is._player[i]._look = player[i].charLook;
+                    _is._player[i]._skill_cooltime1 = player[i].skill_cooltime1;
+                    _is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
+                    _is._player[i]._state = player[i].state;
+                }
+                _is._left_time = elapsedTime;
+                _is._coin_location = { 0,0 }; // 추후에 수정 필요
 
+                buf[0] = SC_ingame_send;
 
+                for (int i = 0; i < 3; ++i) {
+                    send(client_sock[i], buf, BUFSIZE, 0);
+                    send(client_sock[i], reinterpret_cast<char*>(&_is), sizeof(_is), 0);
+                }
             }
         }
 
