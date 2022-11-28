@@ -539,7 +539,7 @@ void CIngameScene::KeyState()
 		}
 
 		
-		s_buf[0] = ECS_ingame_send_tmp;
+		s_buf[0] = CS_ingame_send;
 		retval = send(sock, s_buf, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
 			//err_display("send()");

@@ -337,6 +337,7 @@ void Scene_Charsel::Update(float fTimeElapsed)
 				choice1 = rand() % 4;
 			if (choice2 == 4)
 				choice2 = rand() % 4;
+
 			m_pFramework->ChangeScene(CScene::SceneTag::Ingame);
 			m_pFramework->curSceneCreate();
 			m_pFramework->BuildPlayer(choice1, choice2);
@@ -452,7 +453,7 @@ RECT Scene_Charsel::CalcImage(RECT input) {
 		calc.right = calc.left + input.right*(windowY / Y);
 	}
 
-	printf("top : %d, bottom : %d, left : %d, right : %d\n", calc.top, calc.bottom, calc.left, calc.right);
+	//printf("top : %d, bottom : %d, left : %d, right : %d\n", calc.top, calc.bottom, calc.left, calc.right);
 	//계산된 결과를 리턴한다.
 	return calc;
 }

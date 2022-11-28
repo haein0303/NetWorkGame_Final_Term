@@ -91,6 +91,7 @@ public:
 	static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	void curSceneCreate();
 	void ChangeScene(CScene::SceneTag tag);
+	//void ChangeScene(int tag);
 private:
 	CScene * arrScene[CScene::SceneTag::count];
 	CScene * m_pCurrScene;

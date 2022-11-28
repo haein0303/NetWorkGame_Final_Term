@@ -2,11 +2,12 @@
 #include "Scene_Main.h"
 #include "Framework.h"
 
+//
+extern SC_Scene_Send sc;
+
 CMainScene::CMainScene()
 {
-
 }
-
 
 CMainScene::~CMainScene()
 {
@@ -63,6 +64,8 @@ void CMainScene::Update(float fTimeElapsed)
 
 	if (finish)
 	{
+		//추후 아래로 수정
+		//m_pFramework->ChangeScene(sc._scene_num);
 		m_pFramework->ChangeScene(CScene::SceneTag::Select_Char);
 		m_pFramework->curSceneCreate();
 		CMainScene::OnDestroy();

@@ -9,6 +9,7 @@
 
 //글로벌 키 데이터입니다.
 CS_ingame_send_tmp gKeyData;
+SC_Scene_Send sc;
 CRITICAL_SECTION g_cs;
 
 
@@ -40,6 +41,7 @@ G_data player;
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg)
 {
+
 	InitializeCriticalSection(&g_cs);
 	int retval;
 	char r_buf[BUFSIZE + 1]; // 데이터 수신 버퍼
@@ -57,23 +59,30 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
-	
 
 	// 서버와 데이터 통신
 	while (1) {
-		
-
+		int protocol_num;
 
 		// 데이터 받기
-		retval = recv(sock, r_buf, retval, MSG_WAITALL);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+		retval = recv(sock, r_buf, BUFSIZE, 0);
+		protocol_num = r_buf[0];
+
+		switch (protocol_num){
+		case SC_scene_send: //scene 정보 받을 때
+			retval = recv(sock, reinterpret_cast<char*>(&sc), sizeof(sc), MSG_WAITALL);
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0) break;
+
 			break;
 		}
-		else if (retval == 0)
-			break;
 		
 
+		//현재 서버가 전송한 정보 (프로토콜받기)
+		
 	}
 
 	return 0;

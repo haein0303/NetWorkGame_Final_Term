@@ -9,6 +9,9 @@
 #include "OBJECT_Player.h"
 #include "Framework.h"
 
+//
+extern SC_Scene_Send sc;
+
 using namespace std;
 
 template<typename T>
@@ -80,9 +83,9 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hWnd, const RECT & rc) //생�
 	// 씬 생성
 	BuildScene();
 
-
 	// 최초의 씬은 무엇인가?
 	ChangeScene(CScene::SceneTag::Main_Lobby);
+	//ChangeScene(sc._scene_num);
 
 	return (m_hWnd != NULL);
 }
@@ -378,8 +381,10 @@ void CFramework::curSceneCreate()
 	m_pCurrScene->OnCreate();
 }
 
-void CFramework::ChangeScene(CScene::SceneTag tag)
+void CFramework::ChangeScene(CScene::SceneTag tag) //추후 int tag로 변경
 {
 	m_pCurrScene = arrScene[tag];
+	//테스트
+	cout << "서버가 넘긴 씬 : " << sc._scene_num << endl;
 	//m_pCurrScene->OnCreate();
 }

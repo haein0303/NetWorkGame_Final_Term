@@ -5,9 +5,9 @@
 
 
 enum Scene {
-    Lobby,
-    Char_sel,
-    Main_game,
+    Lobby = 1,
+    Char_sel = 3,
+    Main_game = 4,
     End_game
 };
 
