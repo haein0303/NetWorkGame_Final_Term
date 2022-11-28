@@ -53,7 +53,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             // 임시 에코 서버
             retval = recv(client_sock, buf, BUFSIZE, 0);
             
-            protocol_num = buf[0];
+            protocol_num = (int)buf[0];
             //cout << "프로토콜 넘버" << buf[0] << endl;
 
             switch (protocol_num) {
@@ -165,18 +165,12 @@ int main(int argc, char* argv[])
 
     DWORD event_retval; //결과 저장용
 
-    //// 이벤트 생성
-    //hRcev1Event = CreateEvent(NULL, FALSE, TRUE, NULL);
-    //hRcev2Event = CreateEvent(NULL, FALSE, TRUE, NULL);
-    //hRcev3Event = CreateEvent(NULL, FALSE, TRUE, NULL);
-
-
     //이벤트 생성
     for (int i = 0; i < 3; ++i) {
         hRecvEvent[i] = CreateEvent(NULL, FALSE, TRUE, NULL);
     }
 
-    while (cnt != 3) {
+    while (cnt != 1) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -247,7 +241,7 @@ int main(int argc, char* argv[])
         prevTime = 100;
 
         // 각 클라이언트에 씬데이터 송신
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < cnt; ++i) {
             send(client_sock[i], buf, BUFSIZE, 0);
             send(client_sock[i], reinterpret_cast<char*>(&sc), sizeof(sc), 0);
         }
@@ -268,7 +262,7 @@ int main(int argc, char* argv[])
         buf[0] = SC_ingame_send;
 
         // 각 클라이언트에 인게임 초기 데이터 송신
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < cnt; ++i) {
             send(client_sock[i], buf, BUFSIZE, 0);
             send(client_sock[i], reinterpret_cast<char*>(&is), sizeof(is), 0);
         }
@@ -284,13 +278,16 @@ int main(int argc, char* argv[])
 
             elapsedTime = prevTime - pip.count();
 
-            for (int i = 0; i < 3; ++i) {
-                //대기
-                SetEvent(hRecvEvent[i]);
-                //소환
-                event_retval = WaitForSingleObject(hRootEvent, INFINITE);
-                if (event_retval != WAIT_OBJECT_0) break;
-            }
+            cout << elapsedTime << endl;
+            cout << pip.count() << endl;
+
+            //for (int i = 0; i < 3; ++i) {
+            //    //대기
+            //    SetEvent(hRecvEvent[i]);
+            //    //소환
+            //    event_retval = WaitForSingleObject(hRootEvent, INFINITE);
+            //    if (event_retval != WAIT_OBJECT_0) break;
+            //}
 
 
             if (elapsedTime <= 0) {
@@ -327,7 +324,7 @@ int main(int argc, char* argv[])
 
                 buf[0] = SC_ingame_send;
 
-                for (int i = 0; i < 3; ++i) {
+                for (int i = 0; i < cnt; ++i) {
                     send(client_sock[i], buf, BUFSIZE, 0);
                     send(client_sock[i], reinterpret_cast<char*>(&_is), sizeof(_is), 0);
                 }
@@ -339,10 +336,10 @@ int main(int argc, char* argv[])
     // 소켓 닫기
     closesocket(listen_sock);
 
-    //// 이벤트 제거
-    //CloseHandle(hRcev1Event);
-    //CloseHandle(hRcev2Event);
-    //CloseHandle(hRcev3Event);
+    // 이벤트 제거
+    for (int i = 0; i < 3; ++i) {
+        CloseHandle(hRecvEvent[i]);
+    }
 
     // 윈속 종료
     WSACleanup();
