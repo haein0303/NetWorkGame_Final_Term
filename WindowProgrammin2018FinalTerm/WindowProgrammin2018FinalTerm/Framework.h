@@ -67,7 +67,7 @@ public:
 	HDC GetTotalDC();
 	void CreatebackBuffer();	// HBITMAP을 만든다.
 	void BuildScene();
-	void BuildPlayer(int p1, int p2);
+	void BuildPlayer(int p1, int p2, int p3);
 	void ReleaseScene();	
 
 	bool OnDestroy();	// HDC로 만든 버퍼가 있으면 릴리즈를 한다.

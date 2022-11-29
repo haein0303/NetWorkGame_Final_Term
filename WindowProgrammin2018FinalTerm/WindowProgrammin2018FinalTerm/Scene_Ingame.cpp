@@ -12,10 +12,10 @@ extern SOCKET sock;
 extern SC_Ingame_Send is;
 
 int tx, ty;
+int tx2, ty2;
 
 CIngameScene::CIngameScene()
 {
-
 }
 CIngameScene::~CIngameScene()
 {
@@ -88,7 +88,6 @@ bool CIngameScene::OnCreate()
 			C_Tile[Tileindex[j][i]].BitBlt(*m_pFramework->GetTileDC(), 64 * j, 64 * i, 64, 64, 0, 0, SRCCOPY); //타일의 가로세로크기가 64바이트
 		}
 	}
-
 
 	RemainTime = 99;
 	TimeTick = 0;
@@ -231,10 +230,21 @@ void CIngameScene::KeyState()
 					isp2LockDown = FALSE;
 					p2key = TRUE;
 				}
-				tx = is._player->_location.x;
-				ty = is._player->_location.y;
+				//////////////////////////////////////////////////////////////////////
+
+				//p1 업데이트
+				tx = is._player[0]._location.x;
+				ty = is._player[0]._location.y;
 				m_pFramework->GetPlayer(1)->x = tx;
 				m_pFramework->GetPlayer(1)->y = ty;
+
+				//p2 업데이트
+				tx2 = is._player[1]._location.x;
+				ty2 = is._player[1]._location.y;
+				m_pFramework->GetPlayer(2)->x = tx2;
+				m_pFramework->GetPlayer(2)->y = ty2;
+
+
 				switch (m_pFramework->GetPlayer(2)->Old_CharStat)
 				{
 				case 2:
@@ -279,6 +289,8 @@ void CIngameScene::KeyState()
 				}
 				if (m_pFramework->GetPlayer(2)->AttackTimerTick < 10)
 				{
+
+
 					switch (m_pFramework->GetPlayer(1)->Old_CharStat)
 					{
 					case 2:
@@ -572,11 +584,17 @@ void CIngameScene::CharacterState()
 {
 	if (keydown)
 	{
-
 		// 0 1 2 3 p2 이동 // 4 5 6 p2 스킬 공격 대시 // 7 8 9 10 p1 이동 // 11 12 13 p1 스킬 공격 대시
 		//p2 이동
 		if (keydownList[1])
 		{
+			//p2 업데이트
+			tx2 = is._player[1]._location.x;
+			ty2 = is._player[1]._location.y;
+			m_pFramework->GetPlayer(2)->x = tx2;
+			m_pFramework->GetPlayer(2)->y = ty2;
+
+			cout << "위치: " << tx2 << ", " << ty2 << endl;
 
 			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 			{
@@ -600,7 +618,15 @@ void CIngameScene::CharacterState()
 		if (keydownList[0]) // ← 이동
 		{
 			//서버에서 넘어온 위치 확인
-			//cout <<"위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
+			cout <<"위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
+			
+			//p2 업데이트
+			tx2 = is._player[1]._location.x;
+			ty2 = is._player[1]._location.y;
+			m_pFramework->GetPlayer(2)->x = tx2;
+			m_pFramework->GetPlayer(2)->y = ty2;
+
+			cout << "위치: " << tx2 << ", " << ty2 << endl;
 
 			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 			{
@@ -625,6 +651,14 @@ void CIngameScene::CharacterState()
 		}
 		if (keydownList[3])
 		{
+			//p2 업데이트
+			tx2 = is._player[1]._location.x;
+			ty2 = is._player[1]._location.y;
+			m_pFramework->GetPlayer(2)->x = tx2;
+			m_pFramework->GetPlayer(2)->y = ty2;
+
+			cout << "위치: " << tx2 << ", " << ty2 << endl;
+
 			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(2)->y < 6350)
@@ -646,6 +680,14 @@ void CIngameScene::CharacterState()
 		}
 		if (keydownList[2])
 		{
+			//p2 업데이트
+			tx2 = is._player[1]._location.x;
+			ty2 = is._player[1]._location.y;
+			m_pFramework->GetPlayer(2)->x = tx2;
+			m_pFramework->GetPlayer(2)->y = ty2;
+
+			cout << "위치: " << tx2 << ", " << ty2 << endl;
+
 			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(2)->x < 6350)
@@ -788,16 +830,14 @@ void CIngameScene::CharacterState()
 		}
 
 		////////////////// p1 이동 ///////////////////
-		
 
 		if (keydownList[8]) //위
 		{
 			//서버에서 넘어온 위치 확인
 			//cout << "위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
-
 			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player->_location.x;
-			ty = is._player->_location.y;
+			tx = is._player[0]._location.x;
+			ty = is._player[0]._location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
@@ -823,8 +863,8 @@ void CIngameScene::CharacterState()
 		{
 
 			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player->_location.x;
-			ty = is._player->_location.y;
+			tx = is._player[0]._location.x;
+			ty = is._player[0]._location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
@@ -850,8 +890,8 @@ void CIngameScene::CharacterState()
 		{
 
 			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player->_location.x;
-			ty = is._player->_location.y;
+			tx = is._player[0]._location.x;
+			ty = is._player[0]._location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
@@ -877,8 +917,8 @@ void CIngameScene::CharacterState()
 		{
 
 			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player->_location.x;
-			ty = is._player->_location.y;
+			tx = is._player[0]._location.x;
+			ty = is._player[0]._location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
@@ -1310,11 +1350,13 @@ void CIngameScene::Render(HDC hdc)
 	{
 		m_pFramework->GetPlayer(2)->Render(m_pFramework->GetPlayerDC());
 		m_pFramework->GetPlayer(1)->Render(m_pFramework->GetPlayerDC());
+		m_pFramework->GetPlayer(3)->Render(m_pFramework->GetPlayerDC()); //PL3 추가
 	}
 	else
 	{
 		m_pFramework->GetPlayer(1)->Render(m_pFramework->GetPlayerDC());
 		m_pFramework->GetPlayer(2)->Render(m_pFramework->GetPlayerDC());
+		m_pFramework->GetPlayer(3)->Render(m_pFramework->GetPlayerDC()); //PL3 추가
 	}
 	//코인
 	CoinObject->Render(&*m_pFramework->GetPlayerDC());
@@ -1325,9 +1367,10 @@ void CIngameScene::Render(HDC hdc)
 	//토탈로 옮기기
 	BitBlt(hdc, m_pFramework->p1.left, m_pFramework->p1.top, m_pFramework->p1.right, m_pFramework->p1.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(1)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(1)->y - m_pFramework->p1.bottom / 2, SRCCOPY);
 	BitBlt(hdc, m_pFramework->p2.left, m_pFramework->p2.top, m_pFramework->p1.right, m_pFramework->p2.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(2)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(2)->y - m_pFramework->p2.bottom / 2, SRCCOPY);
-	
+	BitBlt(hdc, m_pFramework->p2.left, m_pFramework->p2.top, m_pFramework->p1.right, m_pFramework->p2.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(3)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(3)->y - m_pFramework->p2.bottom / 2, SRCCOPY);
 
-	if (isGameEnd)
+
+	if (isGameEnd) //PL3 추가해야함
 	{
 		if (m_pFramework->GetPlayer(1)->iHaveCoin == TRUE)
 		{

@@ -114,6 +114,9 @@ CObject_Player* CFramework::GetPlayer(int PlayerNum)
 	case 2:
 		return player2;
 		break;
+	case 3:
+		return player3;
+		break;
 	default:
 		break;
 	}
@@ -163,20 +166,29 @@ void CFramework::BuildScene()
 	arrScene[CScene::SceneTag::Main_Lobby]->OnCreate();
 }
 
-void CFramework::BuildPlayer(int p1, int p2)
+void CFramework::BuildPlayer(int p1, int p2, int p3)
 {
 	while (player1 == NULL)
 		player1 = new CObject_Player();
 	while (player2 == NULL)
 		player2 = new CObject_Player();
+	//PL 3추가
+	while (player3 == NULL)
+		player3 = new CObject_Player();
 	//printf("%d\n", player1->x);
 	player1->OnCreate(p1);
 	player1->x = 35 * 64;
 	player1->y = 15 * 64;
+
 	player2->x = 35 * 64 + 64;
 	player2->y = 15 * 64;
-	//printf("%d\n", player1->x);
+	
+	player3->x = 35 * 64 + 64*2;
+	player3->y = 15 * 64;
+
 	player2->OnCreate(p2);
+
+	player3->OnCreate(p3);
 }
 
 void CFramework::ReleaseScene() // 씬 완전삭제
