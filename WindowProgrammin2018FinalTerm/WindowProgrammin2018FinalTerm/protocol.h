@@ -5,10 +5,10 @@
 
 
 enum Scene {
-    Lobby,
-    Char_sel,
-    Main_game,
-    End_game
+    Lobby = 1,
+    Char_sel = 3,
+    Main_game = 4,
+    End_game,
 };
 
 enum CharState {
@@ -58,7 +58,7 @@ struct char_info {
 // G_data 배열로 실제 데이터 관리, character_data는 네트워크 송수신시 사용
 struct G_data {
     char_info        char_info;
-    int 	    		charType;
+    int 	    	charType;
     int              charLook;
     fvec2            location;
     int 	state;

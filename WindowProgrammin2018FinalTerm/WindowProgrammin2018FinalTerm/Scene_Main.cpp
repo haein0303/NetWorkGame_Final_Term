@@ -43,6 +43,7 @@ void CMainScene::BuildObjects()
 
 void CMainScene::Render(HDC hdc)
 {
+	
 	switch (SceneNum)
 	{
 	case 0:

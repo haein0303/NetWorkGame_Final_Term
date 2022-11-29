@@ -10,9 +10,8 @@ extern CS_ingame_send_tmp gKeyData;
 extern CRITICAL_SECTION g_cs;
 extern SOCKET sock;
 extern SC_Ingame_Send is;
+extern SC_Scene_Send sc;
 
-int tx, ty;
-int tx2, ty2;
 
 CIngameScene::CIngameScene()
 {
@@ -231,19 +230,6 @@ void CIngameScene::KeyState()
 					p2key = TRUE;
 				}
 				//////////////////////////////////////////////////////////////////////
-
-				//p1 업데이트
-				tx = is._player[0]._location.x;
-				ty = is._player[0]._location.y;
-				m_pFramework->GetPlayer(1)->x = tx;
-				m_pFramework->GetPlayer(1)->y = ty;
-
-				//p2 업데이트
-				tx2 = is._player[1]._location.x;
-				ty2 = is._player[1]._location.y;
-				m_pFramework->GetPlayer(2)->x = tx2;
-				m_pFramework->GetPlayer(2)->y = ty2;
-
 
 				switch (m_pFramework->GetPlayer(2)->Old_CharStat)
 				{
@@ -582,488 +568,667 @@ void CIngameScene::KeyState()
 
 void CIngameScene::CharacterState()
 {
-	if (keydown)
+	//각 플레이어들 좌표 업데이트 
+	//if (m_pFramework->GetPlayer(0)) //이렇게 하면 속도 느려짐
+	//{
+	//	for (int i = 0; i < 3; ++i)
+	//	{
+	//		m_pFramework->GetPlayer(i)->x = (int)is._player[i]._location.x;
+	//		m_pFramework->GetPlayer(i)->y = (int)is._player[i]._location.y;
+	//	}
+	//}
+
+	//p1 업데이트
+	m_pFramework->GetPlayer(1)->x = (int)is._player[0]._location.x;
+	m_pFramework->GetPlayer(1)->y = (int)is._player[0]._location.y;
+
+	//p2 업데이트
+	m_pFramework->GetPlayer(2)->x = (int)is._player[1]._location.x;
+	m_pFramework->GetPlayer(2)->y = (int)is._player[1]._location.x;
+
+	//p3 업데이트
+	m_pFramework->GetPlayer(3)->x = (int)is._player[2]._location.x;
+	m_pFramework->GetPlayer(3)->y = (int)is._player[2]._location.x;
+
+	cout << "위치: " << is._player[0]._location.x << ", " << is._player[0]._location.y << endl;
+	//cout << "위치: " << tx2 << ", " << ty2 << endl;
+	//cout << "위치: " << tx3 << ", " << ty3 << endl;
+
+	// 7 8 9 10 p1 이동 // 11 12 13 p1 스킬 공격 대시 // 0 1 2 3 p2 이동 // 4 5 6 p2 스킬 공격 대시 // 
+
+	////////////////////////// p1 이동 /////////////////////////////////
+	if (keydownList[8]) //위
 	{
-		// 0 1 2 3 p2 이동 // 4 5 6 p2 스킬 공격 대시 // 7 8 9 10 p1 이동 // 11 12 13 p1 스킬 공격 대시
-		//p2 이동
-		if (keydownList[1])
+		if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 		{
-			//p2 업데이트
-			tx2 = is._player[1]._location.x;
-			ty2 = is._player[1]._location.y;
-			m_pFramework->GetPlayer(2)->x = tx2;
-			m_pFramework->GetPlayer(2)->y = ty2;
-
-			cout << "위치: " << tx2 << ", " << ty2 << endl;
-
-			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(2)->y > 50)
-					m_pFramework->GetPlayer(2)->y -= (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(2)->WalkingTimerTick++;
-			}
-			else if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60 - 20) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(2)->y > 50)
-					m_pFramework->GetPlayer(2)->y -= (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
-			}
-			p2key = true;
-			m_pFramework->GetPlayer(2)->CharacterStatus = 3;
+			if (m_pFramework->GetPlayer(1)->y > 50)
+				m_pFramework->GetPlayer(1)->y -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(1)->WalkingTimerTick++;
+		}
+		else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 - 30) / 64] == 2)
+		{
 
 		}
-		if (keydownList[0]) // ← 이동
+		else
 		{
-			//서버에서 넘어온 위치 확인
-			cout <<"위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
-			
-			//p2 업데이트
-			tx2 = is._player[1]._location.x;
-			ty2 = is._player[1]._location.y;
-			m_pFramework->GetPlayer(2)->x = tx2;
-			m_pFramework->GetPlayer(2)->y = ty2;
-
-			cout << "위치: " << tx2 << ", " << ty2 << endl;
-
-			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(2)->x > 50)
-					m_pFramework->GetPlayer(2)->x -= (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(2)->WalkingTimerTick++;
-			}
-			else if (Tileindex[((m_pFramework->GetPlayer(2)->x) - 30) / 64][(m_pFramework->GetPlayer(2)->y + 60 - 10) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(2)->x > 50)
-				m_pFramework->GetPlayer(2)->x -= (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
-			}
-			p2key = true;
-			m_pFramework->GetPlayer(2)->CharacterStatus = 2;
-
-
-
+			if (m_pFramework->GetPlayer(1)->y > 50)
+				m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
 		}
-		if (keydownList[3])
+		p1key = true;
+		m_pFramework->GetPlayer(1)->CharacterStatus = 3;
+	}
+	if (keydownList[7])
+	{
+		if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 		{
-			//p2 업데이트
-			tx2 = is._player[1]._location.x;
-			ty2 = is._player[1]._location.y;
-			m_pFramework->GetPlayer(2)->x = tx2;
-			m_pFramework->GetPlayer(2)->y = ty2;
-
-			cout << "위치: " << tx2 << ", " << ty2 << endl;
-
-			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(2)->y < 6350)
-				m_pFramework->GetPlayer(2)->y += (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(2)->WalkingTimerTick++;
-			}
-			else if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60 + 20) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(2)->y < 6350)
-				m_pFramework->GetPlayer(2)->y += (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
-			}
-			p2key = true;
-			m_pFramework->GetPlayer(2)->CharacterStatus = 5;
-
-		}
-		if (keydownList[2])
-		{
-			//p2 업데이트
-			tx2 = is._player[1]._location.x;
-			ty2 = is._player[1]._location.y;
-			m_pFramework->GetPlayer(2)->x = tx2;
-			m_pFramework->GetPlayer(2)->y = ty2;
-
-			cout << "위치: " << tx2 << ", " << ty2 << endl;
-
-			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(2)->x < 6350)
-				m_pFramework->GetPlayer(2)->x += (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(2)->WalkingTimerTick++;
-			}
-			else if (Tileindex[(m_pFramework->GetPlayer(2)->x + 30) / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(2)->x < 6350)
-				m_pFramework->GetPlayer(2)->x += (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
-			}
-			p2key = true;
-			m_pFramework->GetPlayer(2)->CharacterStatus = 4;
-
-		}
-
-		if (keydownList[4]) // p2 스킬
-		{
-			switch (m_pFramework->GetPlayer(2)->charNum)
-			{
-			case 1:
-				SkillCoolTime[1] = 8;
-				break;
-			case 2:
-				SkillCoolTime[1] = 5;
-				break;
-			case 3:
-				SkillCoolTime[1] = 12;
-				break;
-			}
-			switch (m_pFramework->GetPlayer(2)->CharacterStatus)
-			{
-			case 2:
-			case 5:
-			case 6:
-			case 0:
-				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-				m_pFramework->GetPlayer(2)->isSkill = TRUE;
-				m_pFramework->GetPlayer(2)->CharacterStatus = 12;
-				m_pFramework->GetPlayer(2)->SkillCast(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y, m_pFramework->GetPlayer(2)->Old_CharStat);
-				break; // 앞 볼 때
-			case 3:
-			case 4:
-			case 7:
-			case 1:
-				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-				m_pFramework->GetPlayer(2)->isSkill = TRUE;
-				m_pFramework->GetPlayer(2)->CharacterStatus = 13;
-				m_pFramework->GetPlayer(2)->SkillCast(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y, m_pFramework->GetPlayer(2)->Old_CharStat);
-				break; // 뒤 볼 때
-			}
-		}
-		if (keydownList[5]) // p2 공격
-		{
-			switch (m_pFramework->GetPlayer(2)->CharacterStatus)
-			{
-			case 2:
-			case 5:
-			case 6:
-			case 0:
-				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-				m_pFramework->GetPlayer(2)->isAttack = TRUE;
-				m_pFramework->GetPlayer(2)->CharacterStatus = 6;
-				if ((abs(m_pFramework->GetPlayer(2)->x - m_pFramework->GetPlayer(1)->x) < 70) &&
-					(abs(m_pFramework->GetPlayer(2)->y - m_pFramework->GetPlayer(1)->y) < 50))
-				{
-					m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-					m_pFramework->GetPlayer(1)->isAttacked = TRUE;
-					m_pFramework->GetPlayer(1)->CharacterStatus = 9;
-					isp1LockDown = TRUE;
-					if (m_pFramework->GetPlayer(1)->iHaveCoin)
-					{
-						m_pFramework->GetPlayer(1)->iHaveCoin = FALSE;
-						CoinObject->OnCreate(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y);
-						coinLockDown = TRUE;
-					}
-				}
-				break; // 앞 볼 때
-			case 3:
-			case 4:
-			case 7:
-			case 1:
-				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-				m_pFramework->GetPlayer(2)->isAttack = TRUE;
-				m_pFramework->GetPlayer(2)->CharacterStatus = 7;
-				if ((abs(m_pFramework->GetPlayer(2)->x - m_pFramework->GetPlayer(1)->x) < 70) &&
-					(abs(m_pFramework->GetPlayer(2)->y - m_pFramework->GetPlayer(1)->y) < 50))
-				{
-					m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-					m_pFramework->GetPlayer(1)->isAttacked = TRUE;
-					m_pFramework->GetPlayer(1)->CharacterStatus = 8;
-					isp1LockDown = TRUE;
-					if (m_pFramework->GetPlayer(1)->iHaveCoin)
-					{
-						m_pFramework->GetPlayer(1)->iHaveCoin = FALSE;
-						CoinObject->OnCreate(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y);
-						coinLockDown = TRUE;
-					}
-				}
-				break; // 뒤 볼 때
-			}
-		}
-		if (keydownList[6]) // p2 대시
-		{
-			if (m_pFramework->GetPlayer(2)->DashCoolTimer <= 0)
-			{
-				switch (m_pFramework->GetPlayer(2)->charNum)
-				{
-				case 1:
-					m_pFramework->GetPlayer(2)->DashCoolTimer = 410;
-					break;
-				case 2:
-					m_pFramework->GetPlayer(2)->DashCoolTimer = 300;
-					break;
-				case 3:
-					m_pFramework->GetPlayer(2)->DashCoolTimer = 600;
-					break;
-				}
-				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-				switch (m_pFramework->GetPlayer(2)->CharacterStatus)
-				{
-				case 2:
-				case 5:
-				case 0:
-					m_pFramework->GetPlayer(2)->isDash = TRUE;
-					m_pFramework->GetPlayer(2)->CharacterStatus = 10;
-					break; // 앞 볼 때
-				case 3:
-				case 4:
-				case 1:
-					m_pFramework->GetPlayer(2)->isDash = TRUE;
-					m_pFramework->GetPlayer(2)->CharacterStatus = 11;
-					break; // 뒤 볼 때
-				}
-			}
-		}
-
-		////////////////// p1 이동 ///////////////////
-
-		if (keydownList[8]) //위
-		{
-			//서버에서 넘어온 위치 확인
-			//cout << "위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
-			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player[0]._location.x;
-			ty = is._player[0]._location.y;
-			m_pFramework->GetPlayer(1)->x = tx;
-			m_pFramework->GetPlayer(1)->y = ty;
-
-			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(1)->y > 50)
-					m_pFramework->GetPlayer(1)->y -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(1)->WalkingTimerTick++;
-			}
-			else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 - 30) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(1)->y > 50)
-					m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
-			}
-			p1key = true;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 3;
-		}
-		if (keydownList[7])
-		{
-
-			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player[0]._location.x;
-			ty = is._player[0]._location.y;
-			m_pFramework->GetPlayer(1)->x = tx;
-			m_pFramework->GetPlayer(1)->y = ty;
-
-			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(1)->x > 50)
+			if (m_pFramework->GetPlayer(1)->x > 50)
 				m_pFramework->GetPlayer(1)->x -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(1)->WalkingTimerTick++;
-			}
-			else if (Tileindex[(m_pFramework->GetPlayer(1)->x - 30) / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 2)
-			{
+			m_pFramework->GetPlayer(1)->WalkingTimerTick++;
+		}
+		else if (Tileindex[(m_pFramework->GetPlayer(1)->x - 30) / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 2)
+		{
 
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(1)->x > 50)
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(1)->x > 50)
 				m_pFramework->GetPlayer(1)->x -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
-			}
-			p1key = true;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 2;
 		}
-		if (keydownList[10])
+		p1key = true;
+		m_pFramework->GetPlayer(1)->CharacterStatus = 2;
+	}
+	if (keydownList[10])
+	{
+		if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 		{
-
-			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player[0]._location.x;
-			ty = is._player[0]._location.y;
-			m_pFramework->GetPlayer(1)->x = tx;
-			m_pFramework->GetPlayer(1)->y = ty;
-
-			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(1)->y < 6350)
+			if (m_pFramework->GetPlayer(1)->y < 6350)
 				m_pFramework->GetPlayer(1)->y += (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(1)->WalkingTimerTick++;
-			}
-			else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 + 20) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(1)->y < 6350)
-				m_pFramework->GetPlayer(1)->y += (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
-			}
-			p1key = true;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 5;
+			m_pFramework->GetPlayer(1)->WalkingTimerTick++;
 		}
-		if (keydownList[9])
+		else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 + 20) / 64] == 2)
 		{
 
-			cout << "위치: " << tx << ", " << ty << endl;
-			tx = is._player[0]._location.x;
-			ty = is._player[0]._location.y;
-			m_pFramework->GetPlayer(1)->x = tx;
-			m_pFramework->GetPlayer(1)->y = ty;
-
-			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
-			{
-				if (m_pFramework->GetPlayer(1)->x < 6350)
-				m_pFramework->GetPlayer(1)->x += (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
-				m_pFramework->GetPlayer(1)->WalkingTimerTick++;
-			}
-			else if (Tileindex[(m_pFramework->GetPlayer(1)->x + 30) / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 2)
-			{
-
-			}
-			else
-			{
-				if (m_pFramework->GetPlayer(1)->x < 6350)
-				m_pFramework->GetPlayer(1)->x += (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
-			}
-			p1key = true;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 4;
 		}
+		else
+		{
+			if (m_pFramework->GetPlayer(1)->y < 6350)
+				m_pFramework->GetPlayer(1)->y += (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
+		}
+		p1key = true;
+		m_pFramework->GetPlayer(1)->CharacterStatus = 5;
+	}
+	if (keydownList[9])
+	{
+		if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(1)->x < 6350)
+				m_pFramework->GetPlayer(1)->x += (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(1)->WalkingTimerTick++;
+		}
+		else if (Tileindex[(m_pFramework->GetPlayer(1)->x + 30) / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 2)
+		{
 
-		if (keydownList[11]) // p1 스킬
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(1)->x < 6350)
+				m_pFramework->GetPlayer(1)->x += (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
+		}
+		p1key = true;
+		m_pFramework->GetPlayer(1)->CharacterStatus = 4;
+	}
+
+	//////////////////// p1 스킬 공격 대시 //////////////////////////////////
+	if (keydownList[11]) // p1 스킬
+	{
+		switch (m_pFramework->GetPlayer(1)->charNum)
+		{
+		case 1:
+			SkillCoolTime[0] = 8;
+			break;
+		case 2:
+			SkillCoolTime[0] = 5;
+			break;
+		case 3:
+			SkillCoolTime[0] = 12;
+			break;
+		}
+		switch (m_pFramework->GetPlayer(1)->CharacterStatus) 
+		{
+		case 2:
+		case 5:
+		case 6:
+		case 0:
+			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+			m_pFramework->GetPlayer(1)->isSkill = TRUE;
+			m_pFramework->GetPlayer(1)->CharacterStatus = 12;
+			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+			break; // 앞 볼 때
+		case 3:
+		case 4:
+		case 7:
+		case 1:
+			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+			m_pFramework->GetPlayer(1)->isSkill = TRUE;
+			m_pFramework->GetPlayer(1)->CharacterStatus = 13;
+			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+			break; // 뒤 볼 때
+		}
+	}
+	if (keydownList[12]) // p1 공격
+	{
+		switch (m_pFramework->GetPlayer(1)->CharacterStatus)
+		{
+		case 2:
+		case 5:
+		case 6:
+		case 0:
+			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+			m_pFramework->GetPlayer(1)->isAttack = TRUE;
+			m_pFramework->GetPlayer(1)->CharacterStatus = 6;
+			//p2  피격처리 여기서
+			if ((abs(m_pFramework->GetPlayer(1)->x - m_pFramework->GetPlayer(2)->x) < 70) &&
+				(abs(m_pFramework->GetPlayer(1)->y - m_pFramework->GetPlayer(2)->y) < 50))
+			{
+				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+				m_pFramework->GetPlayer(2)->isAttacked = TRUE;
+				m_pFramework->GetPlayer(2)->CharacterStatus = 9;
+				isp2LockDown = TRUE;
+				if (m_pFramework->GetPlayer(2)->iHaveCoin)
+				{
+					m_pFramework->GetPlayer(2)->iHaveCoin = FALSE;
+					CoinObject->OnCreate(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y);
+					coinLockDown = TRUE;
+				}
+			}
+			break; // 앞 볼 때
+		case 3:
+		case 4:
+		case 7:
+		case 1:
+			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+			m_pFramework->GetPlayer(1)->isAttack = TRUE;
+			m_pFramework->GetPlayer(1)->CharacterStatus = 7;
+			if ((abs(m_pFramework->GetPlayer(1)->x - m_pFramework->GetPlayer(2)->x) < 70) &&
+				(abs(m_pFramework->GetPlayer(1)->y - m_pFramework->GetPlayer(2)->y) < 50))
+			{
+				m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+				m_pFramework->GetPlayer(2)->isAttacked = TRUE;
+				m_pFramework->GetPlayer(2)->CharacterStatus = 8;
+				isp2LockDown = TRUE;
+				if (m_pFramework->GetPlayer(2)->iHaveCoin)
+				{
+					m_pFramework->GetPlayer(2)->iHaveCoin = FALSE;
+					CoinObject->OnCreate(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y);
+					coinLockDown = TRUE;
+				}
+			}
+			break; // 뒤 볼 때
+		}
+	}
+	if (keydownList[13]) // p1 대시
+	{
+		if (m_pFramework->GetPlayer(1)->DashCoolTimer <= 0)
 		{
 			switch (m_pFramework->GetPlayer(1)->charNum)
 			{
 			case 1:
-				SkillCoolTime[0] = 8;
+				m_pFramework->GetPlayer(1)->DashCoolTimer = 410;
 				break;
 			case 2:
-				SkillCoolTime[0] = 5;
+				m_pFramework->GetPlayer(1)->DashCoolTimer = 300;
 				break;
 			case 3:
-				SkillCoolTime[0] = 12;
+				m_pFramework->GetPlayer(1)->DashCoolTimer = 600;
 				break;
 			}
-			switch (m_pFramework->GetPlayer(1)->CharacterStatus) 
-			{
-			case 2:
-			case 5:
-			case 6:
-			case 0:
-				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-				m_pFramework->GetPlayer(1)->isSkill = TRUE;
-				m_pFramework->GetPlayer(1)->CharacterStatus = 12;
-				m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
-				break; // 앞 볼 때
-			case 3:
-			case 4:
-			case 7:
-			case 1:
-				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-				m_pFramework->GetPlayer(1)->isSkill = TRUE;
-				m_pFramework->GetPlayer(1)->CharacterStatus = 13;
-				m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
-				break; // 뒤 볼 때
-			}
-		}
-		if (keydownList[12]) // p1 공격
-		{
+	
+			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
 			switch (m_pFramework->GetPlayer(1)->CharacterStatus)
 			{
 			case 2:
 			case 5:
-			case 6:
 			case 0:
-				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-				m_pFramework->GetPlayer(1)->isAttack = TRUE;
-				m_pFramework->GetPlayer(1)->CharacterStatus = 6;
-				//p2  피격처리 여기서
-				if ((abs(m_pFramework->GetPlayer(1)->x - m_pFramework->GetPlayer(2)->x) < 70) &&
-					(abs(m_pFramework->GetPlayer(1)->y - m_pFramework->GetPlayer(2)->y) < 50))
-				{
-					m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-					m_pFramework->GetPlayer(2)->isAttacked = TRUE;
-					m_pFramework->GetPlayer(2)->CharacterStatus = 9;
-					isp2LockDown = TRUE;
-					if (m_pFramework->GetPlayer(2)->iHaveCoin)
-					{
-						m_pFramework->GetPlayer(2)->iHaveCoin = FALSE;
-						CoinObject->OnCreate(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y);
-						coinLockDown = TRUE;
-					}
-				}
+				m_pFramework->GetPlayer(1)->isDash = TRUE;
+				m_pFramework->GetPlayer(1)->CharacterStatus = 10;
 				break; // 앞 볼 때
 			case 3:
 			case 4:
-			case 7:
 			case 1:
-				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-				m_pFramework->GetPlayer(1)->isAttack = TRUE;
-				m_pFramework->GetPlayer(1)->CharacterStatus = 7;
-				if ((abs(m_pFramework->GetPlayer(1)->x - m_pFramework->GetPlayer(2)->x) < 70) &&
-					(abs(m_pFramework->GetPlayer(1)->y - m_pFramework->GetPlayer(2)->y) < 50))
-				{
-					m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
-					m_pFramework->GetPlayer(2)->isAttacked = TRUE;
-					m_pFramework->GetPlayer(2)->CharacterStatus = 8;
-					isp2LockDown = TRUE;
-					if (m_pFramework->GetPlayer(2)->iHaveCoin)
-					{
-						m_pFramework->GetPlayer(2)->iHaveCoin = FALSE;
-						CoinObject->OnCreate(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y);
-						coinLockDown = TRUE;
-					}
-				}
+				m_pFramework->GetPlayer(1)->isDash = TRUE;
+				m_pFramework->GetPlayer(1)->CharacterStatus = 11;
 				break; // 뒤 볼 때
 			}
 		}
-		if (keydownList[13]) // p1 대시
-		{
-			if (m_pFramework->GetPlayer(1)->DashCoolTimer <= 0)
-			{
-				switch (m_pFramework->GetPlayer(1)->charNum)
-				{
-				case 1:
-					m_pFramework->GetPlayer(1)->DashCoolTimer = 410;
-					break;
-				case 2:
-					m_pFramework->GetPlayer(1)->DashCoolTimer = 300;
-					break;
-				case 3:
-					m_pFramework->GetPlayer(1)->DashCoolTimer = 600;
-					break;
-				}
+	}
+	//////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////// p2 이동 ////////////////////////////////////////////
+	//if _look 이 위쪽일때 //if (keydownList[1])
+	{
 
+		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(2)->y > 50)
+				m_pFramework->GetPlayer(2)->y -= (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(2)->WalkingTimerTick++;
+		}
+		else if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60 - 20) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(2)->y > 50)
+				m_pFramework->GetPlayer(2)->y -= (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(2)->CharacterStatus = 3;
+
+	}
+	//if _look 이 왼쪽일때 // if (keydownList[0])
+	{
+		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(2)->x > 50)
+				m_pFramework->GetPlayer(2)->x -= (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(2)->WalkingTimerTick++;
+		}
+		else if (Tileindex[((m_pFramework->GetPlayer(2)->x) - 30) / 64][(m_pFramework->GetPlayer(2)->y + 60 - 10) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(2)->x > 50)
+				m_pFramework->GetPlayer(2)->x -= (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(2)->CharacterStatus = 2;
+
+	}
+	//if _look 이 아래쪽일 때 // if (keydownList[3])
+	{
+
+		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(2)->y < 6350)
+				m_pFramework->GetPlayer(2)->y += (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(2)->WalkingTimerTick++;
+		}
+		else if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60 + 20) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(2)->y < 6350)
+				m_pFramework->GetPlayer(2)->y += (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(2)->CharacterStatus = 5;
+
+	}
+	//if _look 이 오른쪽일때 // if (keydownList[2])
+	{
+
+		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(2)->x < 6350)
+				m_pFramework->GetPlayer(2)->x += (15 - m_pFramework->GetPlayer(2)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(2)->WalkingTimerTick++;
+		}
+		else if (Tileindex[(m_pFramework->GetPlayer(2)->x + 30) / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(2)->x < 6350)
+				m_pFramework->GetPlayer(2)->x += (10 - m_pFramework->GetPlayer(2)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(2)->CharacterStatus = 4;
+
+	}
+
+	/////////////////////////// p2 스킬 공격 대시 /////////////////////////////
+	// if charstate가 skill // if (keydownList[4]) 
+	{
+		switch (m_pFramework->GetPlayer(2)->charNum)
+		{
+		case 1:
+			SkillCoolTime[1] = 8;
+			break;
+		case 2:
+			SkillCoolTime[1] = 5;
+			break;
+		case 3:
+			SkillCoolTime[1] = 12;
+			break;
+		}
+		switch (m_pFramework->GetPlayer(2)->CharacterStatus)
+		{
+		case 2:
+		case 5:
+		case 6:
+		case 0:
+			m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+			m_pFramework->GetPlayer(2)->isSkill = TRUE;
+			m_pFramework->GetPlayer(2)->CharacterStatus = 12;
+			m_pFramework->GetPlayer(2)->SkillCast(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y, m_pFramework->GetPlayer(2)->Old_CharStat);
+			break; // 앞 볼 때
+		case 3:
+		case 4:
+		case 7:
+		case 1:
+			m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+			m_pFramework->GetPlayer(2)->isSkill = TRUE;
+			m_pFramework->GetPlayer(2)->CharacterStatus = 13;
+			m_pFramework->GetPlayer(2)->SkillCast(m_pFramework->GetPlayer(2)->x, m_pFramework->GetPlayer(2)->y, m_pFramework->GetPlayer(2)->Old_CharStat);
+			break; // 뒤 볼 때
+		}
+	}
+	// if charstate가 attack // if (keydownList[5]) // p2 공격 (p3와의 공격체크 안돼있음)
+	{
+		switch (m_pFramework->GetPlayer(2)->CharacterStatus)
+		{
+		case 2:
+		case 5:
+		case 6:
+		case 0:
+			m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+			m_pFramework->GetPlayer(2)->isAttack = TRUE;
+			m_pFramework->GetPlayer(2)->CharacterStatus = 6;
+			if ((abs(m_pFramework->GetPlayer(2)->x - m_pFramework->GetPlayer(1)->x) < 70) &&
+				(abs(m_pFramework->GetPlayer(2)->y - m_pFramework->GetPlayer(1)->y) < 50))
+			{
 				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-				switch (m_pFramework->GetPlayer(1)->CharacterStatus)
+				m_pFramework->GetPlayer(1)->isAttacked = TRUE;
+				m_pFramework->GetPlayer(1)->CharacterStatus = 9;
+				isp1LockDown = TRUE;
+				if (m_pFramework->GetPlayer(1)->iHaveCoin)
 				{
-				case 2:
-				case 5:
-				case 0:
-					m_pFramework->GetPlayer(1)->isDash = TRUE;
-					m_pFramework->GetPlayer(1)->CharacterStatus = 10;
-					break; // 앞 볼 때
-				case 3:
-				case 4:
-				case 1:
-					m_pFramework->GetPlayer(1)->isDash = TRUE;
-					m_pFramework->GetPlayer(1)->CharacterStatus = 11;
-					break; // 뒤 볼 때
+					m_pFramework->GetPlayer(1)->iHaveCoin = FALSE;
+					CoinObject->OnCreate(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y);
+					coinLockDown = TRUE;
 				}
+			}
+			break; // 앞 볼 때
+		case 3:
+		case 4:
+		case 7:
+		case 1:
+			m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+			m_pFramework->GetPlayer(2)->isAttack = TRUE;
+			m_pFramework->GetPlayer(2)->CharacterStatus = 7;
+			if ((abs(m_pFramework->GetPlayer(2)->x - m_pFramework->GetPlayer(1)->x) < 70) &&
+				(abs(m_pFramework->GetPlayer(2)->y - m_pFramework->GetPlayer(1)->y) < 50))
+			{
+				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+				m_pFramework->GetPlayer(1)->isAttacked = TRUE;
+				m_pFramework->GetPlayer(1)->CharacterStatus = 8;
+				isp1LockDown = TRUE;
+				if (m_pFramework->GetPlayer(1)->iHaveCoin)
+				{
+					m_pFramework->GetPlayer(1)->iHaveCoin = FALSE;
+					CoinObject->OnCreate(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y);
+					coinLockDown = TRUE;
+				}
+			}
+			break; // 뒤 볼 때
+		}
+	}
+	// if charstate가 dash // if (keydownList[6]) // p2 대시
+	{
+		if (m_pFramework->GetPlayer(2)->DashCoolTimer <= 0)
+		{
+			switch (m_pFramework->GetPlayer(2)->charNum)
+			{
+			case 1:
+				m_pFramework->GetPlayer(2)->DashCoolTimer = 410;
+				break;
+			case 2:
+				m_pFramework->GetPlayer(2)->DashCoolTimer = 300;
+				break;
+			case 3:
+				m_pFramework->GetPlayer(2)->DashCoolTimer = 600;
+				break;
+			}
+			m_pFramework->GetPlayer(2)->Old_CharStat = m_pFramework->GetPlayer(2)->CharacterStatus;
+			switch (m_pFramework->GetPlayer(2)->CharacterStatus)
+			{
+			case 2:
+			case 5:
+			case 0:
+				m_pFramework->GetPlayer(2)->isDash = TRUE;
+				m_pFramework->GetPlayer(2)->CharacterStatus = 10;
+				break; // 앞 볼 때
+			case 3:
+			case 4:
+			case 1:
+				m_pFramework->GetPlayer(2)->isDash = TRUE;
+				m_pFramework->GetPlayer(2)->CharacterStatus = 11;
+				break; // 뒤 볼 때
 			}
 		}
 	}
+
+	////////////////////////////// p3 추가 /////////////////////////////////////////////
+	// 추후 수정
+	////////////////////////////// p3 이동 ////////////////////////////////////////////
+	//if _look 이 위쪽일때 
+	{
+		if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(3)->y > 50)
+				m_pFramework->GetPlayer(3)->y -= (15 - m_pFramework->GetPlayer(3)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(3)->WalkingTimerTick++;
+		}
+		else if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60 - 20) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(3)->y > 50)
+				m_pFramework->GetPlayer(3)->y -= (10 - m_pFramework->GetPlayer(3)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(3)->CharacterStatus = 3;
+
+	}
+	//if _look 이 왼쪽일때 //
+	{
+		if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(3)->x > 50)
+				m_pFramework->GetPlayer(3)->x -= (15 - m_pFramework->GetPlayer(3)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(3)->WalkingTimerTick++;
+		}
+		else if (Tileindex[((m_pFramework->GetPlayer(3)->x) - 30) / 64][(m_pFramework->GetPlayer(3)->y + 60 - 10) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(3)->x > 50)
+				m_pFramework->GetPlayer(3)->x -= (10 - m_pFramework->GetPlayer(3)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(3)->CharacterStatus = 2;
+
+
+
+	}
+	//if _look 이 아래쪽일 때 
+	{
+		if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(3)->y < 6350)
+				m_pFramework->GetPlayer(3)->y += (15 - m_pFramework->GetPlayer(3)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(3)->WalkingTimerTick++;
+		}
+		else if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60 + 20) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(3)->y < 6350)
+				m_pFramework->GetPlayer(3)->y += (10 - m_pFramework->GetPlayer(3)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(3)->CharacterStatus = 5;
+
+	}
+	//if _look 이 오른쪽일때 // if (keydownList[2])
+	{
+		if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60) / 64] == 1)
+		{
+			if (m_pFramework->GetPlayer(3)->x < 6350)
+				m_pFramework->GetPlayer(3)->x += (15 - m_pFramework->GetPlayer(3)->iHaveCoin * 4);
+			m_pFramework->GetPlayer(3)->WalkingTimerTick++;
+		}
+		else if (Tileindex[(m_pFramework->GetPlayer(3)->x + 30) / 64][(m_pFramework->GetPlayer(3)->y + 60) / 64] == 2)
+		{
+
+		}
+		else
+		{
+			if (m_pFramework->GetPlayer(3)->x < 6350)
+				m_pFramework->GetPlayer(3)->x += (10 - m_pFramework->GetPlayer(3)->iHaveCoin * 2);
+		}
+		p2key = true;
+		m_pFramework->GetPlayer(3)->CharacterStatus = 4;
+
+	}
+
+	/////////////////////////// p3 스킬 공격 대시 /////////////////////////////
+	// if charstate가 skill 
+	{
+		switch (m_pFramework->GetPlayer(3)->charNum)
+		{
+		case 1:
+			SkillCoolTime[2] = 8;
+			break;
+		case 2:
+			SkillCoolTime[2] = 5;
+			break;
+		case 3:
+			SkillCoolTime[2] = 12;
+			break;
+		}
+		switch (m_pFramework->GetPlayer(3)->CharacterStatus)
+		{
+		case 2:
+		case 5:
+		case 6:
+		case 0:
+			m_pFramework->GetPlayer(3)->Old_CharStat = m_pFramework->GetPlayer(3)->CharacterStatus;
+			m_pFramework->GetPlayer(3)->isSkill = TRUE;
+			m_pFramework->GetPlayer(3)->CharacterStatus = 12;
+			m_pFramework->GetPlayer(3)->SkillCast(m_pFramework->GetPlayer(3)->x, m_pFramework->GetPlayer(3)->y, m_pFramework->GetPlayer(3)->Old_CharStat);
+			break; // 앞 볼 때
+		case 3:
+		case 4:
+		case 7:
+		case 1:
+			m_pFramework->GetPlayer(3)->Old_CharStat = m_pFramework->GetPlayer(3)->CharacterStatus;
+			m_pFramework->GetPlayer(3)->isSkill = TRUE;
+			m_pFramework->GetPlayer(3)->CharacterStatus = 13;
+			m_pFramework->GetPlayer(3)->SkillCast(m_pFramework->GetPlayer(3)->x, m_pFramework->GetPlayer(2)->y, m_pFramework->GetPlayer(3)->Old_CharStat);
+			break; // 뒤 볼 때
+		}
+	}
+	// if charstate가 attack // p3 공격
+	{
+		switch (m_pFramework->GetPlayer(3)->CharacterStatus)
+		{
+		case 2:
+		case 5:
+		case 6:
+		case 0: //1번 플레이어와의 공격 체크만 가능한 상태
+			m_pFramework->GetPlayer(3)->Old_CharStat = m_pFramework->GetPlayer(3)->CharacterStatus;
+			m_pFramework->GetPlayer(3)->isAttack = TRUE;
+			m_pFramework->GetPlayer(3)->CharacterStatus = 6;
+			if ((abs(m_pFramework->GetPlayer(3)->x - m_pFramework->GetPlayer(1)->x) < 70) &&
+				(abs(m_pFramework->GetPlayer(3)->y - m_pFramework->GetPlayer(1)->y) < 50))
+			{
+				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+				m_pFramework->GetPlayer(1)->isAttacked = TRUE;
+				m_pFramework->GetPlayer(1)->CharacterStatus = 9;
+				isp1LockDown = TRUE;
+				if (m_pFramework->GetPlayer(1)->iHaveCoin)
+				{
+					m_pFramework->GetPlayer(1)->iHaveCoin = FALSE;
+					CoinObject->OnCreate(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y);
+					coinLockDown = TRUE;
+				}
+			}
+			break; // 앞 볼 때
+		case 3:
+		case 4:
+		case 7:
+		case 1:
+			m_pFramework->GetPlayer(3)->Old_CharStat = m_pFramework->GetPlayer(3)->CharacterStatus;
+			m_pFramework->GetPlayer(3)->isAttack = TRUE;
+			m_pFramework->GetPlayer(3)->CharacterStatus = 7;
+			if ((abs(m_pFramework->GetPlayer(3)->x - m_pFramework->GetPlayer(1)->x) < 70) &&
+				(abs(m_pFramework->GetPlayer(3)->y - m_pFramework->GetPlayer(1)->y) < 50))
+			{
+				m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+				m_pFramework->GetPlayer(1)->isAttacked = TRUE;
+				m_pFramework->GetPlayer(1)->CharacterStatus = 8;
+				isp1LockDown = TRUE;
+				if (m_pFramework->GetPlayer(1)->iHaveCoin)
+				{
+					m_pFramework->GetPlayer(1)->iHaveCoin = FALSE;
+					CoinObject->OnCreate(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y);
+					coinLockDown = TRUE;
+				}
+			}
+			break; // 뒤 볼 때
+		}
+	}
+	// if charstate가 dash 
+	{
+		if (m_pFramework->GetPlayer(3)->DashCoolTimer <= 0)
+		{
+			switch (m_pFramework->GetPlayer(3)->charNum)
+			{
+			case 1:
+				m_pFramework->GetPlayer(3)->DashCoolTimer = 410;
+				break;
+			case 2:
+				m_pFramework->GetPlayer(3)->DashCoolTimer = 300;
+				break;
+			case 3:
+				m_pFramework->GetPlayer(3)->DashCoolTimer = 600;
+				break;
+			}
+			m_pFramework->GetPlayer(3)->Old_CharStat = m_pFramework->GetPlayer(3)->CharacterStatus;
+			switch (m_pFramework->GetPlayer(3)->CharacterStatus)
+			{
+			case 2:
+			case 5:
+			case 0:
+				m_pFramework->GetPlayer(3)->isDash = TRUE;
+				m_pFramework->GetPlayer(3)->CharacterStatus = 10;
+				break; // 앞 볼 때
+			case 3:
+			case 4:
+			case 1:
+				m_pFramework->GetPlayer(3)->isDash = TRUE;
+				m_pFramework->GetPlayer(3)->CharacterStatus = 11;
+				break; // 뒤 볼 때
+			}
+		}
+	}
+
+
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	if (p1key)
 	{
 		m_pFramework->GetPlayer(1)->isWalk = TRUE;
@@ -1147,6 +1312,7 @@ void CIngameScene::Update(float fTimeElapsed)
 {
 	if (RemainTime <= 0)
 	{
+		// 추후 수정해야함 (서버에서 받은 캐릭터 정보로 코인유무 판별후 status 변경하는 걸로)
 		if (m_pFramework->GetPlayer(1)->iHaveCoin == TRUE)
 		{
 			isGameEnd = TRUE;
@@ -1160,7 +1326,8 @@ void CIngameScene::Update(float fTimeElapsed)
 			m_pFramework->GetPlayer(2)->CharacterStatus = 14;
 		}
 	}
-	if (isGameEnd == FALSE)
+	
+	if (sc._scene_num == Main_game) //if(isGameEnd == FALSE) 
 	{
 		KeyState();
 		CharacterState();
@@ -1168,6 +1335,7 @@ void CIngameScene::Update(float fTimeElapsed)
 		CoinObject->Update(fTimeElapsed);
 		m_pFramework->GetPlayer(1)->Update(fTimeElapsed);
 		m_pFramework->GetPlayer(2)->Update(fTimeElapsed);
+		m_pFramework->GetPlayer(3)->Update(fTimeElapsed);
 		TimeTick++;
 
 		if (m_pFramework->GetPlayer(1)->DashCoolTimer > 0)
@@ -1178,7 +1346,10 @@ void CIngameScene::Update(float fTimeElapsed)
 		{
 			m_pFramework->GetPlayer(2)->DashCoolTimer--;
 		}
-
+		if (m_pFramework->GetPlayer(3)->DashCoolTimer > 0)
+		{
+			m_pFramework->GetPlayer(3)->DashCoolTimer--;
+		}
 		//if (m_pFramework->GetPlayer(1)->isSkill)
 		{
 			if (IntersectRect(&tmp, m_pFramework->GetPlayer(2)->getRECT(), m_pFramework->GetPlayer(1)->CSkill->GetRECT())) // p2스킬피격
@@ -1345,6 +1516,7 @@ void CIngameScene::Render(HDC hdc)
 	//BitBlt(*m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(2)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(2)->y - m_pFramework->p1.bottom / 2, m_pFramework->p1.right, m_pFramework->p2.bottom,
 	//	*m_pFramework->GetTileDC(), m_pFramework->GetPlayer(2)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(2)->y - m_pFramework->p2.bottom / 2, SRCCOPY);
 
+
 	//플레이어
 	if (m_pFramework->GetPlayer(1)->y > m_pFramework->GetPlayer(2)->y)
 	{
@@ -1370,7 +1542,7 @@ void CIngameScene::Render(HDC hdc)
 	BitBlt(hdc, m_pFramework->p2.left, m_pFramework->p2.top, m_pFramework->p1.right, m_pFramework->p2.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(3)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(3)->y - m_pFramework->p2.bottom / 2, SRCCOPY);
 
 
-	if (isGameEnd) //PL3 추가해야함
+	if (isGameEnd) //추후 PL3 추가해야함
 	{
 		if (m_pFramework->GetPlayer(1)->iHaveCoin == TRUE)
 		{
@@ -1414,6 +1586,7 @@ void CIngameScene::Render(HDC hdc)
 	C_Numbers[TimerImage[0]].Draw(hdc, m_pFramework->GetRect().right / 2 - 90, m_pFramework->GetRect().bottom / 15, 80, 80);
 	C_Numbers[TimerImage[1]].Draw(hdc, m_pFramework->GetRect().right / 2 + 20, m_pFramework->GetRect().bottom / 15, 80, 80);
 
+	//플레이어들이 코인을 가지고 있는지 확인
 	if (m_pFramework->GetPlayer(1)->iHaveCoin)
 	{
 		CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 - 90 - 60, windowY / 15, 50, 50);
