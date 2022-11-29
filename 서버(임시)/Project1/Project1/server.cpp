@@ -61,7 +61,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             //cout << "프로토콜 넘버" << protocol_num << endl;
 
             switch (protocol_num) {
-            case 0: // ingame_key_send
+            case CS_ingame_send: // ingame_key_send
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
                     if (retval == SOCKET_ERROR) {
                         err_display("recv()");
