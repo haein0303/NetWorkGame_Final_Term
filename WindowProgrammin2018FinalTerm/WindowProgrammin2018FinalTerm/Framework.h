@@ -43,7 +43,7 @@ private:
 	bool inactive = false;
 	CGameTimer*		m_ticker = NULL;
 	
-	CObject_Player* player1 = NULL , *player2 = NULL;
+	CObject_Player* player1 = NULL , *player2 = NULL, *player3 = NULL;
 
 	std::chrono::system_clock::time_point m_current_time;
 	std::chrono::duration<double> m_timeElapsed;	// 시간이 얼마나 지났는가?

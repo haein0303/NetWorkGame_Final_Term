@@ -6,6 +6,8 @@
 
 using namespace std;
 
+#define TILE_SIZE 64
+
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
@@ -206,7 +208,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < 3; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
-        player[i].location = { 0,(float)i * 64 };
+        player[i].location = { (float) 35 * TILE_SIZE,(float)(i+15) * TILE_SIZE};
         player[i].state = Idle;
         player[i].coin = false;
         player[i].skill_cooltime1 = 0;
@@ -259,7 +261,7 @@ int main(int argc, char* argv[])
             is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
             is._player[i]._state = player[i].state;
         }
-        is._coin_location = { 1,1 };
+        is._coin_location = { 34 * 64, 15* 64 };
         is._left_time = prevTime;
         buf[0] = SC_ingame_send;
 
@@ -322,7 +324,7 @@ int main(int argc, char* argv[])
                     _is._player[i]._state = player[i].state;
                 }
                 _is._left_time = elapsedTime;
-                _is._coin_location = { 0,0 }; // 추후에 수정 필요
+                _is._coin_location = { 34 * 64 ,15 * 64 }; // 추후에 수정 필요
 
                 buf[0] = SC_ingame_send;
 
