@@ -10,8 +10,8 @@
 #include "Framework.h"
 
 //
-extern SC_Scene_Send sc;
-
+extern SC_Scene_Send g_scene_send;
+CFramework* g_pFramework;
 
 template<typename T>
 T GetUserDataPtr(HWND hWnd)
@@ -164,6 +164,7 @@ void CFramework::BuildScene()
 	arrScene[CScene::SceneTag::Select_Char] = new Scene_Charsel(CScene::SceneTag::Select_Char, this);
 	arrScene[CScene::SceneTag::Ingame] = new CIngameScene(CScene::SceneTag::Ingame, this);
 	arrScene[CScene::SceneTag::Main_Lobby]->OnCreate();
+	g_pFramework = this;
 }
 
 void CFramework::BuildPlayer(int p1, int p2, int p3)
@@ -396,6 +397,6 @@ void CFramework::ChangeScene(CScene::SceneTag tag) //추후 int tag로 변경
 {
 	m_pCurrScene = arrScene[tag];
 	//테스트
-	cout << "서버가 넘긴 씬 : " << sc._scene_num << endl;
+	cout << "서버가 넘긴 씬 : " << g_scene_send._scene_num << endl;
 	//m_pCurrScene->OnCreate();
 }

@@ -330,13 +330,26 @@ int main(int argc, char* argv[])
                 for (int i = 0; i < 3; ++i) {
                     if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
 
-                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x;
-                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x;
+                        if (player[i].ingame_key._horizontal_key == 1) {
+                            player[i].location.x += _x;
+                            player[i].state = 4;
+                        }
+                        else if (player[i].ingame_key._horizontal_key == -1) {
+                            player[i].location.x -= _x;
+                            player[i].state = 2;
+                        }
+                        if (player[i].ingame_key._vertical_key == 1) {
+                            player[i].location.y += _y;
+                            player[i].state = 3;
+                        }
+                        else if (player[i].ingame_key._vertical_key == -1) {
+                            player[i].location.y -= _y;
+                            player[i].state = 5;
+                        }
+                        //player[i].state = Walk;
 
-                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y;
-                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y;
+                        
 
-                        player[i].state = Walk;
                     }
                     else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
 

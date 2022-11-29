@@ -10,8 +10,8 @@
 //글로벌 키 데이터입니다.
 CS_ingame_send_tmp gKeyData;
 
-SC_Scene_Send sc;
-SC_Ingame_Send is;
+SC_Scene_Send g_scene_send;
+SC_Ingame_Send g_ingame_send;
 
 G_data gPldata;
 
@@ -19,8 +19,8 @@ CRITICAL_SECTION g_cs;
 
 
 #define MAX_LOADSTRING	100
-#define CLIENT_WIDTH	1920
-#define CLIENT_HEIGHT	1080
+#define CLIENT_WIDTH	1280
+#define CLIENT_HEIGHT	720
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -28,6 +28,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 int windowX = ::GetSystemMetrics(SM_CXSCREEN);  //모니터 x길이
 int windowY = ::GetSystemMetrics(SM_CYSCREEN);  //모니터 y길이
+
 CFramework myFramework;
 
 // 이 코드 모듈에 들어 있는 함수의 정방향 선언입니다.
@@ -42,11 +43,11 @@ SOCKET sock; // 소켓
 
 G_data player;
 
-
+extern CFramework* g_pFramework;
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg)
 {
-
+	
 	InitializeCriticalSection(&g_cs);
 	int retval;
 	char r_buf[BUFSIZE + 1]; // 데이터 수신 버퍼
@@ -74,17 +75,47 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		protocol_num = r_buf[0];
 
 		switch (protocol_num){
-		case SC_scene_send: //scene 정보 받을 때
-			retval = recv(sock, reinterpret_cast<char*>(&sc), sizeof(sc), MSG_WAITALL);
+		case SC_ProtocalInfo::SC_lobby_send: //몇명 접속했는지 확인, 내 번호도 확인 가능
+			retval = recv(sock, reinterpret_cast<char*>(&g_scene_send), sizeof(g_scene_send), MSG_WAITALL);
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
 			}
 			else if (retval == 0) break;
+
+
+
+			break;
+		case SC_ProtocalInfo::SC_scene_send: //scene 정보 받을 때
+			retval = recv(sock, reinterpret_cast<char*>(&g_scene_send), sizeof(g_scene_send), MSG_WAITALL);
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0) break;
+			//Scene의 넘겨주는 입력값을 확인하고, 씬을 변경합니다.
+			//g_pFramework < m_pFramework 넣어줘야됨
+			//cout << "넘겨주는 SCENE : " << sc._scene_num << endl;
+			switch (100)//sc._scene_num
+			{
+			case Scene::Char_sel:
+				g_pFramework->ChangeScene(CScene::SceneTag::Select_Char);
+				break;
+			case Scene::Main_game:
+				g_pFramework->ChangeScene(CScene::SceneTag::Ingame);
+				break;
+			case Scene::Lobby:
+				g_pFramework->ChangeScene(CScene::SceneTag::Main_Lobby);
+				break;
+			default:
+				break;
+			}  
+				
+
 			break;
 
-		case SC_ingame_send: //in game
-			retval = recv(sock, reinterpret_cast<char*>(&is), sizeof(is), MSG_WAITALL);
+		case SC_ProtocalInfo::SC_ingame_send: //in game
+			retval = recv(sock, reinterpret_cast<char*>(&g_ingame_send), sizeof(g_ingame_send), MSG_WAITALL);
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;

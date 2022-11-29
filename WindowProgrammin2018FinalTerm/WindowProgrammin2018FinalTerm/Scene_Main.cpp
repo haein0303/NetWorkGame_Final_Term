@@ -3,7 +3,7 @@
 #include "Framework.h"
 
 //
-extern SC_Scene_Send sc;
+extern SC_Scene_Send g_scene_send;
 
 CMainScene::CMainScene()
 {

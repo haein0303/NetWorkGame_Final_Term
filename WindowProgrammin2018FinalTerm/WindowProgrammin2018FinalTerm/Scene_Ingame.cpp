@@ -9,8 +9,8 @@
 extern CS_ingame_send_tmp gKeyData;
 extern CRITICAL_SECTION g_cs;
 extern SOCKET sock;
-extern SC_Ingame_Send is;
-extern SC_Scene_Send sc;
+extern SC_Ingame_Send g_ingame_send;
+extern SC_Scene_Send g_scene_send;
 
 
 CIngameScene::CIngameScene()
@@ -579,18 +579,22 @@ void CIngameScene::CharacterState()
 	//}
 
 	//p1 업데이트
-	m_pFramework->GetPlayer(1)->x = (int)is._player[0]._location.x;
-	m_pFramework->GetPlayer(1)->y = (int)is._player[0]._location.y;
+	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[0]._location.x;
+	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[0]._location.y;
+	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[0]._state;
+	
 
 	//p2 업데이트
-	m_pFramework->GetPlayer(2)->x = (int)is._player[1]._location.x;
-	m_pFramework->GetPlayer(2)->y = (int)is._player[1]._location.x;
+	m_pFramework->GetPlayer(2)->x = (int)g_ingame_send._player[1]._location.x;
+	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[1]._location.x;
+	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[1]._state;
 
 	//p3 업데이트
-	m_pFramework->GetPlayer(3)->x = (int)is._player[2]._location.x;
-	m_pFramework->GetPlayer(3)->y = (int)is._player[2]._location.x;
+	m_pFramework->GetPlayer(3)->x = (int)g_ingame_send._player[2]._location.x;
+	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[2]._location.x;
+	m_pFramework->GetPlayer(3)->CharacterStatus = g_ingame_send._player[3]._state;
 
-	cout << "위치: " << is._player[0]._location.x << ", " << is._player[0]._location.y << endl;
+	//cout << "위치: " << g_ingame_send._player[0]._location.x << ", " << g_ingame_send._player[0]._location.y << endl;
 	//cout << "위치: " << tx2 << ", " << ty2 << endl;
 	//cout << "위치: " << tx3 << ", " << ty3 << endl;
 
@@ -1327,7 +1331,7 @@ void CIngameScene::Update(float fTimeElapsed)
 		}
 	}
 	
-	if (sc._scene_num == Main_game) //if(isGameEnd == FALSE) 
+	if (g_scene_send._scene_num == Main_game) //if(isGameEnd == FALSE) 
 	{
 		KeyState();
 		CharacterState();
