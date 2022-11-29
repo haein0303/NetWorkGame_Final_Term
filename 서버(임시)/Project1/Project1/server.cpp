@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    while (cnt != 1) {
+    while (cnt != 2) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
