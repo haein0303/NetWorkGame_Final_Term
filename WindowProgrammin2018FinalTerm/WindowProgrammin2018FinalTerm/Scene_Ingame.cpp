@@ -11,6 +11,8 @@ extern CRITICAL_SECTION g_cs;
 extern SOCKET sock;
 extern SC_Ingame_Send is;
 
+int tx, ty;
+
 CIngameScene::CIngameScene()
 {
 
@@ -114,6 +116,8 @@ void CIngameScene::BuildObjects()
 
 void CIngameScene::KeyState()
 {
+
+	////cout << "위치: " << tx << ", " << ty << endl;
 
 	if (keydown != TRUE)
 	{
@@ -227,6 +231,10 @@ void CIngameScene::KeyState()
 					isp2LockDown = FALSE;
 					p2key = TRUE;
 				}
+				tx = is._player->_location.x;
+				ty = is._player->_location.y;
+				m_pFramework->GetPlayer(1)->x = tx;
+				m_pFramework->GetPlayer(1)->y = ty;
 				switch (m_pFramework->GetPlayer(2)->Old_CharStat)
 				{
 				case 2:
@@ -562,6 +570,7 @@ void CIngameScene::CharacterState()
 {
 	if (keydown)
 	{
+
 		// 0 1 2 3 p2 이동 // 4 5 6 p2 스킬 공격 대시 // 7 8 9 10 p1 이동 // 11 12 13 p1 스킬 공격 대시
 		//p2 이동
 		if (keydownList[1])
@@ -778,19 +787,17 @@ void CIngameScene::CharacterState()
 
 		////////////////// p1 이동 ///////////////////
 		
-		int tx, ty;
-		tx = int(is._player->_location.x);
-		ty = int(is._player->_location.y);
 
 		if (keydownList[8]) //위
 		{
 			//서버에서 넘어온 위치 확인
 			//cout << "위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
 
+			cout << "위치: " << tx << ", " << ty << endl;
+			tx = is._player->_location.x;
+			ty = is._player->_location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
-
-			cout << "위치: " << tx << ", " << ty << endl;
 
 			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 			{
@@ -807,27 +814,15 @@ void CIngameScene::CharacterState()
 				if (m_pFramework->GetPlayer(1)->y > 50)
 					m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
 			}
-
-			//if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
-			//{
-			//	if (m_pFramework->GetPlayer(1)->y > 50)
-			//	m_pFramework->GetPlayer(1)->y -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
-			//	m_pFramework->GetPlayer(1)->WalkingTimerTick++;
-			//}
-			//else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 - 30) / 64] == 2)
-			//{
-
-			//}
-			//else
-			//{
-			//	if (m_pFramework->GetPlayer(1)->y > 50)
-			//	m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
-			//}
 			p1key = true;
 			m_pFramework->GetPlayer(1)->CharacterStatus = 3;
 		}
 		if (keydownList[7])
 		{
+
+			cout << "위치: " << tx << ", " << ty << endl;
+			tx = is._player->_location.x;
+			ty = is._player->_location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
@@ -851,6 +846,10 @@ void CIngameScene::CharacterState()
 		}
 		if (keydownList[10])
 		{
+
+			cout << "위치: " << tx << ", " << ty << endl;
+			tx = is._player->_location.x;
+			ty = is._player->_location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
@@ -874,6 +873,10 @@ void CIngameScene::CharacterState()
 		}
 		if (keydownList[9])
 		{
+
+			cout << "위치: " << tx << ", " << ty << endl;
+			tx = is._player->_location.x;
+			ty = is._player->_location.y;
 			m_pFramework->GetPlayer(1)->x = tx;
 			m_pFramework->GetPlayer(1)->y = ty;
 
