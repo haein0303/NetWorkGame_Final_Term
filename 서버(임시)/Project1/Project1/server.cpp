@@ -282,8 +282,8 @@ int main(int argc, char* argv[])
 
             elapsedTime = prevTime - pip.count();
 
-            cout << elapsedTime << endl;
-            cout << pip.count() << endl;
+            //cout << elapsedTime << endl;
+            //cout << pip.count() << endl;
 
             //for (int i = 0; i < 3; ++i) {
             //    //대기
@@ -325,6 +325,12 @@ int main(int argc, char* argv[])
                 }
                 _is._left_time = elapsedTime;
                 _is._coin_location = { 34 * 64 ,15 * 64 }; // 추후에 수정 필요
+
+                for (int i = 0; i < 1; ++i) {
+                    cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
+
+                }
+
 
                 buf[0] = SC_ingame_send;
 

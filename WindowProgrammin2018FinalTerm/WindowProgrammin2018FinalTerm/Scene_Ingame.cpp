@@ -518,23 +518,25 @@ void CIngameScene::KeyState()
 
 		//스킬키는 초기화
 		gKeyData._skill_key = 0;
+		gKeyData._horizontal_key = 0;
+		gKeyData._vertical_key = 0;
 
-		if (keydownList[0]) {//LEFT
+		if (keydownList[7]) {//LEFT
 			gKeyData._horizontal_key = -1;
 		}
-		if (keydownList[2]) {//RIGHT
+		if (keydownList[9]) {//RIGHT
 			gKeyData._horizontal_key = 1;
 		}
-		if (keydownList[2]&& keydownList[0]) {//동시
+		if (keydownList[7]&& keydownList[9]) {//동시
 			gKeyData._horizontal_key = 0;
 		}
-		if (keydownList[1]) {//UP
+		if (keydownList[10]) {//UP
 			gKeyData._vertical_key = 1;
 		}
-		if (keydownList[3]) {//DOWN
+		if (keydownList[8]) {//DOWN
 			gKeyData._vertical_key = -1;
 		}
-		if (keydownList[1] && keydownList[3]) {//동시
+		if (keydownList[8] && keydownList[10]) {//동시
 			gKeyData._vertical_key = 0;
 		}
 		if (keydownList[4]) {
