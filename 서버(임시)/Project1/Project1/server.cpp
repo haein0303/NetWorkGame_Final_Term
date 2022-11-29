@@ -46,8 +46,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             my_num = i;
         }
     }
-    float _x = 20;
-    float _y = 20;
 
     while (1) {
         while (1) {
@@ -63,37 +61,13 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             switch (protocol_num) {
             case CS_ingame_send: // ingame_key_send
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
+                player[my_num].ingame_key = ingame_key;
                     if (retval == SOCKET_ERROR) {
                         err_display("recv()");
                         break;
                     }
                     else if (retval == 0) {
                         break;
-                    }
-                    if (ingame_key._skill_key == 0) { // 스킬 x 이동만
-
-                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += _x;
-                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= _x;
-
-                        if (ingame_key._vertical_key == 1) player[my_num].location.y += _y;
-                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= _y;
-
-                        player[my_num].state = Walk;
-                    }
-                    else if (ingame_key._skill_key == 1) { // 1번 스킬
-
-                    }
-                    else if (ingame_key._skill_key == 2) { // 공격
-
-                    }
-                    else if (ingame_key._skill_key == 3) { // 대쉬
-                        if (ingame_key._horizontal_key == 1) player[my_num].location.x += _x*10;
-                        else if (ingame_key._horizontal_key == -1) player[my_num].location.x -= _x*10;
-
-                        if (ingame_key._vertical_key == 1) player[my_num].location.y += _y*10;
-                        else if (ingame_key._vertical_key == -1) player[my_num].location.y -= _y*10;
-
-                        player[my_num].state = Dash;
                     }
                 break;
 
@@ -172,6 +146,38 @@ int main(int argc, char* argv[])
     //이벤트 생성
     for (int i = 0; i < 3; ++i) {
         hRecvEvent[i] = CreateEvent(NULL, FALSE, TRUE, NULL);
+    }
+
+    char Inbuff[20000] = { 0 };
+    DWORD read_size = 20000;
+    DWORD c = 20000;
+
+    HANDLE hFile;
+    int Tileindex[100][100] = { 0 };
+
+    hFile = CreateFile(L"map.txt", GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, 0);
+    memset(Inbuff, 0, 99 * sizeof(WCHAR));
+    ReadFile(hFile, Inbuff, c, &read_size, NULL); // hFile에서 size 만큼 읽어 InBuff에 저장
+    //Inbuff[c - 1] = '\0';
+    for (int i = 0; i < 100; i++)
+    {
+        for (int j = 0; j < 100; j++)
+        {
+            if (Inbuff[j + i * 100] >= 48 && Inbuff[j + i * 100] <= 50)
+                Tileindex[j][i] = Inbuff[j + i * 100] - 48;
+            switch (Tileindex[j][i])
+            {
+            case 0:
+                Tileindex[j][i] = 2;
+                break;
+            case 1:
+                Tileindex[j][i] = 0;
+                break;
+            case 2:
+                Tileindex[j][i] = 1;
+                break;
+            }
+        }
     }
 
     while (cnt != 1) {
@@ -273,6 +279,9 @@ int main(int argc, char* argv[])
 
         auto start = chrono::system_clock::now();
 
+        float _x = 20;
+        float _y = 20;
+
         // while 문에서 매인 게임 문 실행
         while (true)
         {
@@ -302,6 +311,31 @@ int main(int argc, char* argv[])
             else {
                 // 충돌 처리 및 공용 데이터 업데이트
                 for (int i = 0; i < 3; ++i) {
+                    if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
+
+                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x;
+                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x;
+
+                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y;
+                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y;
+
+                        player[i].state = Walk;
+                    }
+                    else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
+
+                    }
+                    else if (player[i].ingame_key._skill_key == 2) { // 공격
+
+                    }
+                    else if (player[i].ingame_key._skill_key == 3) { // 대쉬
+                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 10;
+                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 10;
+
+                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 10;
+                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 10;
+
+                        player[i].state = Dash;
+                    }
                     // 맵 충돌 확인
 
                     // 공격 충돌 확인

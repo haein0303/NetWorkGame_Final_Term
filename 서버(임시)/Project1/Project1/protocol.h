@@ -55,6 +55,12 @@ struct char_info {
     RECT        attack_area; //공격의 범위
 };
 
+struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
+    short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
+    short _vertical_key;    // -1 : down || 0 : NULL || 1 : up
+    short _skill_key;       //  0 : NULL || 1 : skill || 2 : attack || 3 : dash 
+};
+
 // G_data 배열로 실제 데이터 관리, character_data는 네트워크 송수신시 사용
 struct G_data {
     char_info        char_info;
@@ -68,6 +74,7 @@ struct G_data {
     bool	    attack_on;
     bool   	skill_on;
     int my_num;
+    CS_ingame_send_tmp ingame_key;
 };
 
 
@@ -131,11 +138,7 @@ struct CS_ingame_Send {
     int 		vkey; // GetAsyncKeyState(vkey)로 동시키입력 여부를 확인하기 위한 변수 
     SHORT	pressedVkey;
 };
-struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
-    short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
-    short _vertical_key;    // -1 : down || 0 : NULL || 1 : up
-    short _skill_key;       //  0 : NULL || 1 : skill || 2 : attack || 3 : dash 
-};
+
 struct CS_lobby_send {
     CS_ingame_Send      _input;
     bool		        _ready;
