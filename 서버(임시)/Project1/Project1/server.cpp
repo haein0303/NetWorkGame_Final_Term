@@ -279,8 +279,8 @@ int main(int argc, char* argv[])
 
         auto start = chrono::system_clock::now();
 
-        float _x = 10;
-        float _y = 10;
+        float _x = 1;
+        float _y = 1;
 
         // while 문에서 매인 게임 문 실행
         while (true)
