@@ -29,6 +29,7 @@ int calc_prev_thread(int i) {
 //Recv 쓰레드
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
+
     // 데이터 통신에 사용할 변수
     int retval;
     SOCKET client_sock = (SOCKET)arg;
@@ -61,17 +62,25 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             switch (protocol_num) {
             case CS_ingame_send: // ingame_key_send
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
+                //cout << "Recv Thread : " << my_num << " is Work" << endl;
+                WaitForSingleObject(hRecvEvent[my_num], INFINITE);
                 player[my_num].ingame_key = ingame_key;
-                    if (retval == SOCKET_ERROR) {
-                        err_display("recv()");
-                        break;
-                    }
-                    else if (retval == 0) {
-                        break;
-                    }
+                SetEvent(hRootEvent);
                 break;
 
             }
+
+            //에러검사
+            if (retval == SOCKET_ERROR) {
+                err_display("recv()");
+                break;
+            }
+            else if (retval == 0) {
+                break;
+            }
+
+           
+           
         }
 
         // 클라이언트와 데이터 통신
@@ -145,9 +154,9 @@ int main(int argc, char* argv[])
 
     //이벤트 생성
     for (int i = 0; i < 3; ++i) {
-        hRecvEvent[i] = CreateEvent(NULL, FALSE, TRUE, NULL);
+        hRecvEvent[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
     }
-
+    hRootEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     char Inbuff[20000] = { 0 };
     DWORD read_size = 20000;
     DWORD c = 20000;
@@ -180,7 +189,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    while (cnt != 2) {
+    while (cnt != 1) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -279,8 +288,8 @@ int main(int argc, char* argv[])
 
         auto start = chrono::system_clock::now();
 
-        float _x = 1;
-        float _y = 1;
+        float _x = 10;
+        float _y = 10;
 
         // while 문에서 매인 게임 문 실행
         while (true)
@@ -301,6 +310,14 @@ int main(int argc, char* argv[])
             //    event_retval = WaitForSingleObject(hRootEvent, INFINITE);
             //    if (event_retval != WAIT_OBJECT_0) break;
             //}
+
+            for (int i = 0; i < cnt; ++i) {
+                //리시브 스레드 깨우기
+                SetEvent(hRecvEvent[i]);
+                //cout << "main Thread : " << i << " is Work" << endl;
+                //나 기다리기
+                WaitForSingleObject(hRootEvent, 10);//오래기다릴 필요는 없음,
+            }
 
 
             if (elapsedTime <= 0) {
@@ -391,7 +408,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < 3; ++i) {
         CloseHandle(hRecvEvent[i]);
     }
-
+    CloseHandle(hRootEvent);
     // 윈속 종료
     WSACleanup();
     return 0;

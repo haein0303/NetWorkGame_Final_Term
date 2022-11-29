@@ -559,7 +559,7 @@ void CIngameScene::KeyState()
 		if (retval == SOCKET_ERROR) {
 			//err_display("send()");
 		}
-		
+		cout << "SEND" << endl;
 	}
 	
 
