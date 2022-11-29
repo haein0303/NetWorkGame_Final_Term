@@ -372,6 +372,13 @@ int main(int argc, char* argv[])
                     send(client_sock[i], buf, BUFSIZE, 0);
                     send(client_sock[i], reinterpret_cast<char*>(&_is), sizeof(_is), 0);
                 }
+
+                for (int i = 0; i < cnt; i++) {
+                    player[i].ingame_key._horizontal_key = 0;
+                    player[i].ingame_key._skill_key = 0;
+                    player[i].ingame_key._vertical_key = 0;
+                    player[i].state = 0;
+                }
             }
         }
 
