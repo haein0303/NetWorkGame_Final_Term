@@ -9,6 +9,7 @@
 extern CS_ingame_send_tmp gKeyData;
 extern CRITICAL_SECTION g_cs;
 extern SOCKET sock;
+extern SC_Ingame_Send is;
 
 CIngameScene::CIngameScene()
 {
@@ -142,29 +143,29 @@ void CIngameScene::KeyState()
 					isp2LockDown = TRUE;
 				}
 			}
-			else //p2 이동 
+			else //p2 이동 -> p1 이동 수정
 			{
 				if (GetAsyncKeyState(VK_UP) & 0x8000)
 				{
-					keydownList[1] = TRUE;
+					keydownList[8] = TRUE;
 
 					keydown = TRUE;
 				}
 				if (GetAsyncKeyState(VK_LEFT) & 0x8000)
 				{
-					keydownList[0] = TRUE;
+					keydownList[7] = TRUE;
 
 					keydown = TRUE;
 				}
 				if (GetAsyncKeyState(VK_DOWN) & 0x8000)
 				{
-					keydownList[3] = TRUE;
+					keydownList[10] = TRUE;
 
 					keydown = TRUE;
 				}
 				if (GetAsyncKeyState(VK_RIGHT) & 0x8000)
 				{
-					keydownList[2] = TRUE;
+					keydownList[9] = TRUE;
 
 					keydown = TRUE;
 				}
@@ -336,25 +337,25 @@ void CIngameScene::KeyState()
 			{
 				if (GetAsyncKeyState(0x46) & 0x8000) // f
 				{
-					keydownList[7] = TRUE;
+					keydownList[0] = TRUE;
 
 					keydown = TRUE;
 				}
 				if (GetAsyncKeyState(0x54) & 0x8000) // t
 				{
-					keydownList[8] = TRUE;
+					keydownList[1] = TRUE;
 
 					keydown = TRUE;
 				}
 				if (GetAsyncKeyState(0x48) & 0x8000) // h
 				{
-					keydownList[9] = TRUE;
+					keydownList[2] = TRUE;
 
 					keydown = TRUE;
 				}
 				if (GetAsyncKeyState(0x47) & 0x8000) // g
 				{
-					keydownList[10] = TRUE;
+					keydownList[3] = TRUE;
 
 					keydown = TRUE;
 				}
@@ -499,7 +500,7 @@ void CIngameScene::KeyState()
 	char s_buf[BUFSIZE + 1]; // 데이터 수신 버퍼
 	int retval;
 	if(keydown == TRUE)
-	{		// 0 1 2 3 p2 이동 4 5 6 p2 스킬 공격 대시 7 8 9 10 p1 이동 11 12 13 p1 스킬 공격 대시
+	{		// 0 1 2 3 p1 이동 4 5 6 p2 스킬 공격 대시 |||  7 8 9 10 p2 이동 11 12 13 p1 스킬 공격 대시
 
 		//struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
 		//	short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
@@ -561,9 +562,11 @@ void CIngameScene::CharacterState()
 {
 	if (keydown)
 	{
-		// 0 1 2 3 p2 이동 4 5 6 p2 스킬 공격 대시 7 8 9 10 p1 이동 11 12 13 p1 스킬 공격 대시
+		// 0 1 2 3 p2 이동 // 4 5 6 p2 스킬 공격 대시 // 7 8 9 10 p1 이동 // 11 12 13 p1 스킬 공격 대시
+		//p2 이동
 		if (keydownList[1])
 		{
+
 			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(2)->y > 50)
@@ -583,8 +586,11 @@ void CIngameScene::CharacterState()
 			m_pFramework->GetPlayer(2)->CharacterStatus = 3;
 
 		}
-		if (keydownList[0])
+		if (keydownList[0]) // ← 이동
 		{
+			//서버에서 넘어온 위치 확인
+			//cout <<"위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
+
 			if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(2)->x > 50)
@@ -602,6 +608,8 @@ void CIngameScene::CharacterState()
 			}
 			p2key = true;
 			m_pFramework->GetPlayer(2)->CharacterStatus = 2;
+
+
 
 		}
 		if (keydownList[3])
@@ -767,12 +775,27 @@ void CIngameScene::CharacterState()
 				}
 			}
 		}
-		if (keydownList[8])
+
+		////////////////// p1 이동 ///////////////////
+		
+		int tx, ty;
+		tx = int(is._player->_location.x);
+		ty = int(is._player->_location.y);
+
+		if (keydownList[8]) //위
 		{
+			//서버에서 넘어온 위치 확인
+			//cout << "위치: " << is._player->_location.x << ", " << is._player->_location.y << endl;
+
+			m_pFramework->GetPlayer(1)->x = tx;
+			m_pFramework->GetPlayer(1)->y = ty;
+
+			cout << "위치: " << tx << ", " << ty << endl;
+
 			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(1)->y > 50)
-				m_pFramework->GetPlayer(1)->y -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
+					m_pFramework->GetPlayer(1)->y -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
 				m_pFramework->GetPlayer(1)->WalkingTimerTick++;
 			}
 			else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 - 30) / 64] == 2)
@@ -782,13 +805,32 @@ void CIngameScene::CharacterState()
 			else
 			{
 				if (m_pFramework->GetPlayer(1)->y > 50)
-				m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
+					m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
 			}
+
+			//if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
+			//{
+			//	if (m_pFramework->GetPlayer(1)->y > 50)
+			//	m_pFramework->GetPlayer(1)->y -= (15 - m_pFramework->GetPlayer(1)->iHaveCoin * 4);
+			//	m_pFramework->GetPlayer(1)->WalkingTimerTick++;
+			//}
+			//else if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60 - 30) / 64] == 2)
+			//{
+
+			//}
+			//else
+			//{
+			//	if (m_pFramework->GetPlayer(1)->y > 50)
+			//	m_pFramework->GetPlayer(1)->y -= (10 - m_pFramework->GetPlayer(1)->iHaveCoin * 2);
+			//}
 			p1key = true;
 			m_pFramework->GetPlayer(1)->CharacterStatus = 3;
 		}
 		if (keydownList[7])
 		{
+			m_pFramework->GetPlayer(1)->x = tx;
+			m_pFramework->GetPlayer(1)->y = ty;
+
 			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(1)->x > 50)
@@ -809,6 +851,9 @@ void CIngameScene::CharacterState()
 		}
 		if (keydownList[10])
 		{
+			m_pFramework->GetPlayer(1)->x = tx;
+			m_pFramework->GetPlayer(1)->y = ty;
+
 			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(1)->y < 6350)
@@ -829,6 +874,9 @@ void CIngameScene::CharacterState()
 		}
 		if (keydownList[9])
 		{
+			m_pFramework->GetPlayer(1)->x = tx;
+			m_pFramework->GetPlayer(1)->y = ty;
+
 			if (Tileindex[m_pFramework->GetPlayer(1)->x / 64][(m_pFramework->GetPlayer(1)->y + 60) / 64] == 1)
 			{
 				if (m_pFramework->GetPlayer(1)->x < 6350)

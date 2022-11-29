@@ -12,7 +12,6 @@
 //
 extern SC_Scene_Send sc;
 
-using namespace std;
 
 template<typename T>
 T GetUserDataPtr(HWND hWnd)

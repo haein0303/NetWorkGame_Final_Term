@@ -9,7 +9,12 @@
 
 //글로벌 키 데이터입니다.
 CS_ingame_send_tmp gKeyData;
+
 SC_Scene_Send sc;
+SC_Ingame_Send is;
+
+G_data gPldata;
+
 CRITICAL_SECTION g_cs;
 
 
@@ -76,7 +81,15 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				break;
 			}
 			else if (retval == 0) break;
+			break;
 
+		case SC_ingame_send: //in game
+			retval = recv(sock, reinterpret_cast<char*>(&is), sizeof(is), MSG_WAITALL);
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0) break;
 			break;
 		}
 		
