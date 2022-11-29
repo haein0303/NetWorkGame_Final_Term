@@ -279,8 +279,8 @@ int main(int argc, char* argv[])
 
         auto start = chrono::system_clock::now();
 
-        float _x = 20;
-        float _y = 20;
+        float _x = 10;
+        float _y = 10;
 
         // while 문에서 매인 게임 문 실행
         while (true)
@@ -328,11 +328,11 @@ int main(int argc, char* argv[])
 
                     }
                     else if (player[i].ingame_key._skill_key == 3) { // 대쉬
-                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 10;
-                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 10;
+                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
+                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 5;
 
-                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 10;
-                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 10;
+                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 5;
+                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 5;
 
                         player[i].state = Dash;
                     }
