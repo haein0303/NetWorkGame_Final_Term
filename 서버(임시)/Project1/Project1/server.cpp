@@ -377,7 +377,7 @@ int main(int argc, char* argv[])
                     player[i].ingame_key._horizontal_key = 0;
                     player[i].ingame_key._skill_key = 0;
                     player[i].ingame_key._vertical_key = 0;
-                    player[i].state = 0;
+                    player[i].state = Idle;
                 }
             }
         }
