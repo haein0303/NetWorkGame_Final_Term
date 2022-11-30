@@ -9,7 +9,7 @@ using namespace std;
 #define TILE_SIZE 64
 
 #define SERVERPORT 9000
-#define BUFSIZE    512
+#define BUFSIZE    10
 
 G_data player[3];
 
@@ -161,6 +161,7 @@ int main(int argc, char* argv[])
     DWORD read_size = 20000;
     DWORD c = 20000;
 
+    // 맵 데이터 로드
     HANDLE hFile;
     int Tileindex[100][100] = { 0 };
 
@@ -188,6 +189,8 @@ int main(int argc, char* argv[])
             }
         }
     }
+
+    CloseHandle(hFile);
 
     while (cnt != 1) {
         // accept()
@@ -223,7 +226,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < 3; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
-        player[i].location = { (float) 35 * TILE_SIZE,(float)(i+15) * TILE_SIZE};
+        player[i].location = { 35 * TILE_SIZE, (i+15) * TILE_SIZE};
         player[i].state = Idle;
         player[i].coin = false;
         player[i].skill_cooltime1 = 0;
@@ -288,8 +291,8 @@ int main(int argc, char* argv[])
 
         auto start = chrono::system_clock::now();
 
-        float _x = 10;
-        float _y = 10;
+        int _x = 10;
+        int _y = 10;
 
         // while 문에서 매인 게임 문 실행
         while (true)
@@ -325,37 +328,79 @@ int main(int argc, char* argv[])
                 // 바로 종료 안하고 게임 끝나는 화면으로 전환 할수도있음
             }
 
-            else {
+            else { // 게임 업데이트
                 // 충돌 처리 및 공용 데이터 업데이트
-                for (int i = 0; i < 3; ++i) {
+                for (int i = 0; i < cnt; ++i) {
                     if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
+                        if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
+                            if (Tileindex[player[i].location.x + 60 / 64][player[i].location.y / 64] == 1) // 가속발판
+                                player[i].location.x += _x + 5;
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else
+                                player[i].location.x += _x;
 
-                        if (player[i].ingame_key._horizontal_key == 1) {
-                            player[i].location.x += _x;
-                            player[i].state = 4;
+                            player[i].charLook = 4;
                         }
-                        else if (player[i].ingame_key._horizontal_key == -1) {
-                            player[i].location.x -= _x;
-                            player[i].state = 2;
-                        }
-                        if (player[i].ingame_key._vertical_key == 1) {
-                            player[i].location.y += _y;
-                            player[i].state = 3;
-                        }
-                        else if (player[i].ingame_key._vertical_key == -1) {
-                            player[i].location.y -= _y;
-                            player[i].state = 5;
-                        }
-                        //player[i].state = Walk;
+                        else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
+                            if (Tileindex[player[i].location.x - 60 / 64][player[i].location.y / 64] == 1) // 가속발판
+                                player[i].location.x -= _x - 5;
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else // 일반 발판
+                                player[i].location.x -= _x;
 
-                        
+                            player[i].charLook = 2;
+                        }
+                        if (player[i].ingame_key._vertical_key == 1 && player[i].location.y > 50) {
+                            if (Tileindex[player[i].location.x / 64][player[i].location.y - 60 / 64] == 1) // 가속발판
+                                player[i].location.y -= _y - 5;
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else // 일반 발판
+                                player[i].location.y -= _y;
 
+                            player[i].charLook = 3;
+                        }
+                        else if (player[i].ingame_key._vertical_key == -1 && player[i].location.y < 6350) {
+                            if (Tileindex[player[i].location.x / 64][player[i].location.y + 60 / 64] == 1) // 가속발판
+                                player[i].location.y += _y + 5;
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else // 일반 발판
+                                player[i].location.y += _y;
+
+                            player[i].charLook = 5;
+                        }
+                        player[i].state = Walk;
                     }
                     else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
+                        if (player[i].ingame_key._horizontal_key == 1) {
+                            player[i].charLook = 4;
+                        }
+                        else if (player[i].ingame_key._horizontal_key == -1) {
+                            player[i].charLook = 2;
+                        }
+                        if (player[i].ingame_key._vertical_key == 1) {
+                            player[i].charLook = 3;
+                        }
+                        else if (player[i].ingame_key._vertical_key == -1) {
+                            player[i].charLook = 5;
+                        }
 
+                        player[i].state = Skill;
                     }
                     else if (player[i].ingame_key._skill_key == 2) { // 공격
+                        if (player[i].ingame_key._horizontal_key == 1) {
+                            player[i].charLook = 4;
+                        }
+                        else if (player[i].ingame_key._horizontal_key == -1) {
+                            player[i].charLook = 2;
+                        }
+                        if (player[i].ingame_key._vertical_key == 1) {
+                            player[i].charLook = 3;
+                        }
+                        else if (player[i].ingame_key._vertical_key == -1) {
+                            player[i].charLook = 5;
+                        }
 
+                        player[i].state = Attack;
                     }
                     else if (player[i].ingame_key._skill_key == 3) { // 대쉬
                         if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
@@ -366,7 +411,6 @@ int main(int argc, char* argv[])
 
                         player[i].state = Dash;
                     }
-                    // 맵 충돌 확인
 
                     // 공격 충돌 확인
                 }
@@ -390,9 +434,8 @@ int main(int argc, char* argv[])
                 _is._left_time = elapsedTime;
                 _is._coin_location = { 34 * 64 ,15 * 64 }; // 추후에 수정 필요
 
-                for (int i = 0; i < 1; ++i) {
+                for (int i = 0; i < cnt; ++i) {
                     cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
-
                 }
 
 

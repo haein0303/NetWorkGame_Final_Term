@@ -40,8 +40,8 @@ enum CS_ProtocalInfo { //현재 전송하는 정보
 };
 
 struct fvec2 {	//플레이어 좌표 구조체
-    float	x;
-    float	y;
+    int	x;
+    int	y;
 };
 
 //ver3.0 : add
