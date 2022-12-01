@@ -11,19 +11,19 @@ using namespace std;
 #define SERVERPORT 9000
 #define BUFSIZE    10
 
-G_data player[3];
+G_data player[2];
 
 //HANDLE hRcev1Event, hRcev2Event, hRcev3Event; // 이벤트
-HANDLE hRecvEvent[3];
+HANDLE hRecvEvent[2];
 HANDLE hRootEvent;
 
 //자신의 다음 쓰레드의 번호를 반환
 int calc_next_thread(int i) {
-    return (i + 1) % 3;
+    return (i + 1) % 2;
 }
 //자신의 이전 쓰레드의 번호를 반환
 int calc_prev_thread(int i) {
-    return (i + 2) % 3;
+    return (i + 2) % 2;
 }
 
 //Recv 쓰레드
@@ -42,7 +42,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
     int my_num = 0; //자기 자신의 배정 번호를 저장
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
         if (player[i].my_num == GetCurrentThreadId()) {
             my_num = i;
         }
@@ -144,16 +144,16 @@ int main(int argc, char* argv[])
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
     // 데이터 통신에 사용할 변수
-    SOCKET client_sock[3];
+    SOCKET client_sock[2];
     struct sockaddr_in clientaddr;
     int addrlen;
     char buf[BUFSIZE + 1]; // 가변 길이 데이터
-    HANDLE hThread[3];
+    HANDLE hThread[2];
 
     DWORD event_retval; //결과 저장용
 
     //이벤트 생성
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 2; ++i) {
         hRecvEvent[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
     }
     hRootEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
@@ -192,7 +192,7 @@ int main(int argc, char* argv[])
 
     CloseHandle(hFile);
 
-    while (cnt != 1) {
+    while (cnt != 2) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
     }
 
     // 임시 플레이어 데이터 세팅
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 2; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
         player[i].location = { 35 * TILE_SIZE, (i+15) * TILE_SIZE};
@@ -270,7 +270,7 @@ int main(int argc, char* argv[])
 
         // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
         SC_Ingame_Send is;
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 2; ++i) {
             is._player[i]._char_type = player[i].charType;
             is._player[i]._coin = player[i].coin;
             is._player[i]._location = player[i].location;
@@ -335,7 +335,9 @@ int main(int argc, char* argv[])
                         if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
                             if (Tileindex[player[i].location.x + 60 / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x += _x + 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                                player[i].location.x += _x;
+                            } // 벽
                             else
                                 player[i].location.x += _x;
 
@@ -344,7 +346,9 @@ int main(int argc, char* argv[])
                         else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
                             if (Tileindex[player[i].location.x - 60 / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x -= _x - 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                                player[i].location.x -= _x;
+                            } // 벽
                             else // 일반 발판
                                 player[i].location.x -= _x;
 
@@ -353,7 +357,9 @@ int main(int argc, char* argv[])
                         if (player[i].ingame_key._vertical_key == 1 && player[i].location.y > 50) {
                             if (Tileindex[player[i].location.x / 64][player[i].location.y - 60 / 64] == 1) // 가속발판
                                 player[i].location.y -= _y - 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                                player[i].location.y -= _y;
+                            } // 벽
                             else // 일반 발판
                                 player[i].location.y -= _y;
 
@@ -362,7 +368,9 @@ int main(int argc, char* argv[])
                         else if (player[i].ingame_key._vertical_key == -1 && player[i].location.y < 6350) {
                             if (Tileindex[player[i].location.x / 64][player[i].location.y + 60 / 64] == 1) // 가속발판
                                 player[i].location.y += _y + 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {} // 벽
+                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                                player[i].location.y += _y;
+                            } // 벽
                             else // 일반 발판
                                 player[i].location.y += _y;
 
@@ -416,13 +424,13 @@ int main(int argc, char* argv[])
                 }
 
                 // 쿨타임 업데이트
-                for (int i = 0; i < 3; ++i) {
+                for (int i = 0; i < 2; ++i) {
                     // 시간 값 확인 후 지난 시간 만큼 남은 쿨타임에서 감소
                 }
 
                 // 업데이트 된 데이터 송신
                 SC_Ingame_Send _is;
-                for (int i = 0; i < 3; ++i) {
+                for (int i = 0; i < 2; ++i) {
                     _is._player[i]._char_type = player[i].charType;
                     _is._player[i]._coin = player[i].coin;
                     _is._player[i]._location = player[i].location;
@@ -461,7 +469,7 @@ int main(int argc, char* argv[])
     closesocket(listen_sock);
 
     // 이벤트 제거
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 2; ++i) {
         CloseHandle(hRecvEvent[i]);
     }
     CloseHandle(hRootEvent);
