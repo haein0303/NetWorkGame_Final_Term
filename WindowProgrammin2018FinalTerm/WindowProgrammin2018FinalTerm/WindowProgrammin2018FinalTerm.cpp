@@ -12,6 +12,7 @@ CS_ingame_send_tmp gKeyData;
 
 SC_Scene_Send g_scene_send;
 SC_Ingame_Send g_ingame_send;
+SC_Lobby_Send g_lobby_send;
 
 G_data gPldata;
 
@@ -76,7 +77,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 		switch (protocol_num){
 		case SC_ProtocalInfo::SC_lobby_send: //몇명 접속했는지 확인, 내 번호도 확인 가능
-			retval = recv(sock, reinterpret_cast<char*>(&g_scene_send), sizeof(g_scene_send), MSG_WAITALL);
+			retval = recv(sock, reinterpret_cast<char*>(&g_lobby_send), sizeof(g_lobby_send), MSG_WAITALL);
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;

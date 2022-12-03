@@ -9,7 +9,7 @@ using namespace std;
 #define TILE_SIZE 64
 
 #define SERVERPORT 9000
-#define BUFSIZE    10
+#define BUFSIZE    512
 
 G_data player[2];
 
@@ -150,6 +150,8 @@ int main(int argc, char* argv[])
     char buf[BUFSIZE + 1]; // 가변 길이 데이터
     HANDLE hThread[2];
 
+    ZeroMemory(buf, BUFSIZE);
+
     DWORD event_retval; //결과 저장용
 
     //이벤트 생성
@@ -222,6 +224,8 @@ int main(int argc, char* argv[])
         }
     }
 
+    ZeroMemory(buf, BUFSIZE);
+
     // 임시 플레이어 데이터 세팅
     for (int i = 0; i < 2; ++i) {
         player[i].charType = i;
@@ -256,6 +260,31 @@ int main(int argc, char* argv[])
 
     // 메인 게임 부분
     {
+        
+
+        // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
+        SC_Ingame_Send is;
+        for (int i = 0; i < cnt; ++i) {
+            is._player[i]._char_type = player[i].charType;
+            is._player[i]._coin = player[i].coin;
+            is._player[i]._location = player[i].location;
+            is._player[i]._look = player[i].charLook;
+            is._player[i]._skill_cooltime1 = player[i].skill_cooltime1;
+            is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
+            is._player[i]._state = player[i].state;
+        }
+        is._coin_location = { 34 * 64, 15 * 64 };
+        is._left_time = prevTime;
+        buf[0] = SC_ingame_send;
+
+        // 각 클라이언트에 인게임 초기 데이터 송신
+        for (int i = 0; i < cnt; ++i) {
+            send(client_sock[i], buf, BUFSIZE, 0);
+            send(client_sock[i], reinterpret_cast<char*>(&is), sizeof(is), 0);
+        }
+
+        ZeroMemory(buf, BUFSIZE);
+
         // 서버에서 씬넘버 변경 후 타이머 설정
         SC_Scene_Send sc;
         buf[0] = SC_scene_send;
@@ -268,26 +297,7 @@ int main(int argc, char* argv[])
             send(client_sock[i], reinterpret_cast<char*>(&sc), sizeof(sc), 0);
         }
 
-        // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
-        SC_Ingame_Send is;
-        for (int i = 0; i < 2; ++i) {
-            is._player[i]._char_type = player[i].charType;
-            is._player[i]._coin = player[i].coin;
-            is._player[i]._location = player[i].location;
-            is._player[i]._look = player[i].charLook;
-            is._player[i]._skill_cooltime1 = player[i].skill_cooltime1;
-            is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
-            is._player[i]._state = player[i].state;
-        }
-        is._coin_location = { 34 * 64, 15* 64 };
-        is._left_time = prevTime;
-        buf[0] = SC_ingame_send;
-
-        // 각 클라이언트에 인게임 초기 데이터 송신
-        for (int i = 0; i < cnt; ++i) {
-            send(client_sock[i], buf, BUFSIZE, 0);
-            send(client_sock[i], reinterpret_cast<char*>(&is), sizeof(is), 0);
-        }
+        ZeroMemory(buf, BUFSIZE);
 
         auto start = chrono::system_clock::now();
 
@@ -442,9 +452,9 @@ int main(int argc, char* argv[])
                 _is._left_time = elapsedTime;
                 _is._coin_location = { 34 * 64 ,15 * 64 }; // 추후에 수정 필요
 
-                for (int i = 0; i < cnt; ++i) {
+                /*for (int i = 0; i < cnt; ++i) {
                     cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
-                }
+                }*/
 
 
                 buf[0] = SC_ingame_send;
@@ -460,6 +470,8 @@ int main(int argc, char* argv[])
                     player[i].ingame_key._vertical_key = 0;
                     player[i].state = Idle;
                 }
+
+                ZeroMemory(buf, BUFSIZE);
             }
         }
 
