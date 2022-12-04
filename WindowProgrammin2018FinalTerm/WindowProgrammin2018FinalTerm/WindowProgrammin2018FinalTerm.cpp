@@ -136,7 +136,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			
 			cout << "0번 유저 정보 X : " << tmp_send._player[0]._location.x << " Y : " << tmp_send._player[0]._location.y << endl;
 			cout << "1번 유저 정보 X : " << tmp_send._player[1]._location.x << " Y : " << tmp_send._player[1]._location.y << endl;
-			cout << "2번 유저 정보 X : " << tmp_send._player[2]._location.x << " Y : " << tmp_send._player[2]._location.y << endl;
+			//cout << "2번 유저 정보 X : " << tmp_send._player[2]._location.x << " Y : " << tmp_send._player[2]._location.y << endl;
 			::EnterCriticalSection(&g_cs);
 			g_ingame_send = tmp_send;
 			::LeaveCriticalSection(&g_cs);
