@@ -53,8 +53,10 @@ private:
 	int m_TitleLength;
 	//-------------------------------------------------------
 
+	bool UpdateControl = true;
 
 public:
+	
 	CFramework();
 	~CFramework();
 
@@ -92,6 +94,8 @@ public:
 	void curSceneCreate();
 	void ChangeScene(CScene::SceneTag tag);
 	//void ChangeScene(int tag);
+
+	void updateCTR(bool upCtr);
 private:
 	CScene * arrScene[CScene::SceneTag::count];
 	CScene * m_pCurrScene;

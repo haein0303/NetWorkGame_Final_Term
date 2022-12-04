@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
 
     CloseHandle(hFile);
 
-    while (cnt != 1) {
+    while (cnt != 2) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
         sc._scene_num = Main_game;
         prevTime = 100;
         
-        this_thread::sleep_for(5000ms);
+        this_thread::sleep_for(1000ms);
 
         // 각 클라이언트에 씬데이터 송신
         for (int i = 0; i < cnt; ++i) {

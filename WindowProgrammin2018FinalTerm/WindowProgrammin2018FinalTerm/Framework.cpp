@@ -401,6 +401,11 @@ void CFramework::ChangeScene(CScene::SceneTag tag) //추후 int tag로 변경
 	//m_pCurrScene->OnCreate();
 }
 
+void CFramework::updateCTR(bool upCrt)
+{
+	inactive = upCrt;
+}
+
 int calcNetId(int my_num, int calc_num) {
 
 	switch (my_num) {
