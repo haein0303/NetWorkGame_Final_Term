@@ -397,6 +397,29 @@ void CFramework::ChangeScene(CScene::SceneTag tag) //추후 int tag로 변경
 {
 	m_pCurrScene = arrScene[tag];
 	//테스트
-	cout << "서버가 넘긴 씬 : " << g_scene_send._scene_num << endl;
+	//cout << "서버가 넘긴 씬 : " << g_scene_send._scene_num << endl;
 	//m_pCurrScene->OnCreate();
+}
+
+int calcNetId(int my_num, int calc_num) {
+
+	switch (my_num) {
+	case 0:
+		return calc_num;
+		break;
+	case 1:
+		if (calc_num == 1) {
+			return 0;
+		}
+		else {
+			return 2;
+		}
+	case 2:
+		if (calc_num == 1) {
+			return 0;
+		}
+		else {
+			return 1;
+		}
+	}
 }

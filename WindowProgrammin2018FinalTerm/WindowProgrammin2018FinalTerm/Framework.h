@@ -58,7 +58,7 @@ public:
 	CFramework();
 	~CFramework();
 
-	RECT p1, p2;
+	RECT p1, p2, p3;
 	bool OnCreate(HINSTANCE hInstance, HWND hWnd, const RECT &rc); // rc는 윈도우크기이고, m_rcClient에 저장한다.
 	RECT GetRect();
 	HDC* GetTileDC();
@@ -98,3 +98,4 @@ private:
 
 };
 
+int calcNetId(int my_num, int calc_num);//내 번호를 기준으로 다른 유저들의 번호를 반환하는 함수(내번호,player 번호)

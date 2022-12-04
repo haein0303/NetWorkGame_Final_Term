@@ -13,15 +13,16 @@ CS_ingame_send_tmp gKeyData;
 SC_Scene_Send g_scene_send;
 SC_Ingame_Send g_ingame_send;
 SC_Lobby_Send g_lobby_send;
-
 G_data gPldata;
 
 CRITICAL_SECTION g_cs;
 
+int gMy_num = -1;
+
 
 #define MAX_LOADSTRING	100
-#define CLIENT_WIDTH	1280
-#define CLIENT_HEIGHT	720
+#define CLIENT_WIDTH	1920
+#define CLIENT_HEIGHT	1080
 
 // 전역 변수:
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
@@ -52,6 +53,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	InitializeCriticalSection(&g_cs);
 	int retval;
 	char r_buf[BUFSIZE + 1]; // 데이터 수신 버퍼
+	bool b_ingame_setting_checker_toggle = false;
 
 	// 소켓 생성
 	sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -73,18 +75,23 @@ DWORD WINAPI ClientMain(LPVOID arg)
 
 		// 데이터 받기
 		retval = recv(sock, r_buf, BUFSIZE, 0);
-		protocol_num = r_buf[0];
-
+		//cout << "리시브 하긴 하니?" << endl;
+		protocol_num = (int)r_buf[0];
+		//cout << "넘겨받은 번호 : " << protocol_num << endl;
 		switch (protocol_num){
 		case SC_ProtocalInfo::SC_lobby_send: //몇명 접속했는지 확인, 내 번호도 확인 가능
+			
 			retval = recv(sock, reinterpret_cast<char*>(&g_lobby_send), sizeof(g_lobby_send), MSG_WAITALL);
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
 			}
 			else if (retval == 0) break;
-
-
+			if (gMy_num == -1) {
+				gMy_num = g_lobby_send._acc_count;
+				cout << "넘버 받았다!" << gMy_num << endl;//정상 진입 확인완료 20221202 0120
+			}
+			cout << "총 접속 유저수 : " << g_lobby_send._acc_count + 1 << endl;
 
 			break;
 		case SC_ProtocalInfo::SC_scene_send: //scene 정보 받을 때
@@ -95,18 +102,19 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			}
 			else if (retval == 0) break;
 			//Scene의 넘겨주는 입력값을 확인하고, 씬을 변경합니다.
-			//g_pFramework < m_pFramework 넣어줘야됨
-			//cout << "넘겨주는 SCENE : " << sc._scene_num << endl;
-			switch (100)//sc._scene_num
+			//g_pFramework < m_pFramework 넣어줘야 됨
+			//동작 비정상적으로 함으로, 수정필요
+			cout << "넘겨주는 SCENE : " << g_scene_send._scene_num << endl;
+			switch (g_scene_send._scene_num)//sc._scene_num
 			{
 			case Scene::Char_sel:
-				g_pFramework->ChangeScene(CScene::SceneTag::Select_Char);
+				myFramework.ChangeScene(CScene::SceneTag::Select_Char);
 				break;
 			case Scene::Main_game:
-				g_pFramework->ChangeScene(CScene::SceneTag::Ingame);
+				myFramework.ChangeScene(CScene::SceneTag::Ingame);
 				break;
 			case Scene::Lobby:
-				g_pFramework->ChangeScene(CScene::SceneTag::Main_Lobby);
+				myFramework.ChangeScene(CScene::SceneTag::Main_Lobby);
 				break;
 			default:
 				break;
@@ -116,12 +124,23 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			break;
 
 		case SC_ProtocalInfo::SC_ingame_send: //in game
-			retval = recv(sock, reinterpret_cast<char*>(&g_ingame_send), sizeof(g_ingame_send), MSG_WAITALL);
+			SC_Ingame_Send tmp_send;
+			retval = recv(sock, reinterpret_cast<char*>(&tmp_send), sizeof(tmp_send), MSG_WAITALL);
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
 			}
 			else if (retval == 0) break;
+
+
+			
+			cout << "0번 유저 정보 X : " << tmp_send._player[0]._location.x << " Y : " << tmp_send._player[0]._location.y << endl;
+			cout << "1번 유저 정보 X : " << tmp_send._player[1]._location.x << " Y : " << tmp_send._player[1]._location.y << endl;
+			cout << "2번 유저 정보 X : " << tmp_send._player[2]._location.x << " Y : " << tmp_send._player[2]._location.y << endl;
+			::EnterCriticalSection(&g_cs);
+			g_ingame_send = tmp_send;
+			::LeaveCriticalSection(&g_cs);
+
 			break;
 		}
 		

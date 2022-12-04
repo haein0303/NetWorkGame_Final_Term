@@ -11,6 +11,7 @@ extern CRITICAL_SECTION g_cs;
 extern SOCKET sock;
 extern SC_Ingame_Send g_ingame_send;
 extern SC_Scene_Send g_scene_send;
+extern int gMy_num;
 
 
 CIngameScene::CIngameScene()
@@ -115,7 +116,7 @@ void CIngameScene::BuildObjects()
 void CIngameScene::KeyState()
 {
 
-	////cout << "위치: " << tx << ", " << ty << endl;
+	//cout << "함수 소환 테스트" << endl;
 
 	if (keydown != TRUE)
 	{
@@ -505,6 +506,7 @@ void CIngameScene::KeyState()
 
 	char s_buf[BUFSIZE + 1]; // 데이터 수신 버퍼
 	int retval;
+	
 	if(keydown == TRUE)
 	{		// 0 1 2 3 p1 이동 4 5 6 p2 스킬 공격 대시 |||  7 8 9 10 p2 이동 11 12 13 p1 스킬 공격 대시
 
@@ -559,7 +561,7 @@ void CIngameScene::KeyState()
 		if (retval == SOCKET_ERROR) {
 			//err_display("send()");
 		}
-		cout << "SEND" << endl;
+		cout << "KEY SEND" << endl;
 	}
 	
 
@@ -579,27 +581,28 @@ void CIngameScene::CharacterState()
 	//}
 
 	//p1 업데이트
-	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[0]._location.x;
-	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[0]._location.y;
-	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[0]._state;
+	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[gMy_num]._location.x;
+	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
+	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
+	//m_pFramework->GetPlayer(1)->WalkingTimerTick++;
 	
 
 	//p2 업데이트
-	m_pFramework->GetPlayer(2)->x = (int)g_ingame_send._player[1]._location.x;
-	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[1]._location.x;
-	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[1]._state;
+	m_pFramework->GetPlayer(2)->x = (int)g_ingame_send._player[calcNetId(gMy_num,1)]._location.x;
+	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 1)]._location.x;
+	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
 
 	//p3 업데이트
-	m_pFramework->GetPlayer(3)->x = (int)g_ingame_send._player[2]._location.x;
-	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[2]._location.x;
-	m_pFramework->GetPlayer(3)->CharacterStatus = g_ingame_send._player[3]._state;
+	m_pFramework->GetPlayer(3)->x = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.x;
+	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.x;
+	m_pFramework->GetPlayer(3)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 2)]._state;
 
 	//cout << "위치: " << g_ingame_send._player[0]._location.x << ", " << g_ingame_send._player[0]._location.y << endl;
 	//cout << "위치: " << tx2 << ", " << ty2 << endl;
 	//cout << "위치: " << tx3 << ", " << ty3 << endl;
 
 	// 7 8 9 10 p1 이동 // 11 12 13 p1 스킬 공격 대시 // 0 1 2 3 p2 이동 // 4 5 6 p2 스킬 공격 대시 // 
-
+	/*
 	////////////////////////// p1 이동 /////////////////////////////////
 	if (keydownList[8]) //위
 	{
@@ -681,7 +684,7 @@ void CIngameScene::CharacterState()
 		p1key = true;
 		m_pFramework->GetPlayer(1)->CharacterStatus = 4;
 	}
-
+	*/
 	//////////////////// p1 스킬 공격 대시 //////////////////////////////////
 	if (keydownList[11]) // p1 스킬
 	{
@@ -1330,9 +1333,10 @@ void CIngameScene::Update(float fTimeElapsed)
 			m_pFramework->GetPlayer(2)->CharacterStatus = 14;
 		}
 	}
-	
-	if (g_scene_send._scene_num == Main_game) //if(isGameEnd == FALSE) 
+	//cout << "업데이트가 되고 있나요?" << g_scene_send._scene_num << endl;
+	if(isGameEnd == FALSE) //if (g_scene_send._scene_num == Main_game)
 	{
+		
 		KeyState();
 		CharacterState();
 		//Nevigator();
