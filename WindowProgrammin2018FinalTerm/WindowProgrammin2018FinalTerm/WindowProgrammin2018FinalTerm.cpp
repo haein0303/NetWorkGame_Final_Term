@@ -45,7 +45,7 @@ SOCKET sock; // 소켓
 
 G_data player;
 
-extern CFramework* g_pFramework;
+
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg)
 {
@@ -68,6 +68,12 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
+
+	{
+		g_ingame_send._player[0]._location = { 35 * 64, (0 + 15) * 64 };
+		g_ingame_send._player[1]._location = { 35 * 64, (1 + 15) * 64 };
+		g_ingame_send._player[2]._location = { 35 * 64, (2 + 15) * 64 };
+	}
 
 	// 서버와 데이터 통신
 	while (1) {
@@ -112,6 +118,11 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				break;
 			case Scene::Main_game:
 				myFramework.ChangeScene(CScene::SceneTag::Ingame);
+				myFramework.curSceneCreate();
+				myFramework.BuildPlayer(1, 2, 3);
+				/*myFramework.BuildPlayer(g_ingame_send._player[gMy_num]._char_type,
+					g_ingame_send._player[calcNetId(gMy_num, 1)]._char_type,
+					g_ingame_send._player[calcNetId(gMy_num, 2)]._char_type);*/
 				break;
 			case Scene::Lobby:
 				myFramework.ChangeScene(CScene::SceneTag::Main_Lobby);
@@ -131,14 +142,14 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				break;
 			}
 			else if (retval == 0) break;
-
+			
 
 			
-			cout << "0번 유저 정보 X : " << tmp_send._player[0]._location.x << " Y : " << tmp_send._player[0]._location.y << endl;
-			cout << "1번 유저 정보 X : " << tmp_send._player[1]._location.x << " Y : " << tmp_send._player[1]._location.y << endl;
+			//cout << "0번 유저 정보 X : " << tmp_send._player[0]._location.x << " Y : " << tmp_send._player[0]._location.y << endl;
+			//cout << "1번 유저 정보 X : " << tmp_send._player[1]._location.x << " Y : " << tmp_send._player[1]._location.y << endl;
 			//cout << "2번 유저 정보 X : " << tmp_send._player[2]._location.x << " Y : " << tmp_send._player[2]._location.y << endl;
 			::EnterCriticalSection(&g_cs);
-			g_ingame_send = tmp_send;
+				g_ingame_send = tmp_send;						
 			::LeaveCriticalSection(&g_cs);
 
 			break;
@@ -168,8 +179,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 	
-	// 소켓 통신 스레드 생성
-	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+	
 
 
 	// 전역 문자열을 초기화합니다.
@@ -183,6 +193,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	{
 		return FALSE;
 	}
+
+	// 소켓 통신 스레드 생성
+	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
 
 	HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_WINDOWPROGRAMMIN2018FINALTERM));
 

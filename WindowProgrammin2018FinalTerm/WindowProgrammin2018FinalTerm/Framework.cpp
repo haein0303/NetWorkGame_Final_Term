@@ -84,7 +84,7 @@ bool CFramework::OnCreate(HINSTANCE hInstance, HWND hWnd, const RECT & rc) //생�
 
 	// 최초의 씬은 무엇인가?
 	ChangeScene(CScene::SceneTag::Main_Lobby);
-	//ChangeScene(sc._scene_num);
+	
 
 	return (m_hWnd != NULL);
 }

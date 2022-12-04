@@ -88,7 +88,7 @@ struct Character_data {
 struct SC_Ingame_Send { //프레임마다 전송하는 데이터
     Character_data  _player[2];
     fvec2           _coin_location;
-    float           _left_time;
+    float           _left_time = -1.0;
 };
 
 //ver 2.0 : edit

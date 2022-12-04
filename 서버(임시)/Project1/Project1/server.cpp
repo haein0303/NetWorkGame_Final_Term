@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
+#include <thread>
 #include "protocol.h"
 
 using namespace std;
@@ -194,7 +195,7 @@ int main(int argc, char* argv[])
 
     CloseHandle(hFile);
 
-    while (cnt != 2) {
+    while (cnt != 1) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -215,8 +216,8 @@ int main(int argc, char* argv[])
             SC_Lobby_Send cl;
             cl._acc_count = cnt;
             player[cnt].my_num = GetCurrentThreadId();
-
-            for (int i = 0; i < cnt; ++i) {
+           
+            for (int i = 0; i <= cnt; ++i) {
                 send(client_sock[cnt], buf, BUFSIZE, 0);
                 send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
             }
@@ -274,7 +275,7 @@ int main(int argc, char* argv[])
             is._player[i]._state = player[i].state;
         }
         is._coin_location = { 34 * 64, 15 * 64 };
-        is._left_time = prevTime;
+        is._left_time = -1.0;
         buf[0] = SC_ingame_send;
 
         // 각 클라이언트에 인게임 초기 데이터 송신
@@ -290,6 +291,8 @@ int main(int argc, char* argv[])
         buf[0] = SC_scene_send;
         sc._scene_num = Main_game;
         prevTime = 100;
+        
+        this_thread::sleep_for(5000ms);
 
         // 각 클라이언트에 씬데이터 송신
         for (int i = 0; i < cnt; ++i) {
@@ -352,7 +355,7 @@ int main(int argc, char* argv[])
                                 player[i].location.x += _x;
 
                             player[i].charLook = 4;
-                        }
+                        } 
                         else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
                             if (Tileindex[player[i].location.x - 60 / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x -= _x - 5;
