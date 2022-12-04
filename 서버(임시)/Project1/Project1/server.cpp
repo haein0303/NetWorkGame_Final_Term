@@ -56,7 +56,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             int protocol_num;
             // 임시 에코 서버
             retval = recv(client_sock, buf, BUFSIZE, 0);
-            
+
             protocol_num = (int)buf[0];
             //cout << "프로토콜 넘버" << protocol_num << endl;
 
@@ -80,8 +80,8 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 break;
             }
 
-           
-           
+
+
         }
 
         // 클라이언트와 데이터 통신
@@ -111,7 +111,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 
         //}
-       
+
         break;
     }
     return 0;
@@ -210,13 +210,13 @@ int main(int argc, char* argv[])
         // 스레드 생성
         hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
         if (hThread[cnt] == NULL) { closesocket(client_sock[cnt]); }
-        else { 
+        else {
             // 초기 설정 클라 아이디 송신
             buf[0] = SC_lobby_send;
             SC_Lobby_Send cl;
             cl._acc_count = cnt;
             player[cnt].my_num = GetCurrentThreadId();
-           
+
             for (int i = 0; i <= cnt; ++i) {
                 send(client_sock[cnt], buf, BUFSIZE, 0);
                 send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
@@ -231,7 +231,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < 2; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
-        player[i].location = { 35 * TILE_SIZE, (i+15) * TILE_SIZE};
+        player[i].location = { 35 * TILE_SIZE, (i + 15) * TILE_SIZE };
         player[i].state = Idle;
         player[i].coin = false;
         player[i].skill_cooltime1 = 0;
@@ -244,24 +244,24 @@ int main(int argc, char* argv[])
     // 세명 접속 이후 캐릭터 선택 창으로 변경 되는 부분
     {
         // 서버에서 씬넘버 변경 후 타이머 설정
-        
+
 
         // 각 클라이언트에 씬데이터 송신
 
         // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
-    
+
 
         // 각 클라이언트에 인게임 초기 데이터 송신
 
         // while 문 설정 해서 시간 다 될때까지 클라이언트 캐릭터 선택 정보 받아서 모두 선택 완료되거나 시간 종료 시 매인 게임 문 실행
         // 이때 시간 다 지났을 경우 현재 클라 설정으로 캐릭터 세팅
-        
+
         // while문 종료 시 씬넘버 변경 후 메인게임 초기화 데이터 송신
     }
 
     // 메인 게임 부분
     {
-        
+
 
         // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
         SC_Ingame_Send is;
@@ -291,7 +291,7 @@ int main(int argc, char* argv[])
         buf[0] = SC_scene_send;
         sc._scene_num = Main_game;
         prevTime = 100;
-        
+
         this_thread::sleep_for(1000ms);
 
         // 각 클라이언트에 씬데이터 송신
@@ -354,8 +354,9 @@ int main(int argc, char* argv[])
                             else
                                 player[i].location.x += _x;
 
-                            player[i].charLook = 4;
-                        } 
+                            player[i].state = WalkA;
+                            //player[i].charLook = 4;
+                        }
                         else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
                             if (Tileindex[player[i].location.x - 60 / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x -= _x - 5;
@@ -365,9 +366,10 @@ int main(int argc, char* argv[])
                             else // 일반 발판
                                 player[i].location.x -= _x;
 
-                            player[i].charLook = 2;
+                            //player[i].charLook = 2;
+                            player[i].state = WalkB;
                         }
-                        if (player[i].ingame_key._vertical_key == 1 && player[i].location.y > 50) {
+                        if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
                             if (Tileindex[player[i].location.x / 64][player[i].location.y - 60 / 64] == 1) // 가속발판
                                 player[i].location.y -= _y - 5;
                             else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
@@ -376,9 +378,10 @@ int main(int argc, char* argv[])
                             else // 일반 발판
                                 player[i].location.y -= _y;
 
-                            player[i].charLook = 3;
+                            //player[i].charLook = 3;
+                            player[i].state = WalkB;
                         }
-                        else if (player[i].ingame_key._vertical_key == -1 && player[i].location.y < 6350) {
+                        else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
                             if (Tileindex[player[i].location.x / 64][player[i].location.y + 60 / 64] == 1) // 가속발판
                                 player[i].location.y += _y + 5;
                             else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
@@ -387,9 +390,13 @@ int main(int argc, char* argv[])
                             else // 일반 발판
                                 player[i].location.y += _y;
 
-                            player[i].charLook = 5;
+                            //player[i].charLook = 5;
+                            player[i].state = WalkA;
                         }
-                        player[i].state = Walk;
+                       // player[i].state = Walk;
+
+
+
                     }
                     else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
                         if (player[i].ingame_key._horizontal_key == 1) {
@@ -434,6 +441,9 @@ int main(int argc, char* argv[])
                     }
 
                     // 공격 충돌 확인
+
+
+
                 }
 
                 // 쿨타임 업데이트

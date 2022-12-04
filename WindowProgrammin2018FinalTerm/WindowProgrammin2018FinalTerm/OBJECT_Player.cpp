@@ -112,28 +112,33 @@ void CObject_Player::Render(HDC* hdc)
 			this->Image.Idle.GetWidth(), this->Image.Idle.GetHeight());
 		if (this->charNum == 3)
 			this->CSkill->Render(hdc);
+
+	////Idle_B // ±âÁ¸ case 1:
+	//	this->Image.Idle_B.Draw(*hdc, this->x - this->Image.Idle_B.GetWidth() / 2, this->y - 5 - this->Image.Idle_B.GetHeight() / 2,
+	//		this->Image.Idle_B.GetWidth(), this->Image.Idle_B.GetHeight());
+	//	if (this->charNum == 3)
+	//		this->CSkill->Render(hdc);
+	//	break;
 		break;
-		
-	case 1:
-		this->Image.Idle_B.Draw(*hdc, this->x - this->Image.Idle_B.GetWidth() / 2, this->y - 5 - this->Image.Idle_B.GetHeight() / 2,
-			this->Image.Idle_B.GetWidth(), this->Image.Idle_B.GetHeight());
-		if (this->charNum == 3)
-			this->CSkill->Render(hdc);
-		break;
-	case 2:
-	case 5:
+	case CharState::WalkA:
 		this->Image.Walk[this->WalkingImageTick % 6].Draw(*hdc, this->x - this->Image.Walk[this->WalkingImageTick % 6].GetWidth() / 2,
 			this->y - 5 - this->Image.Walk[this->WalkingImageTick % 6].GetHeight() / 2, this->Image.Walk[this->WalkingImageTick % 6].GetWidth(),
 			this->Image.Walk[this->WalkingImageTick % 6].GetHeight());
 		if (this->charNum == 3)
 			this->CSkill->Render(hdc);
 		break;
-	case 3:
-	case 4:
+	case CharState::WalkB:
 		this->Image.Walk_B[this->WalkingImageTick % 6].Draw(*hdc, this->x - this->Image.Walk[this->WalkingImageTick % 6].GetWidth() / 2,
 			this->y - 5 - this->Image.Walk[this->WalkingImageTick % 6].GetHeight() / 2, this->Image.Walk[this->WalkingImageTick % 6].GetWidth(),
 			this->Image.Walk[this->WalkingImageTick % 6].GetHeight());
 		if (this->charNum == 3)
+			this->CSkill->Render(hdc);
+		break;
+	case CharState::Skill:
+		this->Image.Attack[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack[this->AttackImageTick].GetWidth() / 2,
+			this->y - 5 - this->Image.Attack[this->AttackImageTick].GetHeight() / 2, this->Image.Attack[this->AttackImageTick].GetWidth(),
+			this->Image.Attack[this->AttackImageTick].GetHeight());
+		if (this->isSkill)
 			this->CSkill->Render(hdc);
 		break;
 	case 6:
@@ -143,13 +148,13 @@ void CObject_Player::Render(HDC* hdc)
 		if (this->charNum == 3)
 			this->CSkill->Render(hdc);
 		break;
-	case 7:
-		this->Image.Attack_B[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack_B[this->AttackImageTick].GetWidth() / 2,
-			this->y - 5 - this->Image.Attack_B[this->AttackImageTick].GetHeight() / 2, this->Image.Attack_B[this->AttackImageTick].GetWidth(),
-			this->Image.Attack_B[this->AttackImageTick].GetHeight());
-		if (this->charNum == 3)
-			this->CSkill->Render(hdc);
-		break;
+	//case 7:
+	//	this->Image.Attack_B[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack_B[this->AttackImageTick].GetWidth() / 2,
+	//		this->y - 5 - this->Image.Attack_B[this->AttackImageTick].GetHeight() / 2, this->Image.Attack_B[this->AttackImageTick].GetWidth(),
+	//		this->Image.Attack_B[this->AttackImageTick].GetHeight());
+	//	if (this->charNum == 3)
+	//		this->CSkill->Render(hdc);
+	//	break;
 	case 8:
 		this->Image.Attacked[WalkingImageTick % 2].Draw(*hdc, this->x - this->Image.Attacked[WalkingImageTick % 2].GetWidth() / 2,
 			this->y - 5 - Image.Attacked[WalkingImageTick % 2].GetHeight() / 2, Image.Attacked[WalkingImageTick % 2].GetWidth(), Image.Attacked[WalkingImageTick % 2].GetHeight());
@@ -179,13 +184,13 @@ void CObject_Player::Render(HDC* hdc)
 		if (this->charNum == 3)
 			this->CSkill->Render(hdc);
 		break;
-	case 12:
-		this->Image.Attack[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack[this->AttackImageTick].GetWidth() / 2,
-			this->y - 5 - this->Image.Attack[this->AttackImageTick].GetHeight() / 2, this->Image.Attack[this->AttackImageTick].GetWidth(),
-			this->Image.Attack[this->AttackImageTick].GetHeight());
-		if (this->isSkill)
-		this->CSkill->Render(hdc);
-		break;
+	//case 12:
+	//	this->Image.Attack[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack[this->AttackImageTick].GetWidth() / 2,
+	//		this->y - 5 - this->Image.Attack[this->AttackImageTick].GetHeight() / 2, this->Image.Attack[this->AttackImageTick].GetWidth(),
+	//		this->Image.Attack[this->AttackImageTick].GetHeight());
+	//	if (this->isSkill)
+	//	this->CSkill->Render(hdc);
+	//	break;
 	case 13:
 		this->Image.Attack_B[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack_B[this->AttackImageTick].GetWidth() / 2,
 			this->y - 5 - this->Image.Attack_B[this->AttackImageTick].GetHeight() / 2, this->Image.Attack_B[this->AttackImageTick].GetWidth(),

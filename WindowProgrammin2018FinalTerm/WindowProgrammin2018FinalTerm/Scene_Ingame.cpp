@@ -561,7 +561,9 @@ void CIngameScene::KeyState()
 		if (retval == SOCKET_ERROR) {
 			//err_display("send()");
 		}
-		cout << "KEY SEND" << endl;
+		//cout <<"hori : " << gKeyData._horizontal_key << endl;
+		//cout << "verti : " << gKeyData._vertical_key << endl;
+
 	}
 	
 
@@ -584,7 +586,10 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[gMy_num]._location.x;
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
-	//m_pFramework->GetPlayer(1)->WalkingTimerTick++;
+
+
+	p1key = true;
+	cout << g_ingame_send._player[gMy_num]._state << endl;
 	
 
 	//p2 업데이트
@@ -686,42 +691,42 @@ void CIngameScene::CharacterState()
 	}
 	*/
 	//////////////////// p1 스킬 공격 대시 //////////////////////////////////
-	if (keydownList[11]) // p1 스킬
-	{
-		switch (m_pFramework->GetPlayer(1)->charNum)
-		{
-		case 1:
-			SkillCoolTime[0] = 8;
-			break;
-		case 2:
-			SkillCoolTime[0] = 5;
-			break;
-		case 3:
-			SkillCoolTime[0] = 12;
-			break;
-		}
-		switch (m_pFramework->GetPlayer(1)->CharacterStatus) 
-		{
-		case 2:
-		case 5:
-		case 6:
-		case 0:
-			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-			m_pFramework->GetPlayer(1)->isSkill = TRUE;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 12;
-			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
-			break; // 앞 볼 때
-		case 3:
-		case 4:
-		case 7:
-		case 1:
-			m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-			m_pFramework->GetPlayer(1)->isSkill = TRUE;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 13;
-			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
-			break; // 뒤 볼 때
-		}
-	}
+	//if (keydownList[11]) // p1 스킬 A키
+	//{
+	//	switch (m_pFramework->GetPlayer(1)->charNum)
+	//	{
+	//	case 1:
+	//		SkillCoolTime[0] = 8;
+	//		break;
+	//	case 2:
+	//		SkillCoolTime[0] = 5;
+	//		break;
+	//	case 3:
+	//		SkillCoolTime[0] = 12;
+	//		break;
+	//	}
+	//	switch (m_pFramework->GetPlayer(1)->CharacterStatus) 
+	//	{
+	//	case 2:
+	//	case 5:
+	//	case 6:
+	//	case 0:
+	//		m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+	//		m_pFramework->GetPlayer(1)->isSkill = TRUE;
+	//		m_pFramework->GetPlayer(1)->CharacterStatus = 12;
+	//		m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+	//		break; // 앞 볼 때
+	//	case 3:
+	//	case 4:
+	//	case 7:
+	//	case 1:
+	//		m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+	//		m_pFramework->GetPlayer(1)->isSkill = TRUE;
+	//		m_pFramework->GetPlayer(1)->CharacterStatus = 13;
+	//		m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+	//		break; // 뒤 볼 때
+	//	}
+	//}
 	if (keydownList[12]) // p1 공격
 	{
 		switch (m_pFramework->GetPlayer(1)->CharacterStatus)
