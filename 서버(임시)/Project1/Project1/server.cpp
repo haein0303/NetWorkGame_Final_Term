@@ -209,7 +209,7 @@ int main(int argc, char* argv[])
 
         // 스레드 생성
         hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
-        if (hThread == NULL) { closesocket(client_sock[cnt]); }
+        if (hThread[cnt] == NULL) { closesocket(client_sock[cnt]); }
         else { 
             // 초기 설정 클라 아이디 송신
             buf[0] = SC_lobby_send;
