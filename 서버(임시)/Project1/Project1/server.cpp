@@ -63,9 +63,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             switch (protocol_num) {
             case CS_ingame_send: // ingame_key_send
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
-                //cout << "Recv Thread : " << my_num << " is Work" << endl;
                 WaitForSingleObject(hRecvEvent[my_num], INFINITE);
                 player[my_num].ingame_key = ingame_key;
+                //cout << ingame_key._horizontal_key << "|||" << ingame_key._vertical_key << endl;
                 SetEvent(hRootEvent);
                 break;
 
@@ -346,57 +346,51 @@ int main(int argc, char* argv[])
                 for (int i = 0; i < cnt; ++i) {
                     if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
                         if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
-                            if (Tileindex[player[i].location.x + 60 / 64][player[i].location.y / 64] == 1) // 가속발판
+                            if (Tileindex[(player[i].location.x + 15) / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x += _x + 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                            else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) {
                                 player[i].location.x += _x;
                             } // 벽
                             else
                                 player[i].location.x += _x;
 
-                            player[i].state = WalkA;
-                            //player[i].charLook = 4;
+                            player[i].charLook = 4;
                         }
                         else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
-                            if (Tileindex[player[i].location.x - 60 / 64][player[i].location.y / 64] == 1) // 가속발판
-                                player[i].location.x -= _x - 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                            if (Tileindex[(player[i].location.x - 15) / 64][player[i].location.y / 64] == 1) // 가속발판
+                                player[i].location.x -= (_x + 5);
+                            else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) {
                                 player[i].location.x -= _x;
                             } // 벽
                             else // 일반 발판
                                 player[i].location.x -= _x;
 
-                            //player[i].charLook = 2;
-                            player[i].state = WalkB;
+                            player[i].charLook = 2;
                         }
-                        if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
-                            if (Tileindex[player[i].location.x / 64][player[i].location.y - 60 / 64] == 1) // 가속발판
-                                player[i].location.y -= _y - 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+
+                        if (player[i].ingame_key._vertical_key == 1 && player[i].location.y > 50) {
+                            if (Tileindex[player[i].location.x / 64][(player[i].location.y - 15) / 64] == 1) // 가속발판
+                                player[i].location.y -= (_y + 5);
+                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) {
                                 player[i].location.y -= _y;
                             } // 벽
                             else // 일반 발판
                                 player[i].location.y -= _y;
 
-                            //player[i].charLook = 3;
-                            player[i].state = WalkB;
+                            player[i].charLook = 3;
                         }
-                        else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
-                            if (Tileindex[player[i].location.x / 64][player[i].location.y + 60 / 64] == 1) // 가속발판
+                        else if (player[i].ingame_key._vertical_key == -1 && player[i].location.y < 6350) {
+                            if (Tileindex[player[i].location.x / 64][(player[i].location.y + 15) / 64] == 1) // 가속발판
                                 player[i].location.y += _y + 5;
-                            else if (Tileindex[player[i].location.x / 64][player[i].location.y / 64] == 0) {
+                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) {
                                 player[i].location.y += _y;
                             } // 벽
                             else // 일반 발판
                                 player[i].location.y += _y;
 
-                            //player[i].charLook = 5;
-                            player[i].state = WalkA;
+                            player[i].charLook = 5;
                         }
-                       // player[i].state = Walk;
-
-
-
+                        player[i].state = Walk;
                     }
                     else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
                         if (player[i].ingame_key._horizontal_key == 1) {
@@ -441,9 +435,6 @@ int main(int argc, char* argv[])
                     }
 
                     // 공격 충돌 확인
-
-
-
                 }
 
                 // 쿨타임 업데이트

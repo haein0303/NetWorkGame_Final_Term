@@ -539,13 +539,13 @@ void CIngameScene::KeyState()
 		if (keydownList[8] && keydownList[10]) {//µ¿½Ã
 			gKeyData._vertical_key = 0;
 		}
-		if (keydownList[4]) {
+		if (keydownList[11]) {
 			gKeyData._skill_key = 1;
 		}
-		if (keydownList[5]) {
+		if (keydownList[12]) {
 			gKeyData._skill_key = 2;
 		}
-		if (keydownList[6]) {
+		if (keydownList[13]) {
 			gKeyData._skill_key = 3;
 		}
 
