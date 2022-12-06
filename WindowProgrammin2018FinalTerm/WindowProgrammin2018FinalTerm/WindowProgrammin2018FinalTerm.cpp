@@ -78,7 +78,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	// 서버와 데이터 통신
 	while (1) {
 		int protocol_num;
-
+		SC_Ingame_Send init_setting;
+		int user_num[3] = { -1,-1,-1 };
 		// 데이터 받기
 		retval = recv(sock, r_buf, BUFSIZE, 0);
 		//cout << "리시브 하긴 하니?" << endl;
@@ -117,6 +118,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				myFramework.ChangeScene(CScene::SceneTag::Select_Char);
 				break;
 			case Scene::Main_game:
+
 				myFramework.updateCTR(1);
 				myFramework.ChangeScene(CScene::SceneTag::Ingame);
 				myFramework.curSceneCreate();
@@ -144,15 +146,22 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				break;
 			}
 			else if (retval == 0) break;
-			
-
-			
 			//cout << "0번 유저 정보 X : " << tmp_send._player[0]._location.x << " Y : " << tmp_send._player[0]._location.y << endl;
 			//cout << "1번 유저 정보 X : " << tmp_send._player[1]._location.x << " Y : " << tmp_send._player[1]._location.y << endl;
 			//cout << "2번 유저 정보 X : " << tmp_send._player[2]._location.x << " Y : " << tmp_send._player[2]._location.y << endl;
+			
+			//초기화 값인지 검사
+			if (tmp_send._left_time < 0) {
+				init_setting = tmp_send;
+				user_num[0] = gMy_num;
+				user_num[1] = calcNetId(gMy_num, 1);
+				user_num[2] = calcNetId(gMy_num, 2);
+				break;
+			}
 			::EnterCriticalSection(&g_cs);
 				g_ingame_send = tmp_send;						
-			::LeaveCriticalSection(&g_cs);
+			::LeaveCriticalSection(&g_cs);		
+			
 
 			break;
 		}
