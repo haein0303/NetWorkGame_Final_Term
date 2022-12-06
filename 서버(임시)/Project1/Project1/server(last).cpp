@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <chrono>
-#include <thread>
 #include "protocol.h"
 
 using namespace std;
@@ -12,25 +11,24 @@ using namespace std;
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
-G_data player[2];
+G_data player[3];
 
 //HANDLE hRcev1Event, hRcev2Event, hRcev3Event; // 이벤트
-HANDLE hRecvEvent[2];
+HANDLE hRecvEvent[3];
 HANDLE hRootEvent;
 
 //자신의 다음 쓰레드의 번호를 반환
 int calc_next_thread(int i) {
-    return (i + 1) % 2;
+    return (i + 1) % 3;
 }
 //자신의 이전 쓰레드의 번호를 반환
 int calc_prev_thread(int i) {
-    return (i + 2) % 2;
+    return (i + 2) % 3;
 }
 
 //Recv 쓰레드
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
-
     // 데이터 통신에 사용할 변수
     int retval;
     SOCKET client_sock = (SOCKET)arg;
@@ -43,7 +41,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
     int my_num = 0; //자기 자신의 배정 번호를 저장
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 3; i++) {
         if (player[i].my_num == GetCurrentThreadId()) {
             my_num = i;
         }
@@ -63,25 +61,17 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             switch (protocol_num) {
             case CS_ingame_send: // ingame_key_send
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
-                WaitForSingleObject(hRecvEvent[my_num], INFINITE);
                 player[my_num].ingame_key = ingame_key;
-                //cout << ingame_key._horizontal_key << "|||" << ingame_key._vertical_key << endl;
-                SetEvent(hRootEvent);
+                if (retval == SOCKET_ERROR) {
+                    err_display("recv()");
+                    break;
+                }
+                else if (retval == 0) {
+                    break;
+                }
                 break;
 
             }
-
-            //에러검사
-            if (retval == SOCKET_ERROR) {
-                err_display("recv()");
-                break;
-            }
-            else if (retval == 0) {
-                break;
-            }
-
-
-
         }
 
         // 클라이언트와 데이터 통신
@@ -145,26 +135,23 @@ int main(int argc, char* argv[])
     if (retval == SOCKET_ERROR) err_quit("listen()");
 
     // 데이터 통신에 사용할 변수
-    SOCKET client_sock[2];
+    SOCKET client_sock[3];
     struct sockaddr_in clientaddr;
     int addrlen;
     char buf[BUFSIZE + 1]; // 가변 길이 데이터
-    HANDLE hThread[2];
-
-    ZeroMemory(buf, BUFSIZE);
+    HANDLE hThread[3];
 
     DWORD event_retval; //결과 저장용
 
     //이벤트 생성
-    for (int i = 0; i < 2; ++i) {
-        hRecvEvent[i] = CreateEvent(NULL, FALSE, FALSE, NULL);
+    for (int i = 0; i < 3; ++i) {
+        hRecvEvent[i] = CreateEvent(NULL, FALSE, TRUE, NULL);
     }
-    hRootEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+
     char Inbuff[20000] = { 0 };
     DWORD read_size = 20000;
     DWORD c = 20000;
 
-    // 맵 데이터 로드
     HANDLE hFile;
     int Tileindex[100][100] = { 0 };
 
@@ -193,9 +180,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    CloseHandle(hFile);
-
-    while (cnt != 2) {
+    while (cnt != 1) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -209,7 +194,7 @@ int main(int argc, char* argv[])
 
         // 스레드 생성
         hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
-        if (hThread[cnt] == NULL) { closesocket(client_sock[cnt]); }
+        if (hThread == NULL) { closesocket(client_sock[cnt]); }
         else {
             // 초기 설정 클라 아이디 송신
             buf[0] = SC_lobby_send;
@@ -217,7 +202,7 @@ int main(int argc, char* argv[])
             cl._acc_count = cnt;
             player[cnt].my_num = GetCurrentThreadId();
 
-            for (int i = 0; i <= cnt; ++i) {
+            for (int i = 0; i < cnt; ++i) {
                 send(client_sock[cnt], buf, BUFSIZE, 0);
                 send(client_sock[cnt], reinterpret_cast<char*>(&cl), sizeof(cl), 0);
             }
@@ -225,14 +210,12 @@ int main(int argc, char* argv[])
         }
     }
 
-    ZeroMemory(buf, BUFSIZE);
-
     // 임시 플레이어 데이터 세팅
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
-        player[i].location = { 35 * TILE_SIZE, (i + 15) * TILE_SIZE };
-        player[i].state = IdleA;
+        player[i].location = { 35 * TILE_SIZE,(i + 15) * TILE_SIZE };
+        player[i].state = Idle;
         player[i].coin = false;
         player[i].skill_cooltime1 = 0;
         player[i].skill_cooltime2 = 0;
@@ -261,11 +244,21 @@ int main(int argc, char* argv[])
 
     // 메인 게임 부분
     {
+        // 서버에서 씬넘버 변경 후 타이머 설정
+        SC_Scene_Send sc;
+        buf[0] = SC_scene_send;
+        sc._scene_num = Main_game;
+        prevTime = 100;
 
+        // 각 클라이언트에 씬데이터 송신
+        for (int i = 0; i < cnt; ++i) {
+            send(client_sock[i], buf, BUFSIZE, 0);
+            send(client_sock[i], reinterpret_cast<char*>(&sc), sizeof(sc), 0);
+        }
 
         // for 루프문으로 전체 클라이언트에 씬 넘버, 초기 설정값등 송신
         SC_Ingame_Send is;
-        for (int i = 0; i < cnt; ++i) {
+        for (int i = 0; i < 3; ++i) {
             is._player[i]._char_type = player[i].charType;
             is._player[i]._coin = player[i].coin;
             is._player[i]._location = player[i].location;
@@ -275,7 +268,7 @@ int main(int argc, char* argv[])
             is._player[i]._state = player[i].state;
         }
         is._coin_location = { 34 * 64, 15 * 64 };
-        is._left_time = -1.0;
+        is._left_time = prevTime;
         buf[0] = SC_ingame_send;
 
         // 각 클라이언트에 인게임 초기 데이터 송신
@@ -284,28 +277,10 @@ int main(int argc, char* argv[])
             send(client_sock[i], reinterpret_cast<char*>(&is), sizeof(is), 0);
         }
 
-        ZeroMemory(buf, BUFSIZE);
-
-        // 서버에서 씬넘버 변경 후 타이머 설정
-        SC_Scene_Send sc;
-        buf[0] = SC_scene_send;
-        sc._scene_num = Main_game;
-        prevTime = 100;
-
-        this_thread::sleep_for(1000ms);
-
-        // 각 클라이언트에 씬데이터 송신
-        for (int i = 0; i < cnt; ++i) {
-            send(client_sock[i], buf, BUFSIZE, 0);
-            send(client_sock[i], reinterpret_cast<char*>(&sc), sizeof(sc), 0);
-        }
-
-        ZeroMemory(buf, BUFSIZE);
-
         auto start = chrono::system_clock::now();
 
-        int _x = 10;
-        int _y = 10;
+        float _x = 1;
+        float _y = 1;
 
         // while 문에서 매인 게임 문 실행
         while (true)
@@ -327,124 +302,53 @@ int main(int argc, char* argv[])
             //    if (event_retval != WAIT_OBJECT_0) break;
             //}
 
-            for (int i = 0; i < cnt; ++i) {
-                //리시브 스레드 깨우기
-                SetEvent(hRecvEvent[i]);
-                //cout << "main Thread : " << i << " is Work" << endl;
-                //나 기다리기
-                WaitForSingleObject(hRootEvent, 10);//오래기다릴 필요는 없음,
-            }
-
 
             if (elapsedTime <= 0) {
                 // 게임 종료 및 로비 씬으로 전환
                 // 바로 종료 안하고 게임 끝나는 화면으로 전환 할수도있음
             }
 
-            else { // 게임 업데이트
+            else {
                 // 충돌 처리 및 공용 데이터 업데이트
-                for (int i = 0; i < cnt; ++i) {
+                for (int i = 0; i < 3; ++i) {
                     if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
-                        if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
-                            if (Tileindex[(player[i].location.x + 15) / 64][player[i].location.y / 64] == 1) // 가속발판
-                                player[i].location.x += _x + 5;
-                            else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) {
-                                player[i].location.x += _x;
-                            } // 벽
-                            else
-                                player[i].location.x += _x;
-                            player[i].state = WalkB;
-                            player[i].charLook = 4;
-                        }
-                        else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
-                            if (Tileindex[(player[i].location.x - 15) / 64][player[i].location.y / 64] == 1) // 가속발판
-                                player[i].location.x -= (_x + 5);
-                            else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) {
-                                player[i].location.x -= _x;
-                            } // 벽
-                            else // 일반 발판
-                                player[i].location.x -= _x;
-                            player[i].state = WalkA;
-                            player[i].charLook = 2;
-                        }
 
-                        if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
-                            if (Tileindex[player[i].location.x / 64][(player[i].location.y - 15) / 64] == 1) // 가속발판
-                                player[i].location.y -= (_y + 5);
-                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) {
-                                player[i].location.y -= _y;
-                            } // 벽
-                            else // 일반 발판
-                                player[i].location.y -= _y;
-                            player[i].state = WalkB;
-                            player[i].charLook = 3;
-                        }
-                        else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
-                            if (Tileindex[player[i].location.x / 64][(player[i].location.y + 15) / 64] == 1) // 가속발판
-                                player[i].location.y += _y + 5;
-                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) {
-                                player[i].location.y += _y;
-                            } // 벽
-                            else // 일반 발판
-                                player[i].location.y += _y;
-                            player[i].state = WalkA;
-                            player[i].charLook = 5;
-                        }
-                        //player[i].state = Walk;
+                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x;
+                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x;
+
+                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y;
+                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y;
+
+                        player[i].state = Walk;
                     }
                     else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
-                        if (player[i].ingame_key._horizontal_key == 1) {
-                            player[i].charLook = 4;
-                        }
-                        else if (player[i].ingame_key._horizontal_key == -1) {
-                            player[i].charLook = 2;
-                        }
-                        if (player[i].ingame_key._vertical_key == 1) {
-                            player[i].charLook = 3;
-                        }
-                        else if (player[i].ingame_key._vertical_key == -1) {
-                            player[i].charLook = 5;
-                        }
-                        cout << "스킬" << endl;
-                        player[i].state = Skill;
+
                     }
                     else if (player[i].ingame_key._skill_key == 2) { // 공격
-                        if (player[i].ingame_key._horizontal_key == 1) {
-                            player[i].charLook = 4;
-                        }
-                        else if (player[i].ingame_key._horizontal_key == -1) {
-                            player[i].charLook = 2;
-                        }
-                        if (player[i].ingame_key._vertical_key == 1) {
-                            player[i].charLook = 3;
-                        }
-                        else if (player[i].ingame_key._vertical_key == -1) {
-                            player[i].charLook = 5;
-                        }
-                        cout << "공격" << endl;
-                        player[i].state = Attack;
+
                     }
                     else if (player[i].ingame_key._skill_key == 3) { // 대쉬
-                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
-                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 5;
+                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 10;
+                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 10;
 
-                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 5;
-                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 5;
+                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 10;
+                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 10;
 
                         player[i].state = Dash;
                     }
+                    // 맵 충돌 확인
 
                     // 공격 충돌 확인
                 }
 
                 // 쿨타임 업데이트
-                for (int i = 0; i < 2; ++i) {
+                for (int i = 0; i < 3; ++i) {
                     // 시간 값 확인 후 지난 시간 만큼 남은 쿨타임에서 감소
                 }
 
                 // 업데이트 된 데이터 송신
                 SC_Ingame_Send _is;
-                for (int i = 0; i < 2; ++i) {
+                for (int i = 0; i < 3; ++i) {
                     _is._player[i]._char_type = player[i].charType;
                     _is._player[i]._coin = player[i].coin;
                     _is._player[i]._location = player[i].location;
@@ -456,9 +360,10 @@ int main(int argc, char* argv[])
                 _is._left_time = elapsedTime;
                 _is._coin_location = { 34 * 64 ,15 * 64 }; // 추후에 수정 필요
 
-                /*for (int i = 0; i < cnt; ++i) {
+                for (int i = 0; i < 1; ++i) {
                     cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
-                }*/
+
+                }
 
 
                 buf[0] = SC_ingame_send;
@@ -467,15 +372,6 @@ int main(int argc, char* argv[])
                     send(client_sock[i], buf, BUFSIZE, 0);
                     send(client_sock[i], reinterpret_cast<char*>(&_is), sizeof(_is), 0);
                 }
-
-                for (int i = 0; i < cnt; i++) {
-                    player[i].ingame_key._horizontal_key = 0;
-                    player[i].ingame_key._skill_key = 0;
-                    player[i].ingame_key._vertical_key = 0;
-                    player[i].state = IdleA;
-                }
-
-                ZeroMemory(buf, BUFSIZE);
             }
         }
 
@@ -485,10 +381,10 @@ int main(int argc, char* argv[])
     closesocket(listen_sock);
 
     // 이벤트 제거
-    for (int i = 0; i < 2; ++i) {
+    for (int i = 0; i < 3; ++i) {
         CloseHandle(hRecvEvent[i]);
     }
-    CloseHandle(hRootEvent);
+
     // 윈속 종료
     WSACleanup();
     return 0;

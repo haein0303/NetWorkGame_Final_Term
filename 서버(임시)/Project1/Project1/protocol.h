@@ -13,6 +13,8 @@ enum Scene {
 
 enum CharState {
     Idle,
+    IdleA,
+    IdleB,
     Walk,
     WalkA, // 위, 오른쪽
     WalkB, // 아래, 왼쪽

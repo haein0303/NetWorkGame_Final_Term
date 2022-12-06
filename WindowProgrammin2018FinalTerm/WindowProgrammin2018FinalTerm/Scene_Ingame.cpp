@@ -541,12 +541,15 @@ void CIngameScene::KeyState()
 		}
 		if (keydownList[11]) {
 			gKeyData._skill_key = 1;
+			cout << "스킬!" << endl;
 		}
 		if (keydownList[12]) {
 			gKeyData._skill_key = 2;
+			cout << "공격!" << endl;
 		}
 		if (keydownList[13]) {
 			gKeyData._skill_key = 3;
+			cout << "대시!" << endl;
 		}
 
 		
