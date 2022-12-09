@@ -231,7 +231,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < 2; ++i) {
         player[i].charType = i;
         player[i].charLook = 0;
-        player[i].location = { 35 * TILE_SIZE, (i + 15) * TILE_SIZE };
+        player[i].location = { 40 * TILE_SIZE, (i + 15) * TILE_SIZE };
         player[i].state = IdleA;
         player[i].coin = false;
         player[i].skill_cooltime1 = 0;
@@ -348,18 +348,18 @@ int main(int argc, char* argv[])
                         if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
                             if (Tileindex[(player[i].location.x + 15) / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x += _x + 5;
-                            else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) {} // 벽
-                            else
-                                player[i].location.x += _x;
+                            else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) { 
+                                player[i].location.x += _x; 
+                            } // 일반 발판
                             player[i].state = WalkB;
                             player[i].charLook = 4;
                         }
                         else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
                             if (Tileindex[(player[i].location.x - 15) / 64][player[i].location.y / 64] == 1) // 가속발판
                                 player[i].location.x -= (_x + 5);
-                            else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) {} // 벽
-                            else // 일반 발판
-                                player[i].location.x -= _x;
+                            else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) { 
+                                player[i].location.x -= _x; 
+                            } // 일반 발판
                             player[i].state = WalkA;
                             player[i].charLook = 2;
                         }
@@ -367,18 +367,18 @@ int main(int argc, char* argv[])
                         if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
                             if (Tileindex[player[i].location.x / 64][(player[i].location.y - 15) / 64] == 1) // 가속발판
                                 player[i].location.y -= (_y + 5);
-                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) {} // 벽
-                            else // 일반 발판
-                                player[i].location.y -= _y;
+                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) { 
+                                player[i].location.y -= _y; 
+                            } // 일반 발판
                             player[i].state = WalkB;
                             player[i].charLook = 3;
                         }
                         else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
                             if (Tileindex[player[i].location.x / 64][(player[i].location.y + 15) / 64] == 1) // 가속발판
                                 player[i].location.y += _y + 5;
-                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) {} // 벽
-                            else // 일반 발판
-                                player[i].location.y += _y;
+                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) { 
+                                player[i].location.y += _y; 
+                            } // 일반 발판
                             player[i].state = WalkA;
                             player[i].charLook = 5;
                         }
