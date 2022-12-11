@@ -698,10 +698,15 @@ int main(int argc, char* argv[])
                 }
 
                 for (int i = 0; i < cnt; i++) {
-                    if (player[i].ingame_key._horizontal_key == 1 || player[i].ingame_key._vertical_key == 1)
-                        player[i].state = IdleA;
-                    else
-                        player[i].state = IdleB;
+                    if (!(player[i].ingame_key._horizontal_key == 0 && player[i].ingame_key._vertical_key == 0)) {
+                        if (player[i].ingame_key._horizontal_key == 1 || player[i].ingame_key._vertical_key == -1) {
+                            player[i].state = IdleB;
+                        }
+                        else {
+                            player[i].state = IdleA;
+                        }
+                    }                                            
+                    cout << "705 : " << player[i].ingame_key._horizontal_key << player[i].ingame_key._vertical_key << player[i].state <<endl;
                     player[i].ingame_key._horizontal_key = 0;
                     player[i].ingame_key._skill_key = 0;
                     player[i].ingame_key._vertical_key = 0;
