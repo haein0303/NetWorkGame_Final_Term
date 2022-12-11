@@ -509,7 +509,7 @@ void CIngameScene::KeyState()
 	
 	if(keydown == TRUE)
 	{		// 0 1 2 3 p1 이동 4 5 6 p2 스킬 공격 대시 |||  7 8 9 10 p2 이동 11 12 13 p1 스킬 공격 대시
-
+		// p1 7 8 9 10 이동 
 		//struct CS_ingame_send_tmp {// GetAsyncKeyState(vkey)로 동시키입력이 동작X시 사용
 		//	short _horizontal_key;  // -1 : left || 0 : NULL || 1 : right
 		//	short _vertical_key;    // -1 : down || 0 : NULL || 1 : up
@@ -591,10 +591,7 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
 
-
-
 	p1key = true;
-	
 	
 
 	//p2 업데이트
@@ -602,6 +599,8 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 1)]._location.y;
 	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
 	
+	//cout << "ingame 602 :: " << g_ingame_send._player[calcNetId(gMy_num, 1)]._state << endl;
+
 	//p3 업데이트
 	m_pFramework->GetPlayer(3)->x = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.x;
 	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.y;
@@ -821,6 +820,7 @@ void CIngameScene::CharacterState()
 	//////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////// p2 이동 ////////////////////////////////////////////
 	//if _look 이 위쪽일때 //if (keydownList[1])
+	if(g_ingame_send._player[calcNetId(gMy_num, 1)]._look == 5)
 	{
 
 		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
@@ -843,6 +843,7 @@ void CIngameScene::CharacterState()
 
 	}
 	//if _look 이 왼쪽일때 // if (keydownList[0])
+	if (g_ingame_send._player[calcNetId(gMy_num, 1)]._look == 2)
 	{
 		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
 		{
@@ -864,6 +865,7 @@ void CIngameScene::CharacterState()
 
 	}
 	//if _look 이 아래쪽일 때 // if (keydownList[3])
+	if (g_ingame_send._player[calcNetId(gMy_num, 1)]._look == 3)
 	{
 
 		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
@@ -886,6 +888,7 @@ void CIngameScene::CharacterState()
 
 	}
 	//if _look 이 오른쪽일때 // if (keydownList[2])
+	if (g_ingame_send._player[calcNetId(gMy_num, 1)]._look == 4)
 	{
 
 		if (Tileindex[m_pFramework->GetPlayer(2)->x / 64][(m_pFramework->GetPlayer(2)->y + 60) / 64] == 1)
@@ -910,6 +913,7 @@ void CIngameScene::CharacterState()
 
 	/////////////////////////// p2 스킬 공격 대시 /////////////////////////////
 	// if charstate가 skill // if (keydownList[4]) 
+	if (0)
 	{
 		switch (m_pFramework->GetPlayer(2)->charNum)
 		{
@@ -946,6 +950,7 @@ void CIngameScene::CharacterState()
 		}
 	}
 	// if charstate가 attack // if (keydownList[5]) // p2 공격 (p3와의 공격체크 안돼있음)
+	if (0)
 	{
 		switch (m_pFramework->GetPlayer(2)->CharacterStatus)
 		{
@@ -996,6 +1001,7 @@ void CIngameScene::CharacterState()
 		}
 	}
 	// if charstate가 dash // if (keydownList[6]) // p2 대시
+	if(0)
 	{
 		if (m_pFramework->GetPlayer(2)->DashCoolTimer <= 0)
 		{
@@ -1034,7 +1040,7 @@ void CIngameScene::CharacterState()
 	// 추후 수정
 	////////////////////////////// p3 이동 ////////////////////////////////////////////
 	//if _look 이 위쪽일때 
-	{
+	/* {
 		if (Tileindex[m_pFramework->GetPlayer(3)->x / 64][(m_pFramework->GetPlayer(3)->y + 60) / 64] == 1)
 		{
 			if (m_pFramework->GetPlayer(3)->y > 50)
@@ -1242,7 +1248,7 @@ void CIngameScene::CharacterState()
 		}
 	}
 
-
+	*/
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1345,7 +1351,7 @@ void CIngameScene::Update(float fTimeElapsed)
 	}
 
 	//cout << "업데이트가 되고 있나요?" << g_scene_send._scene_num << endl;
-	if(isGameEnd == FALSE) //if (g_scene_send._scene_num == Main_game)
+	if(isGameEnd == FALSE) 
 	{
 		
 		KeyState();
@@ -1370,7 +1376,7 @@ void CIngameScene::Update(float fTimeElapsed)
 		{
 			m_pFramework->GetPlayer(3)->DashCoolTimer--;
 		}
-		//if (m_pFramework->GetPlayer(1)->isSkill)
+		if (m_pFramework->GetPlayer(1)->isSkill)
 		{
 			if (IntersectRect(&tmp, m_pFramework->GetPlayer(2)->getRECT(), m_pFramework->GetPlayer(1)->CSkill->GetRECT())) // p2스킬피격
 			{
@@ -1398,7 +1404,7 @@ void CIngameScene::Update(float fTimeElapsed)
 				}
 			}
 		}
-		//if (m_pFramework->GetPlayer(2)->isSkill)
+		if (m_pFramework->GetPlayer(2)->isSkill)
 		{
 			if (IntersectRect(&tmp, m_pFramework->GetPlayer(1)->getRECT(), m_pFramework->GetPlayer(2)->CSkill->GetRECT()))
 			{

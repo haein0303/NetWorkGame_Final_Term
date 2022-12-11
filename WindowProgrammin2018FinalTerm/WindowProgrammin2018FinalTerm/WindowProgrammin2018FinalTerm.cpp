@@ -69,12 +69,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
 
-	{
-		g_ingame_send._player[0]._location = { 35 * 64, (0 + 15) * 64 };
-		g_ingame_send._player[1]._location = { 35 * 64, (1 + 15) * 64 };
-		g_ingame_send._player[2]._location = { 35 * 64, (2 + 15) * 64 };
-	}
-
 	// 서버와 데이터 통신
 	while (1) {
 		int protocol_num;
@@ -122,10 +116,10 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				myFramework.ChangeScene(CScene::SceneTag::Ingame);
 				myFramework.curSceneCreate();
 				//myFramework.BuildPlayer(1, 2, 3);
-				cout << "126 :: main :: " <<
+				/*cout << "126 :: main :: " <<
 					init_setting._player[0]._char_type <<
 					init_setting._player[1]._char_type<<
-					endl;
+					endl;*/
 				myFramework.BuildPlayer(init_setting._player[gMy_num]._char_type+1,
 					init_setting._player[calcNetId(gMy_num, 1)]._char_type+1,
 					3);
@@ -157,9 +151,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			//초기화 값인지 검사
 			if (tmp_send._left_time < 0) {
 				init_setting = tmp_send;
-				user_num[0] = gMy_num;
-				user_num[1] = calcNetId(gMy_num, 1);
-				user_num[2] = calcNetId(gMy_num, 2);
 				break;
 			}
 			::EnterCriticalSection(&g_cs);
