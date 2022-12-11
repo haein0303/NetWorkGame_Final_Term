@@ -590,23 +590,21 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[gMy_num]._location.x;
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
-	cout << "Scene_ingame.cpp  593 ::" << gMy_num << " : " <<
-		(int)g_ingame_send._player[gMy_num]._location.x << " : " <<
-		(int)g_ingame_send._player[gMy_num]._location.y << endl;
+
 
 
 	p1key = true;
-	//cout << "Scene_ingame.cpp 595:: " << g_ingame_send._player[gMy_num]._state << endl;
+	
 	
 
 	//p2 업데이트
 	m_pFramework->GetPlayer(2)->x = (int)g_ingame_send._player[calcNetId(gMy_num,1)]._location.x;
-	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 1)]._location.x;
+	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 1)]._location.y;
 	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
-
+	
 	//p3 업데이트
 	m_pFramework->GetPlayer(3)->x = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.x;
-	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.x;
+	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.y;
 	m_pFramework->GetPlayer(3)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 2)]._state;
 
 	//cout << "위치: " << g_ingame_send._player[0]._location.x << ", " << g_ingame_send._player[0]._location.y << endl;
@@ -1345,6 +1343,7 @@ void CIngameScene::Update(float fTimeElapsed)
 			m_pFramework->GetPlayer(2)->CharacterStatus = 14;
 		}
 	}
+
 	//cout << "업데이트가 되고 있나요?" << g_scene_send._scene_num << endl;
 	if(isGameEnd == FALSE) //if (g_scene_send._scene_num == Main_game)
 	{
@@ -1356,6 +1355,7 @@ void CIngameScene::Update(float fTimeElapsed)
 		m_pFramework->GetPlayer(1)->Update(fTimeElapsed);
 		m_pFramework->GetPlayer(2)->Update(fTimeElapsed);
 		m_pFramework->GetPlayer(3)->Update(fTimeElapsed);
+		//cout << "업데이트가 되고 있나요?" << endl;
 		TimeTick++;
 
 		if (m_pFramework->GetPlayer(1)->DashCoolTimer > 0)
@@ -1556,10 +1556,36 @@ void CIngameScene::Render(HDC hdc)
 	//Ellipse(*m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(1)->x - 5, m_pFramework->GetPlayer(1)->y - 5, m_pFramework->GetPlayer(1)->x + 5, m_pFramework->GetPlayer(1)->y + 5);
 	//Ellipse(*m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(2)->x - 5, m_pFramework->GetPlayer(2)->y - 5, m_pFramework->GetPlayer(2)->x + 5, m_pFramework->GetPlayer(2)->y + 5);
 
-	//토탈로 옮기기
-	BitBlt(hdc, m_pFramework->p1.left, m_pFramework->p1.top, m_pFramework->p1.right, m_pFramework->p1.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(1)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(1)->y - m_pFramework->p1.bottom / 2, SRCCOPY);
-	BitBlt(hdc, m_pFramework->p2.left, m_pFramework->p2.top, m_pFramework->p1.right, m_pFramework->p2.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(2)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(2)->y - m_pFramework->p2.bottom / 2, SRCCOPY);
-	BitBlt(hdc, m_pFramework->p2.left, m_pFramework->p2.top, m_pFramework->p1.right, m_pFramework->p2.bottom, *m_pFramework->GetPlayerDC(), m_pFramework->GetPlayer(3)->x - m_pFramework->p1.right / 2, m_pFramework->GetPlayer(3)->y - m_pFramework->p2.bottom / 2, SRCCOPY);
+	//토탈로 옮기기?? 뭐고 이게
+	BitBlt(hdc, //hdcDest
+		m_pFramework->p1.left,  //nXDest 이미지를 출력할 위치인 x, y 좌표입니다.
+		m_pFramework->p1.top,  //nYDest 이미지를 출력할 위치인 x, y 좌표입니다.
+		m_pFramework->p1.right, //원본 이미지의 너비, 높이입니다. 이 크기만큼 원본 이미지에서 잘라와 그립니다.
+		m_pFramework->p1.bottom, //원본 이미지의 너비, 높이입니다. 이 크기만큼 원본 이미지에서 잘라와 그립니다.
+		*m_pFramework->GetPlayerDC(), //이미지의 핸들입니다.
+		m_pFramework->GetPlayer(1)->x - m_pFramework->p1.right / 2, //가져올 이미지의 시작지점인 x, y좌표입니다.이 위치부터 nWidth, nHeight만큼 이미지를 잘라옵니다.
+		m_pFramework->GetPlayer(1)->y - m_pFramework->p1.bottom / 2, //가져올 이미지의 시작지점인 x, y좌표입니다.이 위치부터 nWidth, nHeight만큼 이미지를 잘라옵니다.
+		SRCCOPY); //이미지의 출력 방법입니다.	
+	
+	BitBlt(hdc, 
+		m_pFramework->p2.left, 
+		m_pFramework->p2.top, 
+		m_pFramework->p1.right, 
+		m_pFramework->p2.bottom, 
+		*m_pFramework->GetPlayerDC(), 
+		m_pFramework->GetPlayer(2)->x - m_pFramework->p1.right / 2, 
+		m_pFramework->GetPlayer(2)->y - m_pFramework->p2.bottom / 2, 
+		SRCCOPY);
+
+	//BitBlt(hdc, 
+	//	m_pFramework->p3.left,
+	//	m_pFramework->p3.top,
+	//	m_pFramework->p2.right,
+	//	m_pFramework->p3.bottom, 
+	//	*m_pFramework->GetPlayerDC(),
+	//	m_pFramework->GetPlayer(3)->x - m_pFramework->p1.right / 2, 
+	//	m_pFramework->GetPlayer(3)->y - m_pFramework->p2.bottom / 2, 
+	//	SRCCOPY);
 
 
 	if (isGameEnd) //추후 PL3 추가해야함
@@ -1606,15 +1632,15 @@ void CIngameScene::Render(HDC hdc)
 	C_Numbers[TimerImage[0]].Draw(hdc, m_pFramework->GetRect().right / 2 - 90, m_pFramework->GetRect().bottom / 15, 80, 80);
 	C_Numbers[TimerImage[1]].Draw(hdc, m_pFramework->GetRect().right / 2 + 20, m_pFramework->GetRect().bottom / 15, 80, 80);
 
-	//플레이어들이 코인을 가지고 있는지 확인
-	if (m_pFramework->GetPlayer(1)->iHaveCoin)
-	{
-		CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 - 90 - 60, windowY / 15, 50, 50);
-	}
-	else if (m_pFramework->GetPlayer(2)->iHaveCoin)
-	{
-		CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 + 110, windowY / 15, 50, 50);
-	}
+	////플레이어들이 코인을 가지고 있는지 확인
+	//if (m_pFramework->GetPlayer(1)->iHaveCoin)
+	//{
+	//	CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 - 90 - 60, windowY / 15, 50, 50);
+	//}
+	//else if (m_pFramework->GetPlayer(2)->iHaveCoin)
+	//{
+	//	CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 + 110, windowY / 15, 50, 50);
+	//}
 
 	for (int i = 0; i < nObjects; ++i)
 		ppObjects[i]->Render(*m_pFramework->GetPlayerDC());
