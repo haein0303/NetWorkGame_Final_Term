@@ -118,15 +118,18 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				myFramework.ChangeScene(CScene::SceneTag::Select_Char);
 				break;
 			case Scene::Main_game:
-
 				myFramework.updateCTR(1);
 				myFramework.ChangeScene(CScene::SceneTag::Ingame);
 				myFramework.curSceneCreate();
-				myFramework.BuildPlayer(1, 2, 3);
+				//myFramework.BuildPlayer(1, 2, 3);
+				cout << "126 :: main :: " <<
+					init_setting._player[0]._char_type <<
+					init_setting._player[1]._char_type<<
+					endl;
+				myFramework.BuildPlayer(init_setting._player[gMy_num]._char_type+1,
+					init_setting._player[calcNetId(gMy_num, 1)]._char_type+1,
+					3);
 				myFramework.updateCTR(0);
-				/*myFramework.BuildPlayer(g_ingame_send._player[gMy_num]._char_type,
-					g_ingame_send._player[calcNetId(gMy_num, 1)]._char_type,
-					g_ingame_send._player[calcNetId(gMy_num, 2)]._char_type);*/
 				break;
 			case Scene::Lobby:
 				myFramework.ChangeScene(CScene::SceneTag::Main_Lobby);
