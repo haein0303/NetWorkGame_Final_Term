@@ -414,7 +414,7 @@ int main(int argc, char* argv[])
                             }
                             player[i].charLook = 2;
                         }
-                        if (player[i].ingame_key._vertical_key == 1) {
+                        else if (player[i].ingame_key._vertical_key == 1) {
                             RECT tmp;
                             tmp.left = player[i].location.x - player[i].char_info.skill_area.bottom / 2;
                             tmp.right = player[i].location.x + player[i].char_info.skill_area.bottom / 2;
@@ -543,7 +543,7 @@ int main(int argc, char* argv[])
                             }
                             player[i].charLook = 2;
                         }
-                        if (player[i].ingame_key._vertical_key == 1) {
+                        else if (player[i].ingame_key._vertical_key == 1) {
                             RECT tmp;
                             tmp.left = player[i].location.x - player[i].char_info.attack_area.bottom / 2;
                             tmp.right = player[i].location.x + player[i].char_info.attack_area.bottom / 2;
