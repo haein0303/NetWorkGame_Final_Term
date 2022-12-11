@@ -65,10 +65,9 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
                 WaitForSingleObject(hRecvEvent[my_num], INFINITE);
                 player[my_num].ingame_key = ingame_key;
-                cout << my_num << " : " << ingame_key._horizontal_key << "|" << ingame_key._vertical_key << endl;
+                //cout << my_num << " : " << ingame_key._horizontal_key << "|" << ingame_key._vertical_key << endl;
                 SetEvent(hRootEvent);
                 break;
-
             }
 
             //에러검사
@@ -79,9 +78,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             else if (retval == 0) {
                 break;
             }
-
-
-
         }
 
         break;
@@ -212,6 +208,45 @@ int main(int argc, char* argv[])
         player[i].skill_cooltime2 = 0;
         player[i].attack_on = false;
         player[i].skill_on = false;
+        switch (player[i].charType)
+        {
+        case 0:
+            // 스킬 범위
+            player[i].char_info.skill_area.left = 0;
+            player[i].char_info.skill_area.right = 552;
+            player[i].char_info.skill_area.top = 0;
+            player[i].char_info.skill_area.bottom = 310;
+            // 공격 범위
+            player[i].char_info.skill_area.left = 0;
+            player[i].char_info.skill_area.right = 70;
+            player[i].char_info.skill_area.top = 0;
+            player[i].char_info.skill_area.bottom = 50;
+            break;
+        case 1:
+            // 스킬 범위
+            player[i].char_info.skill_area.left = 0;
+            player[i].char_info.skill_area.right = 323;
+            player[i].char_info.skill_area.top = 0;
+            player[i].char_info.skill_area.bottom = 128;
+            // 공격 범위
+            player[i].char_info.skill_area.left = 0;
+            player[i].char_info.skill_area.right = 70;
+            player[i].char_info.skill_area.top = 0;
+            player[i].char_info.skill_area.bottom = 50;
+            break;
+        case 2:
+            // 스킬 범위
+            player[i].char_info.skill_area.left = 0;
+            player[i].char_info.skill_area.right = 413;
+            player[i].char_info.skill_area.top = 0;
+            player[i].char_info.skill_area.bottom = 223;
+            // 공격 범위
+            player[i].char_info.skill_area.left = 0;
+            player[i].char_info.skill_area.right = 70;
+            player[i].char_info.skill_area.top = 0;
+            player[i].char_info.skill_area.bottom = 50;
+            break;
+        }
     }
     // end
 
@@ -315,89 +350,320 @@ int main(int argc, char* argv[])
             else { // 게임 업데이트
                 // 충돌 처리 및 공용 데이터 업데이트
                 for (int i = 0; i < cnt; ++i) {
-                    if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
-                        if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
-                            if (Tileindex[(player[i].location.x + 15) / 64][player[i].location.y / 64] == 1) // 가속발판
-                                player[i].location.x += _x + 5;
-                            else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) { 
-                                player[i].location.x += _x; 
-                            } // 일반 발판
-                            player[i].state = WalkB;
-                            player[i].charLook = 4;
-                        }
-                        else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
-                            if (Tileindex[(player[i].location.x - 15) / 64][player[i].location.y / 64] == 1) // 가속발판
-                                player[i].location.x -= (_x + 5);
-                            else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) { 
-                                player[i].location.x -= _x; 
-                            } // 일반 발판
-                            player[i].state = WalkA;
-                            player[i].charLook = 2;
-                        }
-
-                        if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
-                            if (Tileindex[player[i].location.x / 64][(player[i].location.y - 15) / 64] == 1) // 가속발판
-                                player[i].location.y -= (_y + 5);
-                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) { 
-                                player[i].location.y -= _y; 
-                            } // 일반 발판
-                            player[i].state = WalkB;
-                            player[i].charLook = 3;
-                        }
-                        else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
-                            if (Tileindex[player[i].location.x / 64][(player[i].location.y + 15) / 64] == 1) // 가속발판
-                                player[i].location.y += _y + 5;
-                            else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) { 
-                                player[i].location.y += _y; 
-                            } // 일반 발판
-                            player[i].state = WalkA;
-                            player[i].charLook = 5;
-                        }
-                        //player[i].state = Walk;
-                    }
-                    else if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
+                    // 스킬 충돌
+                    if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
                         if (player[i].ingame_key._horizontal_key == 1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x;
+                            tmp.right = player[i].location.x + player[i].char_info.skill_area.right;
+                            tmp.top = player[i].location.y - player[i].char_info.skill_area.bottom / 2;
+                            tmp.bottom = player[i].location.y + player[i].char_info.skill_area.bottom / 2;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 4;
                         }
                         else if (player[i].ingame_key._horizontal_key == -1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x - player[i].char_info.skill_area.right;
+                            tmp.right = player[i].location.x;
+                            tmp.top = player[i].location.y - player[i].char_info.skill_area.bottom / 2;
+                            tmp.bottom = player[i].location.y + player[i].char_info.skill_area.bottom / 2;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 2;
                         }
                         if (player[i].ingame_key._vertical_key == 1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x - player[i].char_info.skill_area.bottom / 2;
+                            tmp.right = player[i].location.x + player[i].char_info.skill_area.bottom / 2;
+                            tmp.top = player[i].location.y - player[i].char_info.skill_area.right;
+                            tmp.bottom = player[i].location.y;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 3;
                         }
                         else if (player[i].ingame_key._vertical_key == -1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x - player[i].char_info.skill_area.bottom / 2;
+                            tmp.right = player[i].location.x + player[i].char_info.skill_area.bottom / 2;
+                            tmp.top = player[i].location.y;
+                            tmp.bottom = player[i].location.y + player[i].char_info.skill_area.right;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 5;
                         }
                         cout << "스킬" << endl;
                         player[i].state = Skill;
-                    }
+                        }
+                    // 공격 충돌
                     else if (player[i].ingame_key._skill_key == 2) { // 공격
                         if (player[i].ingame_key._horizontal_key == 1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x;
+                            tmp.right = player[i].location.x + player[i].char_info.attack_area.right;
+                            tmp.top = player[i].location.y - player[i].char_info.attack_area.bottom / 2;
+                            tmp.bottom = player[i].location.y + player[i].char_info.attack_area.bottom / 2;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 4;
                         }
                         else if (player[i].ingame_key._horizontal_key == -1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x - player[i].char_info.attack_area.right;
+                            tmp.right = player[i].location.x;
+                            tmp.top = player[i].location.y - player[i].char_info.attack_area.bottom / 2;
+                            tmp.bottom = player[i].location.y + player[i].char_info.attack_area.bottom / 2;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 2;
                         }
                         if (player[i].ingame_key._vertical_key == 1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x - player[i].char_info.attack_area.bottom / 2;
+                            tmp.right = player[i].location.x + player[i].char_info.attack_area.bottom / 2;
+                            tmp.top = player[i].location.y - player[i].char_info.attack_area.right;
+                            tmp.bottom = player[i].location.y;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 3;
                         }
                         else if (player[i].ingame_key._vertical_key == -1) {
+                            RECT tmp;
+                            tmp.left = player[i].location.x - player[i].char_info.attack_area.bottom / 2;
+                            tmp.right = player[i].location.x + player[i].char_info.attack_area.bottom / 2;
+                            tmp.top = player[i].location.y;
+                            tmp.bottom = player[i].location.y + player[i].char_info.attack_area.right;
+
+                            if (i == 0)
+                            {
+                                if (player[1].location.x >= tmp.left &&
+                                    player[1].location.x <= tmp.right &&
+                                    player[1].location.y >= tmp.top &&
+                                    player[1].location.y <= tmp.bottom)
+                                {
+                                    player[1].state = Attacked;
+                                    player[1].coin = false;
+                                }
+                            }
+                            else
+                            {
+                                if (player[0].location.x >= tmp.left &&
+                                    player[0].location.x <= tmp.right &&
+                                    player[0].location.y >= tmp.top &&
+                                    player[0].location.y <= tmp.bottom)
+                                {
+                                    player[0].state = Attacked;
+                                    player[0].coin = false;
+                                }
+                            }
                             player[i].charLook = 5;
                         }
                         cout << "공격" << endl;
                         player[i].state = Attack;
+                        }
+
+                    if (player[i].state == Attacked) continue;
+                    else 
+                    {
+                        // 이동
+                        if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
+                            if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
+                                if (Tileindex[(player[i].location.x + 15) / 64][player[i].location.y / 64] == 1) // 가속발판
+                                    player[i].location.x += _x + 5;
+                                else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) {
+                                    player[i].location.x += _x;
+                                } // 일반 발판
+                                player[i].state = WalkB;
+                                player[i].charLook = 4;
+                            }
+                            else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
+                                if (Tileindex[(player[i].location.x - 15) / 64][player[i].location.y / 64] == 1) // 가속발판
+                                    player[i].location.x -= (_x + 5);
+                                else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) {
+                                    player[i].location.x -= _x;
+                                } // 일반 발판
+                                player[i].state = WalkA;
+                                player[i].charLook = 2;
+                            }
+
+                            if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
+                                if (Tileindex[player[i].location.x / 64][(player[i].location.y - 15) / 64] == 1) // 가속발판
+                                    player[i].location.y -= (_y + 5);
+                                else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) {
+                                    player[i].location.y -= _y;
+                                } // 일반 발판
+                                player[i].state = WalkB;
+                                player[i].charLook = 3;
+                            }
+                            else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
+                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 15) / 64] == 1) // 가속발판
+                                    player[i].location.y += _y + 5;
+                                else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) {
+                                    player[i].location.y += _y;
+                                } // 일반 발판
+                                player[i].state = WalkA;
+                                player[i].charLook = 5;
+                            }
+                            //player[i].state = Walk;
+                        }
+                        // 대쉬
+                        else if (player[i].ingame_key._skill_key == 3) { // 대쉬
+                            if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
+                            else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 5;
+
+                            if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 5;
+                            else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 5;
+
+                            player[i].state = Dash;
+                        }
                     }
-                    else if (player[i].ingame_key._skill_key == 3) { // 대쉬
-                        if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
-                        else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 5;
-
-                        if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 5;
-                        else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 5;
-
-                        player[i].state = Dash;
-                    }
-
-                    // 공격 충돌 확인
                 }
 
                 // 쿨타임 업데이트
