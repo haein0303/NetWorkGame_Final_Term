@@ -1433,13 +1433,20 @@ void CIngameScene::Update(float fTimeElapsed)
 				}
 			}
 		}
+		
+		{
+			RemainTime = (int)g_ingame_send._left_time;
+			TimerImage[0] = RemainTime / 10;
+			TimerImage[1] = RemainTime % 10;
+		}
 
 		if (TimeTick >= 60)
 		{
 			TimeTick = 0;
-			if (RemainTime > 0)
+			if(0)//if (RemainTime > 0)
 			{
-				RemainTime--;
+				//RemainTime--;
+				RemainTime = (int)g_ingame_send._left_time;
 				TimerImage[0] = RemainTime / 10;
 				TimerImage[1] = RemainTime % 10;
 			}
@@ -1452,6 +1459,7 @@ void CIngameScene::Update(float fTimeElapsed)
 				SkillCoolTime[1]--;
 			}
 		}
+
 		if (CoinObject->GetbDraw() && coinLockDown == FALSE)
 		{
 			if (abs(CoinObject->x() - m_pFramework->GetPlayer(1)->x) < 30 && abs(CoinObject->y() - m_pFramework->GetPlayer(1)->y) < 30)
