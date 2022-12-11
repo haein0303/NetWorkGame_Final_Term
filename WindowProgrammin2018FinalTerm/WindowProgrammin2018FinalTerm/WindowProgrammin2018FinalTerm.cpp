@@ -150,6 +150,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			//cout << "1번 유저 정보 X : " << tmp_send._player[1]._location.x << " Y : " << tmp_send._player[1]._location.y << endl;
 			//cout << "2번 유저 정보 X : " << tmp_send._player[2]._location.x << " Y : " << tmp_send._player[2]._location.y << endl;
 			
+			
 			//초기화 값인지 검사
 			if (tmp_send._left_time < 0) {
 				init_setting = tmp_send;
