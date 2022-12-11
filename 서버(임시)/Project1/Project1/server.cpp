@@ -13,6 +13,7 @@ using namespace std;
 #define BUFSIZE    512
 
 G_data player[2];
+Coin coin;
 
 //HANDLE hRcev1Event, hRcev2Event, hRcev3Event; // ¿Ã∫•∆Æ
 HANDLE hRecvEvent[2];
@@ -164,6 +165,9 @@ int main(int argc, char* argv[])
 
     CloseHandle(hFile);
 
+    coin.init = true;
+    coin.location = { 34 * 64, 15 * 64 };
+
     while (cnt < 2) {
         // accept()
         addrlen = sizeof(clientaddr);
@@ -283,7 +287,7 @@ int main(int argc, char* argv[])
             is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
             is._player[i]._state = player[i].state;
         }
-        is._coin_location = { 34 * 64, 15 * 64 };
+        is._coin_location = coin.location;
         is._left_time = -1.0;
         buf[0] = SC_ingame_send;
 
@@ -706,7 +710,6 @@ int main(int argc, char* argv[])
                             player[i].state = IdleA;
                         }
                     }                                            
-                    cout << "705 : " << player[i].ingame_key._horizontal_key << player[i].ingame_key._vertical_key << player[i].state <<endl;
                     player[i].ingame_key._horizontal_key = 0;
                     player[i].ingame_key._skill_key = 0;
                     player[i].ingame_key._vertical_key = 0;

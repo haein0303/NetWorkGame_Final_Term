@@ -48,6 +48,11 @@ struct fvec2 {	//플레이어 좌표 구조체
     int	y;
 };
 
+struct Coin {
+    fvec2 location;
+    bool init;
+};
+
 //ver3.0 : add
 //공용데이터------------------------------------------
 float           prevTime;	//이전시간(제한시간으로 초기화)
