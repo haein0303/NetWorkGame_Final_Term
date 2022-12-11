@@ -77,7 +77,7 @@ struct G_data {
     float 	    skill_cooltime2;
     bool	    attack_on;
     bool   	skill_on;
-    int my_num;
+    DWORD my_num;
     CS_ingame_send_tmp ingame_key;
 };
 

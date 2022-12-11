@@ -30,7 +30,6 @@ int calc_prev_thread(int i) {
 //Recv 쓰레드
 DWORD WINAPI ProcessClient(LPVOID arg)
 {
-
     // 데이터 통신에 사용할 변수
     int retval;
     SOCKET client_sock = (SOCKET)arg;
@@ -44,10 +43,10 @@ DWORD WINAPI ProcessClient(LPVOID arg)
     int my_num = 0; //자기 자신의 배정 번호를 저장
 
     for (int i = 0; i < 2; i++) {
-        if (player[i].my_num == -1) {
+        if (player[i].my_num == GetCurrentThreadId()) {
+            cout << player[i].my_num << "   " << GetCurrentThreadId() << endl;
             my_num = i;
-            player[i].my_num = 0;
-            cout << "work!" << endl;
+            break;
         }
     }
 
@@ -60,7 +59,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
             retval = recv(client_sock, buf, BUFSIZE, 0);
 
             protocol_num = (int)buf[0];
-            //cout << "프로토콜 넘버" << protocol_num << endl;
 
             switch (protocol_num) {
             case CS_ingame_send: // ingame_key_send
@@ -86,34 +84,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
         }
 
-        // 클라이언트와 데이터 통신
-        //while (1) {
-        //    DWORD retval;
-
-        //    // 데이터 받기(가변 길이)
-        //    retval = recv(client_sock, buf, BUFSIZE, MSG_WAITALL);
-        //    if (retval == SOCKET_ERROR) {
-        //        err_display("recv()");
-        //        break;
-        //    }
-        //    else if (retval == 0)
-        //        break;
-
-        //    //이전 쓰레드가 자신에게 허락할때까지 대기
-        //    retval = WaitForSingleObject(hRecvEvent[my_num], INFINITE);
-        //    if (retval != WAIT_OBJECT_0) break;
-
-
-        //    // 데이터 받은 후 받은 데이터 공용 데이터에 업데이트
-        //    
-        //    //root 이벤트를 돌려줌
-        //    SetEvent(hRootEvent);
-
-        //    // 이후 반복
-
-
-        //}
-
         break;
     }
     return 0;
@@ -123,6 +93,7 @@ int main(int argc, char* argv[])
 {
     int retval;
     int cnt = 0;
+    DWORD num;
 
     // 윈속 초기화
     WSADATA wsa;
@@ -210,7 +181,7 @@ int main(int argc, char* argv[])
         printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 
         // 스레드 생성
-        hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
+        hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, &num);
         
         if (hThread[cnt] == NULL) { closesocket(client_sock[cnt]); }
         else {
@@ -218,7 +189,7 @@ int main(int argc, char* argv[])
             buf[0] = SC_lobby_send;
             SC_Lobby_Send cl;
             cl._acc_count = cnt;
-            player[cnt].my_num = -1;
+            player[cnt].my_num = num;
 
             for (int i = 0; i <= cnt; ++i) {
                 send(client_sock[cnt], buf, BUFSIZE, 0);
@@ -313,15 +284,6 @@ int main(int argc, char* argv[])
         // while 문에서 매인 게임 문 실행
         while (true)
         {
-            auto now = chrono::system_clock::now();
-
-            chrono::duration<float> pip = now - start;
-
-            elapsedTime = prevTime - pip.count();
-
-            //cout << elapsedTime << endl;
-            //cout << pip.count() << endl;
-
             //for (int i = 0; i < 3; ++i) {
             //    //대기
             //    SetEvent(hRecvEvent[i]);
@@ -337,6 +299,12 @@ int main(int argc, char* argv[])
                 //나 기다리기
                 WaitForSingleObject(hRootEvent, 10);//오래기다릴 필요는 없음,
             }
+
+            auto now = chrono::system_clock::now();
+
+            chrono::duration<float> pip = now - start;
+
+            elapsedTime = prevTime - pip.count();
 
 
             if (elapsedTime <= 0) {
