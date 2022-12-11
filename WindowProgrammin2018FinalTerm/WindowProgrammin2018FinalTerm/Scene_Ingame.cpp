@@ -585,15 +585,18 @@ void CIngameScene::CharacterState()
 	//	}
 	//}
 
-	cout << "Scene_ingame.cpp  588 :: " << gMy_num << endl;
+	//cout << "Scene_ingame.cpp  588 :: " << gMy_num << endl;
 	//p1 업데이트
 	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[gMy_num]._location.x;
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
+	cout << "Scene_ingame.cpp  593 ::" << gMy_num << " : " <<
+		(int)g_ingame_send._player[gMy_num]._location.x << " : " <<
+		(int)g_ingame_send._player[gMy_num]._location.y << endl;
 
 
 	p1key = true;
-	cout << "Scene_ingame.cpp 595:: " << g_ingame_send._player[gMy_num]._state << endl;
+	//cout << "Scene_ingame.cpp 595:: " << g_ingame_send._player[gMy_num]._state << endl;
 	
 
 	//p2 업데이트

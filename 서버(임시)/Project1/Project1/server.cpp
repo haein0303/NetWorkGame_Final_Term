@@ -44,8 +44,10 @@ DWORD WINAPI ProcessClient(LPVOID arg)
     int my_num = 0; //자기 자신의 배정 번호를 저장
 
     for (int i = 0; i < 2; i++) {
-        if (player[i].my_num == GetCurrentThreadId()) {
+        if (player[i].my_num == -1) {
             my_num = i;
+            player[i].my_num = 0;
+            cout << "work!" << endl;
         }
     }
 
@@ -65,7 +67,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
                 retval = recv(client_sock, reinterpret_cast<char*>(&ingame_key), sizeof(ingame_key), MSG_WAITALL);
                 WaitForSingleObject(hRecvEvent[my_num], INFINITE);
                 player[my_num].ingame_key = ingame_key;
-                //cout << ingame_key._horizontal_key << "|||" << ingame_key._vertical_key << endl;
+                cout << my_num << " : " << ingame_key._horizontal_key << "|" << ingame_key._vertical_key << endl;
                 SetEvent(hRootEvent);
                 break;
 
@@ -195,7 +197,7 @@ int main(int argc, char* argv[])
 
     CloseHandle(hFile);
 
-    while (cnt != 2) {
+    while (cnt < 2) {
         // accept()
         addrlen = sizeof(clientaddr);
         client_sock[cnt] = accept(listen_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -209,13 +211,14 @@ int main(int argc, char* argv[])
 
         // 스레드 생성
         hThread[cnt] = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock[cnt], 0, NULL);
+        
         if (hThread[cnt] == NULL) { closesocket(client_sock[cnt]); }
         else {
             // 초기 설정 클라 아이디 송신
             buf[0] = SC_lobby_send;
             SC_Lobby_Send cl;
             cl._acc_count = cnt;
-            player[cnt].my_num = GetCurrentThreadId();
+            player[cnt].my_num = -1;
 
             for (int i = 0; i <= cnt; ++i) {
                 send(client_sock[cnt], buf, BUFSIZE, 0);
