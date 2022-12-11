@@ -371,7 +371,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -382,7 +387,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 4;
@@ -402,7 +412,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -413,7 +428,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 2;
@@ -433,7 +453,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -444,7 +469,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 3;
@@ -500,7 +530,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -511,7 +546,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 4;
@@ -542,7 +582,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 2;
@@ -562,7 +607,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -573,7 +623,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 3;
@@ -593,7 +648,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -604,7 +664,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 5;
@@ -667,6 +732,12 @@ int main(int argc, char* argv[])
 
                             player[i].state = Dash;
                         }
+
+                        if (player[i].location.x == coin.location.x && player[i].location.y && coin.location.y) {
+                            coin.init = false;
+                            coin.location = { 0, 0 };
+                            player[i].coin = true;
+                        }
                     }
                 }
 
@@ -687,7 +758,7 @@ int main(int argc, char* argv[])
                     _is._player[i]._state = player[i].state;
                 }
                 _is._left_time = elapsedTime;
-                _is._coin_location = { 34 * 64 ,15 * 64 }; // 추후에 수정 필요
+                _is._coin_location = coin.location; // 추후에 수정 필요
 
                 /*for (int i = 0; i < cnt; ++i) {
                     cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
