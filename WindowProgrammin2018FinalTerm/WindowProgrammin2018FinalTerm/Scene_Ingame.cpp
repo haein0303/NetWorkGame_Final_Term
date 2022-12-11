@@ -590,7 +590,15 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[gMy_num]._location.x;
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
-
+	m_pFramework->GetPlayer(1)->iHaveCoin = g_ingame_send._player[gMy_num]._coin;
+	if (g_ingame_send._player[gMy_num]._state == CharState::Attacked) {
+		m_pFramework->GetPlayer(1)->isAttacked = true;
+		m_pFramework->GetPlayer(1)->CharacterStatus = 9;//lose
+	}
+	else {
+		m_pFramework->GetPlayer(1)->isAttacked = false;
+	}
+	m_pFramework->GetPlayer(1)->DashCoolTimer = g_ingame_send._player[gMy_num]._skill_cooltime1;
 	p1key = true;
 	
 
@@ -786,7 +794,7 @@ void CIngameScene::CharacterState()
 	{
 		if (m_pFramework->GetPlayer(1)->DashCoolTimer <= 0)
 		{
-			switch (m_pFramework->GetPlayer(1)->charNum)
+			switch (0)//switch (m_pFramework->GetPlayer(1)->charNum)
 			{
 			case 1:
 				m_pFramework->GetPlayer(1)->DashCoolTimer = 410;
@@ -1366,7 +1374,7 @@ void CIngameScene::Update(float fTimeElapsed)
 
 		if (m_pFramework->GetPlayer(1)->DashCoolTimer > 0)
 		{
-			m_pFramework->GetPlayer(1)->DashCoolTimer--;
+			//m_pFramework->GetPlayer(1)->DashCoolTimer--;
 		}
 		if (m_pFramework->GetPlayer(2)->DashCoolTimer > 0)
 		{

@@ -120,8 +120,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 					init_setting._player[0]._char_type <<
 					init_setting._player[1]._char_type<<
 					endl;*/
-				myFramework.BuildPlayer(init_setting._player[gMy_num]._char_type+1,
-					init_setting._player[calcNetId(gMy_num, 1)]._char_type+1,
+				myFramework.BuildPlayer(init_setting._player[gMy_num]._char_type,
+					init_setting._player[calcNetId(gMy_num, 1)]._char_type,
 					3);
 				myFramework.updateCTR(0);
 				break;

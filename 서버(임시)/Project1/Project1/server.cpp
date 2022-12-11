@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
 
     // 임시 플레이어 데이터 세팅
     for (int i = 0; i < 2; ++i) {
-        player[i].charType = i;
+        player[i].charType = i+1;
         player[i].charLook = 0;
         player[i].location = { 40 * TILE_SIZE, (i + 15) * TILE_SIZE };
         player[i].state = IdleA;
@@ -355,7 +355,7 @@ int main(int argc, char* argv[])
                 // 충돌 처리 및 공용 데이터 업데이트
                 for (int i = 0; i < cnt; ++i) {
                     // 스킬 충돌
-                    if (player[i].ingame_key._skill_key == 1) { // 1번 스킬
+                    if (player[i].ingame_key._skill_key == 1 && player[i].skill_cooltime2 <= 0) { // 1번 스킬
                         if (player[i].ingame_key._horizontal_key == 1) {
                             RECT tmp;
                             tmp.left = player[i].location.x;
@@ -512,6 +512,17 @@ int main(int argc, char* argv[])
                         }
                         cout << "스킬" << endl;
                         player[i].state = Skill;
+                        switch (player[i].charType) {
+                        case 1:
+                            player[i].skill_cooltime2 = 120;
+                            break;
+                        case 2:
+                            player[i].skill_cooltime2 = 60;
+                            break;
+                        case 3:
+                            player[i].skill_cooltime2 = 180;
+                            break;
+                        }
                         }
                     // 공격 충돌
                     else if (player[i].ingame_key._skill_key == 2) { // 공격
@@ -723,7 +734,7 @@ int main(int argc, char* argv[])
                             //player[i].state = Walk;
                         }
                         // 대쉬
-                        else if (player[i].ingame_key._skill_key == 3) { // 대쉬
+                        else if (player[i].ingame_key._skill_key == 3 && player[i].skill_cooltime1 <= 0) { // 대쉬
                             if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
                             else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 5;
 
@@ -731,6 +742,17 @@ int main(int argc, char* argv[])
                             else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 5;
 
                             player[i].state = Dash;
+                            switch (player[i].charType) {
+                            case 1:
+                                player[i].skill_cooltime1 = 410;
+                                break;
+                            case 2:
+                                player[i].skill_cooltime1 = 300;
+                                break;
+                            case 3:
+                                player[i].skill_cooltime1 = 600;
+                                break;
+                            }
                         }
 
                         if (player[i].location.x == coin.location.x && player[i].location.y && coin.location.y) {
@@ -743,6 +765,13 @@ int main(int argc, char* argv[])
 
                 // 쿨타임 업데이트
                 for (int i = 0; i < 2; ++i) {
+                    if (player[i].skill_cooltime1 > 0) {
+                        player[i].skill_cooltime1 -= pip.count();
+                    }
+                    if (player[i].skill_cooltime2 > 0) {
+                        player[i].skill_cooltime2 -= pip.count();
+                    }                 
+
                     // 시간 값 확인 후 지난 시간 만큼 남은 쿨타임에서 감소
                 }
 
