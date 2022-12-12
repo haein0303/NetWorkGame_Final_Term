@@ -335,8 +335,63 @@ int main(int argc, char* argv[])
 
 
             if (elapsedTime <= 0) {
-                // 게임 종료 및 로비 씬으로 전환
-                // 바로 종료 안하고 게임 끝나는 화면으로 전환 할수도있음
+                // 게임 종료 시 결과 송신
+                for (int i = 0; i < cnt; i++) {
+                    // 한명이 이김
+                    if (player[i].coin == true) {
+                        player[i].state = Win;
+                        if (i == 0) player[1].state = Lose;
+                        else player[0].state = Lose;
+
+                        buf[0] = SC_ingame_send;
+
+                        SC_Ingame_Send _is;
+                        for (int i = 0; i < 2; ++i) {
+                            _is._player[i]._char_type = player[i].charType;
+                            _is._player[i]._coin = player[i].coin;
+                            _is._player[i]._location = player[i].location;
+                            _is._player[i]._look = player[i].charLook;
+                            _is._player[i]._skill_cooltime1 = player[i].skill_cooltime1;
+                            _is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
+                            _is._player[i]._state = player[i].state;
+                        }
+                        _is._left_time = elapsedTime;
+                        _is._coin_location = coin.location; // 추후에 수정 필요
+
+                        for (int i = 0; i < cnt; ++i) {
+                            send(client_sock[i], buf, BUFSIZE, 0);
+                            send(client_sock[i], reinterpret_cast<char*>(&_is), sizeof(_is), 0);
+                        }
+
+                        break;
+                    }
+                    // 둘 다 못이김
+                    else {
+                        for (int i = 0; i < cnt; i++) player[i].state = Lose;
+
+                        buf[0] = SC_ingame_send;
+
+                        SC_Ingame_Send _is;
+                        for (int i = 0; i < 2; ++i) {
+                            _is._player[i]._char_type = player[i].charType;
+                            _is._player[i]._coin = player[i].coin;
+                            _is._player[i]._location = player[i].location;
+                            _is._player[i]._look = player[i].charLook;
+                            _is._player[i]._skill_cooltime1 = player[i].skill_cooltime1;
+                            _is._player[i]._skill_cooltime2 = player[i].skill_cooltime2;
+                            _is._player[i]._state = player[i].state;
+                        }
+                        _is._left_time = elapsedTime;
+                        _is._coin_location = coin.location; // 추후에 수정 필요
+
+                        for (int i = 0; i < cnt; ++i) {
+                            send(client_sock[i], buf, BUFSIZE, 0);
+                            send(client_sock[i], reinterpret_cast<char*>(&_is), sizeof(_is), 0);
+                        }
+
+                        break;
+                    }
+                }
             }
 
             else { // 게임 업데이트
