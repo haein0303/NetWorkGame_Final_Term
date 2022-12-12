@@ -610,14 +610,6 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
 	m_pFramework->GetPlayer(2)->iHaveCoin = g_ingame_send._player[calcNetId(gMy_num, 1)]._coin;
 	
-	//
-	//if (g_ingame_send._player[calcNetId(gMy_num, 1)]._state == CharState::Attacked) {
-	//	m_pFramework->GetPlayer(2)->isAttacked = true;
-	//	m_pFramework->GetPlayer(2)->CharacterStatus = 9;//lose
-	//}
-	//else {
-	//	m_pFramework->GetPlayer(2)->isAttacked = false;
-	//}
 	//cout << "ingame 602 :: " << g_ingame_send._player[calcNetId(gMy_num, 1)]._state << endl;
 
 	//p3 업데이트
@@ -721,10 +713,10 @@ void CIngameScene::CharacterState()
 		//case 2:
 		//case 5:
 		//case 6:
-	case CharState::Skill:  //0
-		m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+	case CharState::Skill:  
+		m_pFramework->GetPlayer(1)->Old_CharStat = CharState::IdleB;
 		m_pFramework->GetPlayer(1)->isSkill = TRUE;
-		//m_pFramework->GetPlayer(1)->CharacterStatus = CharState::Skill; //12
+		m_pFramework->GetPlayer(1)->CharacterStatus = CharState::Skill; //12
 		m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
 		break; // 앞 볼 때
 	//case 3:
