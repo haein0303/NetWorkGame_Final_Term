@@ -587,13 +587,16 @@ void CIngameScene::CharacterState()
 	//}
 
 	//cout << "Scene_ingame.cpp  588 :: " << gMy_num << endl;
+
 	//p1 업데이트
 	m_pFramework->GetPlayer(1)->x = (int)g_ingame_send._player[gMy_num]._location.x;
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
 	m_pFramework->GetPlayer(1)->iHaveCoin = g_ingame_send._player[gMy_num]._coin;
-	//
+	m_pFramework->GetPlayer(1)->havecoin = g_ingame_send._player[gMy_num]._coin;
 	m_pFramework->GetPlayer(1)->look = g_ingame_send._player[gMy_num]._look;
+
+	cout << "코인유무 : " << m_pFramework->GetPlayer(1)->havecoin << endl;
 
 	if (g_ingame_send._player[gMy_num]._state == CharState::Attacked) {
 		m_pFramework->GetPlayer(1)->isAttacked = true;
@@ -620,6 +623,7 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(3)->x = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.x;
 	m_pFramework->GetPlayer(3)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 2)]._location.y;
 	m_pFramework->GetPlayer(3)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 2)]._state;
+
 
 	//cout << "위치: " << g_ingame_send._player[0]._location.x << ", " << g_ingame_send._player[0]._location.y << endl;
 	//cout << "위치: " << tx2 << ", " << ty2 << endl;
@@ -717,6 +721,7 @@ void CIngameScene::CharacterState()
 		//case 2:
 		//case 5:
 		//case 6:
+
 	case CharState::Skill:  
 		// 앞/왼쪽 볼 때
 		if(m_pFramework->GetPlayer(1)->look == 2 || m_pFramework->GetPlayer(1)->look == 5) 
@@ -776,6 +781,7 @@ void CIngameScene::CharacterState()
 	//}
 	if (keydownList[12]) // p1 공격
 	{
+		//cout << "남은시간: " << g_ingame_send._left_time << endl;
 		switch (m_pFramework->GetPlayer(1)->CharacterStatus)
 		{
 		case 2:
@@ -1376,21 +1382,30 @@ void CIngameScene::Nevigator()
 
 void CIngameScene::Update(float fTimeElapsed)
 {
-	if (RemainTime <= 0)
+	if ( (int)g_ingame_send._left_time <= 0) //if (RemainTime <= 0)
 	{
-		// 추후 수정해야함 (서버에서 받은 캐릭터 정보로 코인유무 판별후 status 변경하는 걸로)
-		if (m_pFramework->GetPlayer(1)->iHaveCoin == TRUE)
-		{
-			isGameEnd = TRUE;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 14;
-			m_pFramework->GetPlayer(2)->CharacterStatus = 15;
-		}
-		else if (m_pFramework->GetPlayer(2)->iHaveCoin == TRUE)
-		{
-			isGameEnd = TRUE;
-			m_pFramework->GetPlayer(1)->CharacterStatus = 15;
-			m_pFramework->GetPlayer(2)->CharacterStatus = 14;
-		}
+		isGameEnd = TRUE;
+		m_pFramework->GetPlayer(1)->Update(fTimeElapsed);
+		m_pFramework->GetPlayer(2)->Update(fTimeElapsed);
+
+	//	//// 추후 수정해야함 (서버에서 받은 캐릭터 정보로 코인유무 판별후 status 변경하는 걸로)
+	//	//if (m_pFramework->GetPlayer(1)->iHaveCoin == TRUE)
+	//	//{
+	//	//	isGameEnd = TRUE;
+	//	//	m_pFramework->GetPlayer(1)->CharacterStatus = 14;
+	//	//	m_pFramework->GetPlayer(2)->CharacterStatus = 15;
+	//	//}
+	//	//else if (m_pFramework->GetPlayer(2)->iHaveCoin == TRUE)
+	//	//{
+	//	//	isGameEnd = TRUE;
+	//	//	m_pFramework->GetPlayer(1)->CharacterStatus = 15;
+	//	//	m_pFramework->GetPlayer(2)->CharacterStatus = 14;
+	//	//}
+	//	//else
+	//	//{
+	//	//	m_pFramework->GetPlayer(1)->CharacterStatus = 15;
+	//	//	m_pFramework->GetPlayer(2)->CharacterStatus = 15;
+	//	//}
 	}
 
 	//cout << "업데이트가 되고 있나요?" << g_scene_send._scene_num << endl;
@@ -1690,14 +1705,15 @@ void CIngameScene::Render(HDC hdc)
 	C_Numbers[TimerImage[1]].Draw(hdc, m_pFramework->GetRect().right / 2 + 20, m_pFramework->GetRect().bottom / 15, 80, 80);
 
 	////플레이어들이 코인을 가지고 있는지 확인
-	//if (m_pFramework->GetPlayer(1)->iHaveCoin)
-	//{
-	//	CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 - 90 - 60, windowY / 15, 50, 50);
-	//}
-	//else if (m_pFramework->GetPlayer(2)->iHaveCoin)
-	//{
-	//	CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 + 110, windowY / 15, 50, 50);
-	//}
+
+	if (m_pFramework->GetPlayer(1)->iHaveCoin)
+	{
+		CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 - 90 - 60, windowY / 15, 50, 50);
+	}
+	else if (m_pFramework->GetPlayer(2)->iHaveCoin)
+	{
+		CoinObject->Image.Draw(hdc, m_pFramework->GetRect().right / 2 + 110, windowY / 15, 50, 50);
+	}
 
 	for (int i = 0; i < nObjects; ++i)
 		ppObjects[i]->Render(*m_pFramework->GetPlayerDC());

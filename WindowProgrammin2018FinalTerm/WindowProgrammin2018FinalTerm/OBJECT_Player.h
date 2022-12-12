@@ -40,6 +40,8 @@ public:
 	BOOL iHaveCoin = FALSE;
 	OBJECT_Skill* CSkill = NULL;
 
+	bool havecoin = false;
+
 	RECT reTmp;
 
 	int WalkingTimerTick = 0;

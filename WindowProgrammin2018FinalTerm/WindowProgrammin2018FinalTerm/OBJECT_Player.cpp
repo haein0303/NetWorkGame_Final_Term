@@ -165,7 +165,6 @@ void CObject_Player::Render(HDC* hdc)
 	//		this->CSkill->Render(hdc);
 	//	break;
 	case CharState::Attacked:
-		cout << "Attacked!!" << endl;
 		this->Image.Attacked[WalkingImageTick % 2].Draw(*hdc, this->x - this->Image.Attacked[WalkingImageTick % 2].GetWidth() / 2,
 			this->y - 5 - Image.Attacked[WalkingImageTick % 2].GetHeight() / 2, Image.Attacked[WalkingImageTick % 2].GetWidth(), Image.Attacked[WalkingImageTick % 2].GetHeight());
 		if (this->charNum == 3)
@@ -210,11 +209,13 @@ void CObject_Player::Render(HDC* hdc)
 		if (this->isSkill)
 			this->CSkill->Render(hdc);
 		break;
-	case 14:
+	//case 14:
+	case CharState::Win:
 		this->Image.Win.Draw(*hdc, this->x - this->Image.Idle_B.GetWidth() / 2, this->y - 5 - this->Image.Idle_B.GetHeight() / 2,
 			this->Image.Idle_B.GetWidth(), this->Image.Idle_B.GetHeight());
 		break;
-	case 15:
+	//case 15:
+	case CharState::Lose:
 		this->Image.Lose.Draw(*hdc, this->x - this->Image.Idle_B.GetWidth() / 2, this->y - 5 - this->Image.Idle_B.GetHeight() / 2,
 			this->Image.Idle_B.GetWidth(), this->Image.Idle_B.GetHeight());
 		break;

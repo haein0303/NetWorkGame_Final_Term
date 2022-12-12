@@ -817,6 +817,7 @@ int main(int argc, char* argv[])
                             coin.init = false;
                             coin.location = { 0, 0 };
                             player[i].coin = true;
+                            cout << "ÄÚÀÎÈ¹µæ!" << endl;
                         }
                     }
                 }
