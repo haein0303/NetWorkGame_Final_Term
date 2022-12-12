@@ -214,41 +214,29 @@ int main(int argc, char* argv[])
         player[i].skill_on = false;
         switch (player[i].charType)
         {
-        case 0:
+        case 1:
             // 스킬 범위
             player[i].char_info.skill_area.left = 0;
             player[i].char_info.skill_area.right = 552;
             player[i].char_info.skill_area.top = 0;
             player[i].char_info.skill_area.bottom = 310;
             // 공격 범위
-            player[i].char_info.skill_area.left = 0;
-            player[i].char_info.skill_area.right = 70;
-            player[i].char_info.skill_area.top = 0;
-            player[i].char_info.skill_area.bottom = 50;
+            player[i].char_info.attack_area.left = 0;
+            player[i].char_info.attack_area.right = 70;
+            player[i].char_info.attack_area.top = 0;
+            player[i].char_info.attack_area.bottom = 50;
             break;
-        case 1:
+        case 2:
             // 스킬 범위
             player[i].char_info.skill_area.left = 0;
             player[i].char_info.skill_area.right = 323;
             player[i].char_info.skill_area.top = 0;
             player[i].char_info.skill_area.bottom = 128;
             // 공격 범위
-            player[i].char_info.skill_area.left = 0;
-            player[i].char_info.skill_area.right = 70;
-            player[i].char_info.skill_area.top = 0;
-            player[i].char_info.skill_area.bottom = 50;
-            break;
-        case 2:
-            // 스킬 범위
-            player[i].char_info.skill_area.left = 0;
-            player[i].char_info.skill_area.right = 413;
-            player[i].char_info.skill_area.top = 0;
-            player[i].char_info.skill_area.bottom = 223;
-            // 공격 범위
-            player[i].char_info.skill_area.left = 0;
-            player[i].char_info.skill_area.right = 70;
-            player[i].char_info.skill_area.top = 0;
-            player[i].char_info.skill_area.bottom = 50;
+            player[i].char_info.attack_area.left = 0;
+            player[i].char_info.attack_area.right = 70;
+            player[i].char_info.attack_area.top = 0;
+            player[i].char_info.attack_area.bottom = 50;
             break;
         }
     }
@@ -494,7 +482,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[1].location.x + 20;
+                                        coin.location.y = player[1].location.y + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -505,7 +498,12 @@ int main(int argc, char* argv[])
                                     player[0].location.y <= tmp.bottom)
                                 {
                                     player[0].state = Attacked;
-                                    player[0].coin = false;
+                                    if (player[0].coin == true) {
+                                        coin.init = true;
+                                        coin.location.x = player[0].location.x + 20;
+                                        coin.location.y = player[0].location.y + 20;
+                                        player[0].coin = false;
+                                    }
                                 }
                             }
                             player[i].charLook = 5;
@@ -582,7 +580,12 @@ int main(int argc, char* argv[])
                                     player[1].location.y <= tmp.bottom)
                                 {
                                     player[1].state = Attacked;
-                                    player[1].coin = false;
+                                    if (player[1].coin == true) {
+                                        coin.init = true;
+                                        coin.location.y = player[1].location.y + 20;
+                                        coin.location.x = player[1].location.x + 20;
+                                        player[1].coin = false;
+                                    }
                                 }
                             }
                             else
@@ -735,11 +738,11 @@ int main(int argc, char* argv[])
                         }
                         // 대쉬
                         else if (player[i].ingame_key._skill_key == 3 && player[i].skill_cooltime1 <= 0) { // 대쉬
-                            if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 5;
-                            else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 5;
+                            if (player[i].ingame_key._horizontal_key == 1) player[i].location.x += _x * 20;
+                            else if (player[i].ingame_key._horizontal_key == -1) player[i].location.x -= _x * 20;
 
-                            if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 5;
-                            else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 5;
+                            if (player[i].ingame_key._vertical_key == 1) player[i].location.y += _y * 20;
+                            else if (player[i].ingame_key._vertical_key == -1) player[i].location.y -= _y * 20;
 
                             player[i].state = Dash;
                             switch (player[i].charType) {
@@ -789,9 +792,9 @@ int main(int argc, char* argv[])
                 _is._left_time = elapsedTime;
                 _is._coin_location = coin.location; // 추후에 수정 필요
 
-                for (int i = 0; i < cnt; ++i) {
+                /*for (int i = 0; i < cnt; ++i) {
                     cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
-                }
+                }*/
 
 
                 buf[0] = SC_ingame_send;
