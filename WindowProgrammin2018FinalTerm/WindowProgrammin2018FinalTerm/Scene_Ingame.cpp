@@ -737,17 +737,7 @@ void CIngameScene::CharacterState()
 			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
 			break; // 뒤 볼 때
 		}
-	//case 3:
-	//case 4:
-	//case 7:
-	//case 1:
-	//	m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
-	//	m_pFramework->GetPlayer(1)->isSkill = TRUE;
-	//	m_pFramework->GetPlayer(1)->CharacterStatus = 13;
-	//	m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
-	//	break; // 뒤 볼 때
 	}
-	
 	//if (keydownList[11]) // p1 스킬 A키
 	//{
 	//	switch (m_pFramework->GetPlayer(1)->charNum)

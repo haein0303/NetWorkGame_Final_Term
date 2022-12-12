@@ -138,12 +138,25 @@ void CObject_Player::Render(HDC* hdc)
 
 	//case 6:
 	case CharState::Attack : //dŰ
-		this->Image.Attack[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack[this->AttackImageTick].GetWidth() / 2,
-			this->y - 5 - this->Image.Attack[this->AttackImageTick].GetHeight() / 2, this->Image.Attack[this->AttackImageTick].GetWidth(),
-			this->Image.Attack[this->AttackImageTick].GetHeight());
-		if (this->charNum == 3)
-			this->CSkill->Render(hdc);
-		break;
+		if (this->look == 3 || this->look == 4)
+		{
+			this->Image.Attack_B[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack_B[this->AttackImageTick].GetWidth() / 2,
+				this->y - 5 - this->Image.Attack_B[this->AttackImageTick].GetHeight() / 2, this->Image.Attack_B[this->AttackImageTick].GetWidth(),
+				this->Image.Attack_B[this->AttackImageTick].GetHeight());
+			if (this->charNum == 3)
+				this->CSkill->Render(hdc);
+			break;
+		}
+
+		else
+		{
+			this->Image.Attack[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack[this->AttackImageTick].GetWidth() / 2,
+				this->y - 5 - this->Image.Attack[this->AttackImageTick].GetHeight() / 2, this->Image.Attack[this->AttackImageTick].GetWidth(),
+				this->Image.Attack[this->AttackImageTick].GetHeight());
+			if (this->charNum == 3)
+				this->CSkill->Render(hdc);
+			break;
+		}
 	//case 7:
 	//	this->Image.Attack_B[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack_B[this->AttackImageTick].GetWidth() / 2,
 	//		this->y - 5 - this->Image.Attack_B[this->AttackImageTick].GetHeight() / 2, this->Image.Attack_B[this->AttackImageTick].GetWidth(),
