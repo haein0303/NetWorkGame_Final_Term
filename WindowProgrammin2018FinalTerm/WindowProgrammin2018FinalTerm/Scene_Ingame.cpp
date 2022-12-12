@@ -187,10 +187,10 @@ void CIngameScene::KeyState()
 						m_pFramework->GetPlayer(2)->AttackTimerTick = 0;
 						m_pFramework->GetPlayer(2)->AttackImageTick = 0;
 						//printf("%d", m_pFramework->GetPlayer(2)->CharacterStatus);
-						if (m_pFramework->GetPlayer(2)->CharacterStatus == 6)
-							m_pFramework->GetPlayer(2)->CharacterStatus = 0;
+						if (m_pFramework->GetPlayer(2)->CharacterStatus == CharState::Attack) //6
+							m_pFramework->GetPlayer(2)->CharacterStatus = CharState::IdleA; //0
 						else
-							m_pFramework->GetPlayer(2)->CharacterStatus = 1;
+							m_pFramework->GetPlayer(2)->CharacterStatus = CharState::IdleA; //1
 						isp2LockDown = FALSE;
 						p2key = TRUE;
 					}
@@ -211,10 +211,10 @@ void CIngameScene::KeyState()
 			}
 			else if (m_pFramework->GetPlayer(2)->isSkillEnd)
 			{
-				if (m_pFramework->GetPlayer(2)->CharacterStatus == 12)
-					m_pFramework->GetPlayer(2)->CharacterStatus = 0;
+				if (m_pFramework->GetPlayer(2)->CharacterStatus == CharState::Skill) //12
+					m_pFramework->GetPlayer(2)->CharacterStatus = CharState::IdleA; //0
 				else
-					m_pFramework->GetPlayer(2)->CharacterStatus = 1;
+					m_pFramework->GetPlayer(2)->CharacterStatus = CharState::IdleA; //1
 				m_pFramework->GetPlayer(2)->AttackTimerTick = 0;
 				m_pFramework->GetPlayer(2)->AttackImageTick = 0;
 				m_pFramework->GetPlayer(2)->isSkillEnd = FALSE;
@@ -381,10 +381,11 @@ void CIngameScene::KeyState()
 						m_pFramework->GetPlayer(1)->AttackTimerTick = 0;
 						m_pFramework->GetPlayer(1)->AttackImageTick = 0;
 						//printf("%d", m_pFramework->GetPlayer(1)->CharacterStatus);
-						if (m_pFramework->GetPlayer(1)->CharacterStatus == 6)
-							m_pFramework->GetPlayer(1)->CharacterStatus = 0;
+						if(m_pFramework->GetPlayer(1)->CharacterStatus == CharState::Attacked) //if (m_pFramework->GetPlayer(1)->CharacterStatus == 6)
+							m_pFramework->GetPlayer(1)->CharacterStatus = CharState::IdleA;
+							
 						else
-							m_pFramework->GetPlayer(1)->CharacterStatus = 1;
+							m_pFramework->GetPlayer(1)->CharacterStatus = CharState::IdleA;
 						isp1LockDown = FALSE;
 						p1key = TRUE;
 					}
@@ -405,10 +406,10 @@ void CIngameScene::KeyState()
 			}
 			else if (m_pFramework->GetPlayer(1)->isSkillEnd)
 			{
-				if (m_pFramework->GetPlayer(1)->CharacterStatus == 12)
-					m_pFramework->GetPlayer(1)->CharacterStatus = 0;
+				if (m_pFramework->GetPlayer(1)->CharacterStatus == CharState::Skill) // 기존 : 12
+					m_pFramework->GetPlayer(1)->CharacterStatus = CharState::IdleA; //0
 				else
-					m_pFramework->GetPlayer(1)->CharacterStatus = 1;
+					m_pFramework->GetPlayer(1)->CharacterStatus = CharState::IdleB; //1
 				m_pFramework->GetPlayer(1)->AttackTimerTick = 0;
 				m_pFramework->GetPlayer(1)->AttackImageTick = 0;
 				m_pFramework->GetPlayer(1)->isSkillEnd = FALSE;
@@ -606,7 +607,17 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(2)->x = (int)g_ingame_send._player[calcNetId(gMy_num,1)]._location.x;
 	m_pFramework->GetPlayer(2)->y = (int)g_ingame_send._player[calcNetId(gMy_num, 1)]._location.y;
 	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
+	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
+	m_pFramework->GetPlayer(2)->iHaveCoin = g_ingame_send._player[calcNetId(gMy_num, 1)]._coin;
 	
+	//
+	//if (g_ingame_send._player[calcNetId(gMy_num, 1)]._state == CharState::Attacked) {
+	//	m_pFramework->GetPlayer(2)->isAttacked = true;
+	//	m_pFramework->GetPlayer(2)->CharacterStatus = 9;//lose
+	//}
+	//else {
+	//	m_pFramework->GetPlayer(2)->isAttacked = false;
+	//}
 	//cout << "ingame 602 :: " << g_ingame_send._player[calcNetId(gMy_num, 1)]._state << endl;
 
 	//p3 업데이트
@@ -703,6 +714,30 @@ void CIngameScene::CharacterState()
 	}
 	*/
 	//////////////////// p1 스킬 공격 대시 //////////////////////////////////
+	// p1 스킬
+	switch (m_pFramework->GetPlayer(1)->CharacterStatus)
+	{
+		SkillCoolTime[0] = 8;
+		//case 2:
+		//case 5:
+		//case 6:
+	case CharState::Skill:  //0
+		m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+		m_pFramework->GetPlayer(1)->isSkill = TRUE;
+		//m_pFramework->GetPlayer(1)->CharacterStatus = CharState::Skill; //12
+		m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+		break; // 앞 볼 때
+	//case 3:
+	//case 4:
+	//case 7:
+	//case 1:
+	//	m_pFramework->GetPlayer(1)->Old_CharStat = m_pFramework->GetPlayer(1)->CharacterStatus;
+	//	m_pFramework->GetPlayer(1)->isSkill = TRUE;
+	//	m_pFramework->GetPlayer(1)->CharacterStatus = 13;
+	//	m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+	//	break; // 뒤 볼 때
+	}
+	
 	//if (keydownList[11]) // p1 스킬 A키
 	//{
 	//	switch (m_pFramework->GetPlayer(1)->charNum)
@@ -1564,13 +1599,13 @@ void CIngameScene::Render(HDC hdc)
 	{
 		m_pFramework->GetPlayer(2)->Render(m_pFramework->GetPlayerDC());
 		m_pFramework->GetPlayer(1)->Render(m_pFramework->GetPlayerDC());
-		m_pFramework->GetPlayer(3)->Render(m_pFramework->GetPlayerDC()); //PL3 추가
+		//m_pFramework->GetPlayer(3)->Render(m_pFramework->GetPlayerDC()); //PL3 추가
 	}
 	else
 	{
 		m_pFramework->GetPlayer(1)->Render(m_pFramework->GetPlayerDC());
 		m_pFramework->GetPlayer(2)->Render(m_pFramework->GetPlayerDC());
-		m_pFramework->GetPlayer(3)->Render(m_pFramework->GetPlayerDC()); //PL3 추가
+		//m_pFramework->GetPlayer(3)->Render(m_pFramework->GetPlayerDC()); //PL3 추가
 	}
 	//코인
 	CoinObject->Render(&*m_pFramework->GetPlayerDC());
@@ -1592,10 +1627,10 @@ void CIngameScene::Render(HDC hdc)
 	BitBlt(hdc, 
 		m_pFramework->p2.left, 
 		m_pFramework->p2.top, 
-		m_pFramework->p1.right, 
+		m_pFramework->p2.right, 
 		m_pFramework->p2.bottom, 
 		*m_pFramework->GetPlayerDC(), 
-		m_pFramework->GetPlayer(2)->x - m_pFramework->p1.right / 2, 
+		m_pFramework->GetPlayer(2)->x - m_pFramework->p2.right / 2, 
 		m_pFramework->GetPlayer(2)->y - m_pFramework->p2.bottom / 2, 
 		SRCCOPY);
 
