@@ -695,18 +695,18 @@ int main(int argc, char* argv[])
                         // 이동
                         if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
                             if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
-                                if (Tileindex[(player[i].location.x + 15) / 64][player[i].location.y / 64] == 1) // 가속발판
+                                if (Tileindex[(player[i].location.x + 20) / 64][(player[i].location.y + 64) / 64] == 1) // 가속발판
                                     player[i].location.x += _x + 5;
-                                else if (Tileindex[(player[i].location.x + 10) / 64][player[i].location.y / 64] == 0) {
+                                else if (Tileindex[(player[i].location.x + 15) / 64][(player[i].location.y + 64) / 64] == 0) {
                                     player[i].location.x += _x;
                                 } // 일반 발판
                                 player[i].state = WalkB;
                                 player[i].charLook = 4;
                             }
                             else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
-                                if (Tileindex[(player[i].location.x - 15) / 64][player[i].location.y / 64] == 1) // 가속발판
+                                if (Tileindex[(player[i].location.x - 20) / 64][(player[i].location.y + 64) / 64] == 1) // 가속발판
                                     player[i].location.x -= (_x + 5);
-                                else if (Tileindex[(player[i].location.x - 10) / 64][player[i].location.y / 64] == 0) {
+                                else if (Tileindex[(player[i].location.x - 15) / 64][(player[i].location.y + 64) / 64] == 0) {
                                     player[i].location.x -= _x;
                                 } // 일반 발판
                                 player[i].state = WalkA;
@@ -714,18 +714,18 @@ int main(int argc, char* argv[])
                             }
 
                             if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
-                                if (Tileindex[player[i].location.x / 64][(player[i].location.y - 15) / 64] == 1) // 가속발판
+                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 44) / 64] == 1) // 가속발판
                                     player[i].location.y -= (_y + 5);
-                                else if (Tileindex[player[i].location.x / 64][(player[i].location.y - 10) / 64] == 0) {
+                                else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 49) / 64] == 0) {
                                     player[i].location.y -= _y;
                                 } // 일반 발판
                                 player[i].state = WalkB;
                                 player[i].charLook = 3;
                             }
                             else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
-                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 15) / 64] == 1) // 가속발판
+                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 84) / 64] == 1) // 가속발판
                                     player[i].location.y += _y + 5;
-                                else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 10) / 64] == 0) {
+                                else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 79) / 64] == 0) {
                                     player[i].location.y += _y;
                                 } // 일반 발판
                                 player[i].state = WalkA;
@@ -789,9 +789,9 @@ int main(int argc, char* argv[])
                 _is._left_time = elapsedTime;
                 _is._coin_location = coin.location; // 추후에 수정 필요
 
-                /*for (int i = 0; i < cnt; ++i) {
+                for (int i = 0; i < cnt; ++i) {
                     cout << i << " X : " << player[i].location.x << " Y : " << player[i].location.y << endl;
-                }*/
+                }
 
 
                 buf[0] = SC_ingame_send;
