@@ -698,7 +698,7 @@ int main(int argc, char* argv[])
                         // 이동
                         if (player[i].ingame_key._skill_key == 0) { // 스킬 x 이동만
                             if (player[i].ingame_key._horizontal_key == 1 && player[i].location.x < 6350) {
-                                if (Tileindex[(player[i].location.x + 20) / 64][(player[i].location.y + 64) / 64] == 1) // 가속발판
+                                if (Tileindex[(player[i].location.x + 15) / 64][(player[i].location.y + 64) / 64] == 1) // 가속발판
                                     player[i].location.x += _x + 5;
                                 else if (Tileindex[(player[i].location.x + 15) / 64][(player[i].location.y + 64) / 64] == 0) {
                                     player[i].location.x += _x;
@@ -707,7 +707,7 @@ int main(int argc, char* argv[])
                                 player[i].charLook = 4;
                             }
                             else if (player[i].ingame_key._horizontal_key == -1 && player[i].location.x > 50) {
-                                if (Tileindex[(player[i].location.x - 20) / 64][(player[i].location.y + 64) / 64] == 1) // 가속발판
+                                if (Tileindex[(player[i].location.x - 15) / 64][(player[i].location.y + 64) / 64] == 1) // 가속발판
                                     player[i].location.x -= (_x + 5);
                                 else if (Tileindex[(player[i].location.x - 15) / 64][(player[i].location.y + 64) / 64] == 0) {
                                     player[i].location.x -= _x;
@@ -717,7 +717,7 @@ int main(int argc, char* argv[])
                             }
 
                             if (player[i].ingame_key._vertical_key == -1 && player[i].location.y > 50) {
-                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 44) / 64] == 1) // 가속발판
+                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 49) / 64] == 1) // 가속발판
                                     player[i].location.y -= (_y + 5);
                                 else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 49) / 64] == 0) {
                                     player[i].location.y -= _y;
@@ -726,7 +726,7 @@ int main(int argc, char* argv[])
                                 player[i].charLook = 3;
                             }
                             else if (player[i].ingame_key._vertical_key == 1 && player[i].location.y < 6350) {
-                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 84) / 64] == 1) // 가속발판
+                                if (Tileindex[player[i].location.x / 64][(player[i].location.y + 79) / 64] == 1) // 가속발판
                                     player[i].location.y += _y + 5;
                                 else if (Tileindex[player[i].location.x / 64][(player[i].location.y + 79) / 64] == 0) {
                                     player[i].location.y += _y;
