@@ -29,6 +29,7 @@ public:
 
 	int x=0;
 	int y=0;
+	int look = 0;
 
 	BOOL isWalk = FALSE;
 	BOOL isAttack = FALSE;

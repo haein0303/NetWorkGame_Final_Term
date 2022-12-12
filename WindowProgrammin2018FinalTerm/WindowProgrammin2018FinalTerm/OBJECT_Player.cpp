@@ -182,14 +182,15 @@ void CObject_Player::Render(HDC* hdc)
 			this->CSkill->Render(hdc);
 		break;
 	//case 12: //스킬
-	case CharState::Skill: //스킬
+	case CharState::Skill: //왼쪽스킬
 		this->Image.Attack[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack[this->AttackImageTick].GetWidth() / 2,
 			this->y - 5 - this->Image.Attack[this->AttackImageTick].GetHeight() / 2, this->Image.Attack[this->AttackImageTick].GetWidth(),
 			this->Image.Attack[this->AttackImageTick].GetHeight());
 		if (this->isSkill)
 			this->CSkill->Render(hdc);
 		break;
-	case 13:
+	//case 13:
+	case CharState::SkillB: //오른쪽스킬
 		this->Image.Attack_B[this->AttackImageTick].Draw(*hdc, this->x - this->Image.Attack_B[this->AttackImageTick].GetWidth() / 2,
 			this->y - 5 - this->Image.Attack_B[this->AttackImageTick].GetHeight() / 2, this->Image.Attack_B[this->AttackImageTick].GetWidth(),
 			this->Image.Attack_B[this->AttackImageTick].GetHeight());

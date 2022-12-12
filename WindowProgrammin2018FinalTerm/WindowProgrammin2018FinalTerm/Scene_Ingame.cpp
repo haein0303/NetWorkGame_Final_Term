@@ -531,10 +531,10 @@ void CIngameScene::KeyState()
 		if (keydownList[7]&& keydownList[9]) {//동시
 			gKeyData._horizontal_key = 0;
 		}
-		if (keydownList[10]) {//UP
+		if (keydownList[10]) {//down
 			gKeyData._vertical_key = 1;
 		}
-		if (keydownList[8]) {//DOWN
+		if (keydownList[8]) {//up
 			gKeyData._vertical_key = -1;
 		}
 		if (keydownList[8] && keydownList[10]) {//동시
@@ -592,6 +592,9 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(1)->y = (int)g_ingame_send._player[gMy_num]._location.y;
 	m_pFramework->GetPlayer(1)->CharacterStatus = g_ingame_send._player[gMy_num]._state;
 	m_pFramework->GetPlayer(1)->iHaveCoin = g_ingame_send._player[gMy_num]._coin;
+	//
+	m_pFramework->GetPlayer(1)->look = g_ingame_send._player[gMy_num]._look;
+
 	if (g_ingame_send._player[gMy_num]._state == CharState::Attacked) {
 		m_pFramework->GetPlayer(1)->isAttacked = true;
 		m_pFramework->GetPlayer(1)->CharacterStatus = 9;//lose
@@ -609,7 +612,8 @@ void CIngameScene::CharacterState()
 	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
 	m_pFramework->GetPlayer(2)->CharacterStatus = g_ingame_send._player[calcNetId(gMy_num, 1)]._state;
 	m_pFramework->GetPlayer(2)->iHaveCoin = g_ingame_send._player[calcNetId(gMy_num, 1)]._coin;
-	
+	m_pFramework->GetPlayer(2)->look = g_ingame_send._player[calcNetId(gMy_num, 1)]._look;
+
 	//cout << "ingame 602 :: " << g_ingame_send._player[calcNetId(gMy_num, 1)]._state << endl;
 
 	//p3 업데이트
@@ -714,11 +718,25 @@ void CIngameScene::CharacterState()
 		//case 5:
 		//case 6:
 	case CharState::Skill:  
-		m_pFramework->GetPlayer(1)->Old_CharStat = CharState::IdleB;
-		m_pFramework->GetPlayer(1)->isSkill = TRUE;
-		m_pFramework->GetPlayer(1)->CharacterStatus = CharState::Skill; //12
-		m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
-		break; // 앞 볼 때
+		// 앞/왼쪽 볼 때
+		if(m_pFramework->GetPlayer(1)->look == 2 || m_pFramework->GetPlayer(1)->look == 5) 
+		{
+			//cout << "캐릭터 look: " << m_pFramework->GetPlayer(1)->look << endl;
+			m_pFramework->GetPlayer(1)->Old_CharStat = CharState::IdleB;
+			m_pFramework->GetPlayer(1)->isSkill = TRUE;
+			m_pFramework->GetPlayer(1)->CharacterStatus = CharState::Skill; //12
+			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+			break;
+		}
+		//뒤/오른쪽 볼때
+		if (m_pFramework->GetPlayer(1)->look == 4 || m_pFramework->GetPlayer(1)->look == 3)
+		{
+			m_pFramework->GetPlayer(1)->Old_CharStat = CharState::IdleA;;
+			m_pFramework->GetPlayer(1)->isSkill = TRUE;
+			m_pFramework->GetPlayer(1)->CharacterStatus = CharState::SkillB;
+			m_pFramework->GetPlayer(1)->SkillCast(m_pFramework->GetPlayer(1)->x, m_pFramework->GetPlayer(1)->y, m_pFramework->GetPlayer(1)->Old_CharStat);
+			break; // 뒤 볼 때
+		}
 	//case 3:
 	//case 4:
 	//case 7:

@@ -22,6 +22,7 @@ enum CharState {
     Attacked,
     Dash,
     Skill,
+    SkillB = 13,
     Win,
     Lose,
 };
